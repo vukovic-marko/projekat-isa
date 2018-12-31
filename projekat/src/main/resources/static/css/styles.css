@@ -19,9 +19,6 @@
 	margin-bottom: 15px;
 }
 
-.ord-num input, .item-price, .item-quantity{
-	width:75px;
-}
 
 #pageContent {
 	overflow: auto;

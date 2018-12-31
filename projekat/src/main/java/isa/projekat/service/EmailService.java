@@ -25,8 +25,8 @@ public class EmailService {
 		mail.setFrom(env.getProperty("spring.mail.username"));
 		mail.setSubject("Aktivacioni email");
 		String body = "Postovani  " + user.getUsername()
-				+ ",\nDa biste aktivirali svoj nalog, potrebno je da kliknete na sledeci link:"
-				+"http://" +env.getProperty("hostname") + "/activate/" + user.getId();
+				+ ",\nDa biste aktivirali svoj nalog, potrebno je da kliknete na sledeci link: "
+				+"http://" +env.getProperty("hostname") + "/activate/" + user.getUsername();
 		mail.setText(body);
 		javaMailSender.send(mail);
 	}

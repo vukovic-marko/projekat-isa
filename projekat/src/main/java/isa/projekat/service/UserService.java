@@ -30,7 +30,6 @@ public class UserService {
 	//registruje novog korisnika
 	@Transactional(readOnly=false,isolation=Isolation.READ_COMMITTED)
 	public Boolean register(User u) {
-		// TODO provera
 		u.setActivated(false);
 		User ret = userRepository.save(u);
 		if (ret != null) {
@@ -42,8 +41,8 @@ public class UserService {
 	
 	//aktivira korisnicki nalog
 	@Transactional(readOnly=false,isolation=Isolation.READ_COMMITTED)
-	public Boolean activate(Long id) {
-		User u=userRepository.getOne(id);
+	public Boolean activate(String username) {
+		User u=userRepository.findOneByUsername(username);
 		if(u==null)
 			return false;
 		u.setActivated(true);
