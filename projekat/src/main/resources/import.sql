@@ -7,6 +7,6 @@ INSERT INTO user (id, activated, city, email, first_name, last_name, password, p
 INSERT INTO AUTHORITY (id, name) VALUES (1, 'ROLE_USER');
 INSERT INTO AUTHORITY (id, name) VALUES (2, 'ROLE_ADMIN');
 
---INSERT INTO USER_AUTHORITY (user_id, authority_id) VALUES (1, 1);
+INSERT INTO USER_AUTHORITY (user_id, authority_id) VALUES (1, 2);
 --INSERT INTO USER_AUTHORITY (user_id, authority_id) VALUES (2, 1);
 --INSERT INTO USER_AUTHORITY (user_id, authority_id) VALUES (2, 2);
