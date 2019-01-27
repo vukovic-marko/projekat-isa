@@ -1,6 +1,16 @@
+function getToken() {
+	return localStorage.getItem('jwtToken');
+}
+$(document).ajaxSend(function(event, jqxhr, settings) {
+	var token = getToken();
+	if (token != null)
+		jqxhr.setRequestHeader('Authorization', 'Bearer ' + token);
+});
+
 $(document).ready(
+
 		function() {
-			
+
 			$.validator.methods.phoneCheck = function(value, element) {
 				return this.optional(element)
 						|| /([0-9]{3,3}\/[0-9]{3,3}-[0-9]{2,2}-[0-9]{2,2})$/
@@ -59,7 +69,7 @@ function fillButtons() {
 								required : true,
 								phoneCheck : true
 							},
-							city:{
+							city : {
 								required : true
 							}
 
@@ -93,42 +103,47 @@ function fillButtons() {
 								required : "Telefon nije unet",
 								phoneCheck : "Neispravan format (123/456-78-99)"
 							},
-							
+
 							city : {
 								required : "Grad nije unet"
 							}
 						}
 					});
 
-	$('#login')
-			.click(
-					function() {
-						if ($('#loginForm').valid()) {
-							$
-									.ajax({
-										url : 'user/login',
-										type : 'post',
-										data : $("#loginForm").serialize(),
-										success : function(data) {
-											if (data == true) {
-												window.location.replace("");
-											} else {
-												$('#btn-error')
-														.show()
-														.html(
-																'Neispravno korisničko ime i/ili lozinka')
-														.fadeOut(5000);
+	$('#login').click(function() {
 
-											}
-										}
-									});
-						}
-
-					});
-	$('.navbar-nav').append(
-			'<li class="nav-item">'
-					+ ' <button id="refModalShow" data-toggle="modal" href="#registerModal"'
-					+ '  class="btn btn-primary">Registruj se</button> </li>');
+		if ($('#loginForm').valid()) {
+			var d = {};
+			d.username = $('#username').val();
+			d.password = $('#password').val();
+			$.ajax({
+				url : 'user/login',
+				type : 'post',
+				contentType : 'application/json',
+				data : JSON.stringify(d),
+				success : function(data) {
+					localStorage.setItem('jwtToken',data.accessToken);
+					window.location.replace("");
+				},
+				statusCode : {
+					401 : function(data) {
+						var string = data.responseJSON.message;
+						var flag = string.localeCompare("Bad credentials");
+						if (flag == 0)
+							string = "Neispravno korisničko ime i/ili lozinka";
+						else
+							string = "Korisnički nalog nije aktiviran"
+						$('#btn-error').show().html(string).fadeOut(5000);
+					}
+				}
+			});
+		}
+	});
+	$('.navbar-nav')
+			.append(
+					'<li class="nav-item">'
+							+ ' <button id="refModalShow" data-toggle="modal" href="#registerModal"'
+							+ '  class="btn btn-primary">Registruj se</button> </li>');
 	$('#registerButton').click(
 
 			function() {
@@ -151,9 +166,9 @@ function fillButtons() {
 						success : function(data) {
 							if (data == true) {
 								$("#registerModal").modal('hide');
-								
+
 								$("#successModal").modal('show');
-								
+
 								// window.location.replace("");
 							} else {
 								$('#regbtn-error').show().html(

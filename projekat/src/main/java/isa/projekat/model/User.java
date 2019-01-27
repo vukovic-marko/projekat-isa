@@ -1,40 +1,74 @@
 package isa.projekat.model;
 
-import javax.persistence.*;
+import java.util.Collection;
+import java.util.List;
+
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToMany;
+import javax.persistence.Table;
+import javax.persistence.Version;
+
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
 
 @Entity
-public class User {
+@Table(name = "USER")
+public class User implements UserDetails {
+
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 6882427434891133050L;
 
 	@Version
 	private Long version;
-	
+	@ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+	@JoinTable(name = "user_authority", joinColumns = @JoinColumn(name = "user_id", referencedColumnName = "id"), inverseJoinColumns = @JoinColumn(name = "authority_id", referencedColumnName = "id"))
+	private List<Authority> authorities;
+
+	public void setAuthorities(List<Authority> authorities) {
+		this.authorities = authorities;
+	}
+
+	@Override
+	public Collection<? extends GrantedAuthority> getAuthorities() {
+		return this.authorities;
+	}
 
 	@Column(nullable = false)
 	private String username;
-	
+
 	@Column(nullable = false)
 	private String email;
-	
+
 	@Column(nullable = false)
 	private String firstName;
-	
+
 	@Column(nullable = false)
 	private String password;
-	
+
 	@Column(nullable = false)
 	private String lastName;
-	
+
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	private Long id;
 
-	@Column(nullable=false)
+	@Column(nullable = false)
 	private Boolean activated;
-	
-	@Column(nullable=false)
+
+	@Column(nullable = false)
 	private String city;
-	
-	@Column(nullable=false)
+
+	@Column(nullable = false)
 	private String phone;
 
 	public User() {
@@ -111,6 +145,7 @@ public class User {
 	public void setPhone(String phone) {
 		this.phone = phone;
 	}
+
 	public Long getVersion() {
 		return version;
 	}
@@ -118,6 +153,29 @@ public class User {
 	public void setVersion(Long version) {
 		this.version = version;
 	}
-	
-	
+
+	@Override
+	public boolean isAccountNonExpired() {
+		// TODO Auto-generated method stub
+		return true;
+	}
+
+	@Override
+	public boolean isAccountNonLocked() {
+		// TODO Auto-generated method stub
+		return true;
+	}
+
+	@Override
+	public boolean isCredentialsNonExpired() {
+		// TODO Auto-generated method stub
+		return true;
+	}
+
+	@Override
+	public boolean isEnabled() {
+		// TODO Auto-generated method stub
+		return getActivated();
+	}
+
 }

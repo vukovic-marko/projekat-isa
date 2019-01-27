@@ -1,13 +1,11 @@
 package isa.projekat.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.ApplicationContext;
 import org.springframework.core.env.Environment;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
-import org.springframework.web.util.UrlPathHelper;
 
 import isa.projekat.model.User;
 
@@ -26,7 +24,7 @@ public class EmailService {
 		mail.setSubject("Aktivacioni email");
 		String body = "Postovani  " + user.getUsername()
 				+ ",\nDa biste aktivirali svoj nalog, potrebno je da kliknete na sledeci link: "
-				+"http://" +env.getProperty("hostname") + "/activate/" + user.getUsername();
+				+"http://" +env.getProperty("hostname") + "/user/activate/" + user.getUsername();
 		mail.setText(body);
 		javaMailSender.send(mail);
 	}

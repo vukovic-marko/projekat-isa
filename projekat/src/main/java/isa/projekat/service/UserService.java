@@ -1,6 +1,7 @@
 package isa.projekat.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
@@ -14,7 +15,8 @@ public class UserService {
 	private UserRepository userRepository;
 	@Autowired
 	private EmailService emailService;
-
+	@Autowired
+	private PasswordEncoder passwordEncoder;
 	// proverava da li postoji korisnik sa zadatom e-mail adresom
 	@Transactional(readOnly=true,isolation=Isolation.READ_COMMITTED)
 	public Boolean checkEmail(String email) {
@@ -31,6 +33,7 @@ public class UserService {
 	@Transactional(readOnly=false,isolation=Isolation.READ_COMMITTED)
 	public Boolean register(User u) {
 		u.setActivated(false);
+		u.setPassword(passwordEncoder.encode(u.getPassword()));
 		User ret = userRepository.save(u);
 		if (ret != null) {
 			emailService.sendActivationEmail(ret);
