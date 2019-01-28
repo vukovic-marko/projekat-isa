@@ -19,11 +19,82 @@
 <body style="background-color: #e9ebee;">
 
 	<nav
-		class="navbar navbar-default navbar-expand-sm bg-dark navbar-dark fixed-top">
+		class="navbar navbar-default navbar-expand-sm bg-dark navbar-dark fixed-top logged-out-navbar">
 		<ul class="navbar-nav">
 
 		</ul>
 	</nav>
+	<nav
+		class="navbar navbar-default navbar-expand-sm bg-dark navbar-dark fixed-top system-admin-navbar">
+		<ul class="navbar-nav">
+
+		</ul>
+	</nav>
+	
+	<div class="container mt-5 homepage-system-admin">
+		<ul class="list">
+		</ul>
+		<table class="table table-system-admin">
+		  <thead>
+		    <tr>
+		      <th scope="col">#</th>
+		      <th scope="col">Korisnicko ime</th>
+		      <th scope="col">Korisnik</th>
+		      <th scope="col">Administrator sistema</th>
+		      <th scope="col">Administrator aviokompanija</th>
+		      <th scope="col">Administrator hotela</th>
+		      <th scope="col">Administrator rent-a-car servisa</th>
+		    </tr>
+		  </thead>
+		  <tbody>
+		  </tbody>
+		</table>
+		
+		
+	</div>
+	
+	<!-- Izmena uloga korisnika -->
+		<div class="modal fade" id="editRolesModal">
+			<div class="modal-dialog modal-md">
+				<div class="modal-content">
+	
+					<div class="modal-header">
+						<h4 class="modal-title">Izmeni ulogu korisnika</h4>
+						<button type="button" class="close" data-dismiss="modal">×</button>
+					</div>
+					<div class="modal-body">
+						<form id="loginForm">
+							<div class="form-group">
+								<label for="username">Korisničko ime:</label> <input type="text"
+									class="form-control" name="username" id="username" readonly="readonly">
+							</div>
+							<div class="form-group">
+								<label for="system-admin">Administrator sistema:</label> <input type="radio"
+									class="form-control" name="username" id="system-admin-radio">
+							</div>
+							<div class="form-group">
+								<label for="airport-admin">Administrator aerodroma:</label> <input type="radio"
+									class="form-control" name="username" id="airport-admin-radio">
+							</div>
+							<div class="form-group">
+								<label for="hotel-admin">Adminsitrator hotela:</label> <input type="radio"
+									class="form-control" name="username" id="hotel-admin-radio">
+							</div>
+							<div class="form-group">
+								<label for="rent-a-car-admin">Administrator rent-a-car servisa:</label> <input type="radio"
+									class="form-control" name="username" id="rent-a-car-admin-radio">
+							</div>
+						</form>
+					</div>
+	
+					<div class="modal-footer">
+						<button type="button" id="edit" class="btn btn-primary">Izmeni</button>
+						<button type="button" class="btn btn-danger" data-dismiss="modal">Zatvori</button>
+					</div>
+	
+				</div>
+			</div>
+		</div>
 
 
 	<!-- LOGOVANJE -->

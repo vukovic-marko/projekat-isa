@@ -5,7 +5,10 @@
 INSERT INTO user (id, activated, city, email, first_name, last_name, password, phone, username) VALUES ('1', true, 's', 'admin@admin.admin', 's', 'ss', '$2a$10$BjZ8Ihb955YG9AiR4JvkL.k9WUR7/oGa8LIF6Q0ys7k.EVrbOtRqe', '123/456-78-99', 'admin');
 
 INSERT INTO AUTHORITY (id, name) VALUES (1, 'ROLE_USER');
-INSERT INTO AUTHORITY (id, name) VALUES (2, 'ROLE_ADMIN');
+INSERT INTO AUTHORITY (id, name) VALUES (2, 'ROLE_SYSTEM_ADMIN');
+INSERT INTO AUTHORITY (id, name) VALUES (3, 'ROLE_AIRPORT_ADMIN');
+INSERT INTO AUTHORITY (id, name) VALUES (4, 'ROLE_HOTEL_ADMIN');
+INSERT INTO AUTHORITY (id, name) VALUES (5, 'ROLE_RENT_A_CAR_ADMIN');
 
 INSERT INTO USER_AUTHORITY (user_id, authority_id) VALUES (1, 2);
 --INSERT INTO USER_AUTHORITY (user_id, authority_id) VALUES (2, 1);

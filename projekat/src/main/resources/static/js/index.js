@@ -7,9 +7,96 @@ $(document).ajaxSend(function(event, jqxhr, settings) {
 		jqxhr.setRequestHeader('Authorization', 'Bearer ' + token);
 });
 
+function setView() {
+	$.ajax({
+		url : 'user/authorities',
+		type : 'get',
+		success : function(data) {
+			if (data.some(obj => obj.authority == "ROLE_SYSTEM_ADMIN")) {
+				$('.logged-out-navbar').hide();
+				$('.system-admin-navbar').show();
+				$('.homepage-system-admin').show();
+				$.ajax({
+					url: 'user/all',
+					type: 'get'
+				}).then(function(data) {
+					$('.table-system-admin tbody').empty();
+					$.each(data, function(index, value) {
+						var str = "<tr><td>" + value.id + "</td><td><a class=\"editUserRoles\" href=\"javascript:void(0)\" meta-username=\"" + value.username + "\">" + value.username + "</a>";
+					    var exists = new Array(5).fill(false);
+					    var checked = new Array(5).fill("");
+					    $.each(value.authorities, function (idx, val) {
+							if (val.authority == "ROLE_USER") { exists[0] = true; checked[0] = " checked"; return false;}
+							if (val.authority == "ROLE_SYSTEM_ADMIN") {exists[1] = true; checked[1] = " checked"; return false;}
+							if (val.authority == "ROLE_AIRPORT_ADMIN") {exists[2] = true; checked[2] = " checked"; return false;}
+							if (val.authority == "ROLE_HOTEL_ADMIN") {exists[3] = true; checked[3] = " checked"; return false;}
+							if (val.authority == "ROLE_RENT_A_CAR_ADMIN") {exists[4] = true; checked[4] = " checked"; return false;}
+						});
+
+					    str += "</td><td>";
+					    console.log(checked);
+					    str += "<input meta-username=\"" + value.username + "\" type=\"radio\" name=\"radio"+ index +"\"" +checked[0]+ " meta-kind=\"0\"></td><td>";
+					    str += "<input meta-username=\"" + value.username + "\" type=\"radio\" name=\"radio"+ index +"\"" +checked[1]+ " meta-kind=\"1\"></td><td>";
+					    str += "<input meta-username=\"" + value.username + "\" type=\"radio\" name=\"radio"+ index +"\"" +checked[2]+ " meta-kind=\"2\"></td><td>";
+					    str += "<input meta-username=\"" + value.username + "\" type=\"radio\" name=\"radio"+ index +"\"" +checked[3]+ " meta-kind=\"3\"></td><td>";
+					    str += "<input meta-username=\"" + value.username + "\" type=\"radio\" name=\"radio"+ index +"\"" +checked[4]+ " meta-kind=\"4\"></td></tr>";
+						
+						$('.table-system-admin tbody').append(str);
+					});
+				});
+				
+			}
+		},
+		statusCode : {
+			401 : function(data) {
+				$('.logged-out-navbar').show();
+				$('.system-admin-navbar').hide();
+				$('.homepage-system-admin').hide();
+			}
+		}
+	});
+}
+
+$(document).on("click", ".table-system-admin input[type=\"radio\"]", function(e) {
+	var username =e.target.attributes["meta-username"].value;
+	var kind = e.target.attributes["meta-kind"].value;
+	var obj = username;
+	
+	$.ajax({
+		url: 'user/editRole/' + kind,
+		type: 'post',
+		contentType : 'application/json',
+		data : JSON.stringify(obj),
+		success: function(e) {
+			alert("Uspesno promenjena uloga.");
+		},
+		statusCode : {
+			400: function(data) {
+				alert("Nije moguce promeniti svoj tip.");
+				setView();
+			},
+			401: function(data) {
+				alert("Samo administratori sistema mogu menjati uloge korisnika.");
+				setView();
+			}
+		}
+		
+	});
+	//e.preventDefault();
+});
+
+$(document).on("click", ".editUserRoles", function (e) {
+	$('#editRolesModal').modal('show');
+	var username = e.target.attributes["meta-username"].value;
+	$('#editRolesModal #username').val(username);
+	e.preventDefault();
+});
+
 $(document).ready(
 
 		function() {
+			
+			setView();
 
 			$.validator.methods.phoneCheck = function(value, element) {
 				return this.optional(element)
@@ -23,9 +110,9 @@ $(document).ready(
 $(window).resize(adjust_body_offset);
 adjust_body_offset();
 
-function fillButtons() {
-
-	$('.navbar-nav').append(
+function fillButtons() {	
+	
+	$('.logged-out-navbar .navbar-nav').append(
 			'<li class="nav-item">'
 					+ ' <button data-toggle="modal" href="#loginModal"'
 					+ '  class="btn btn-primary">Prijavi se</button> </li>');
@@ -114,8 +201,8 @@ function fillButtons() {
 
 		if ($('#loginForm').valid()) {
 			var d = {};
-			d.username = $('#username').val();
-			d.password = $('#password').val();
+			d.username = $('#loginModal #username').val();
+			d.password = $('#loginModal #password').val();
 			$.ajax({
 				url : 'user/login',
 				type : 'post',
@@ -139,7 +226,7 @@ function fillButtons() {
 			});
 		}
 	});
-	$('.navbar-nav')
+	$('.logged-out-navbar .navbar-nav')
 			.append(
 					'<li class="nav-item">'
 							+ ' <button id="refModalShow" data-toggle="modal" href="#registerModal"'

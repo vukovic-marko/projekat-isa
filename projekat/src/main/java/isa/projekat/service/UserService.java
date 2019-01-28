@@ -1,18 +1,25 @@
 package isa.projekat.service;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
 
+import isa.projekat.model.Authority;
 import isa.projekat.model.User;
+import isa.projekat.repository.AuthorityRepository;
 import isa.projekat.repository.UserRepository;
 
 @Service
 public class UserService {
 	@Autowired
-	private UserRepository userRepository;
+	private UserRepository userRepository;	
+	@Autowired
+	private AuthorityRepository authorityRepository;
 	@Autowired
 	private EmailService emailService;
 	@Autowired
@@ -34,6 +41,9 @@ public class UserService {
 	public Boolean register(User u) {
 		u.setActivated(false);
 		u.setPassword(passwordEncoder.encode(u.getPassword()));
+		ArrayList<Authority> lista = new ArrayList<Authority>();
+		lista.add(authorityRepository.findOneByName("ROLE_USER"));
+		u.setAuthorities(lista);
 		User ret = userRepository.save(u);
 		if (ret != null) {
 			emailService.sendActivationEmail(ret);
@@ -51,5 +61,34 @@ public class UserService {
 		u.setActivated(true);
 		return true;
 	}
+	
+	//dobavlja sve korisnike iz baze
+	@Transactional(readOnly=true,isolation=Isolation.READ_COMMITTED)
+	public List<User> getUsers() {
+		return userRepository.findAll();
+	}
+	
+	//dobavlja sve uloge iz baze
+	public List<Authority> getAuthorities() {
+		return authorityRepository.findAll();
+	}
+	
+	//dobavlja ulogu iz baze po nazivu
+	public Authority getAuthority(String name) {
+		return authorityRepository.findOneByName(name);
+	}
+	
+	//menja ulogu korisnika
+	public Boolean editRole(String username, Authority role) {
+		User u = userRepository.findOneByUsername(username);
+		if (u == null) 
+			return false;
+		ArrayList<Authority> lista = new ArrayList<Authority>();
+		lista.add(role);
+		u.setAuthorities(lista);
+		userRepository.save(u);
+		
+		return true;
 
+	}
 }

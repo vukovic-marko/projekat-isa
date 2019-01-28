@@ -1,6 +1,10 @@
 package isa.projekat.controller;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -14,6 +18,7 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -25,6 +30,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import isa.projekat.common.DeviceProvider;
+import isa.projekat.model.Authority;
 import isa.projekat.model.User;
 import isa.projekat.model.UserTokenState;
 import isa.projekat.security.TokenUtils;
@@ -115,5 +121,54 @@ public class UserController {
 		return new ResponseEntity<Boolean>(reg,HttpStatus.OK);	
 	}
 	
+	@RequestMapping(value="/authorities", method = RequestMethod.GET)
+	public List<? extends GrantedAuthority> getUserAuthorities(HttpServletRequest request) {
+		String token = tokenUtils.getToken(request);
+		if (token != null) {
+			String username = this.tokenUtils.getUsernameFromToken(token);
+			User user = (User) this.userDetailsService.loadUserByUsername(username);
+			
+			if (user != null) {
+				ArrayList<? extends GrantedAuthority> lista = new ArrayList<>(user.getAuthorities());
+				return lista;
+			}
+		}
+		
+		return new ArrayList<>();
+	}
 	
+	@RequestMapping(value = "/all",
+			method = RequestMethod.GET)
+	public List<User> getUsers() {
+		return userService.getUsers();
+	}
+	
+	@RequestMapping(value="/editRole/{kind}",
+			method = RequestMethod.POST)
+	public @ResponseBody ResponseEntity<Boolean> editRole(HttpServletRequest request, @PathVariable int kind, @RequestBody String username){
+		//boolean reg=userService.activate(username);
+		
+		String token = tokenUtils.getToken(request);
+		String uname = this.tokenUtils.getUsernameFromToken(token);
+	    User user = (User) this.userDetailsService.loadUserByUsername(uname);
+		
+		System.out.println(kind);
+		username = username.replaceAll("\"", "");
+		System.out.println(username);
+		
+		if (uname.equals(username)) {
+			return new ResponseEntity<Boolean>(false, HttpStatus.BAD_REQUEST);
+		}
+		
+		if (!user.getAuthorities().contains(userService.getAuthority("ROLE_SYSTEM_ADMIN"))) {
+			return new ResponseEntity<Boolean>(false, HttpStatus.UNAUTHORIZED);
+		}
+		
+		List<Authority> authorities = userService.getAuthorities();
+		Authority a = authorities.get(kind);
+		
+		Boolean b = userService.editRole(username, a);
+		
+		return new ResponseEntity<Boolean>(b,HttpStatus.OK);	
+	}
 }
