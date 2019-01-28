@@ -8,12 +8,14 @@ $(document).ajaxSend(function(event, jqxhr, settings) {
 });
 
 function setView() {
+	$('.logged-out-navbar').hide();
+	$('.system-admin-navbar').hide();
+	$('.homepage-system-admin').hide();
 	$.ajax({
 		url : 'user/authorities',
 		type : 'get',
 		success : function(data) {
 			if (data.some(obj => obj.authority == "ROLE_SYSTEM_ADMIN")) {
-				$('.logged-out-navbar').hide();
 				$('.system-admin-navbar').show();
 				$('.homepage-system-admin').show();
 				$.ajax({
@@ -50,8 +52,6 @@ function setView() {
 		statusCode : {
 			401 : function(data) {
 				$('.logged-out-navbar').show();
-				$('.system-admin-navbar').hide();
-				$('.homepage-system-admin').hide();
 			}
 		}
 	});
