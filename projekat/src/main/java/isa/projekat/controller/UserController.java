@@ -14,6 +14,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.mobile.device.Device;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -122,29 +123,33 @@ public class UserController {
 	}
 	
 	@RequestMapping(value="/authorities", method = RequestMethod.GET)
-	public List<? extends GrantedAuthority> getUserAuthorities(HttpServletRequest request) {
+	public ResponseEntity<List<? extends GrantedAuthority>> getUserAuthorities(HttpServletRequest request) {
 		String token = tokenUtils.getToken(request);
 		if (token != null) {
 			String username = this.tokenUtils.getUsernameFromToken(token);
-			User user = (User) this.userDetailsService.loadUserByUsername(username);
+			if (username != null) {
+				User user = (User) this.userDetailsService.loadUserByUsername(username);
 			
-			if (user != null) {
-				ArrayList<? extends GrantedAuthority> lista = new ArrayList<>(user.getAuthorities());
-				return lista;
+				if (user != null) {
+					ArrayList<? extends GrantedAuthority> lista = new ArrayList<>(user.getAuthorities());
+					return new ResponseEntity<List<? extends GrantedAuthority>>(lista, HttpStatus.OK);
+				}
 			}
 		}
 		
-		return new ArrayList<>();
+		return new ResponseEntity<List<? extends GrantedAuthority>>(new ArrayList<>(), HttpStatus.NO_CONTENT);
 	}
 	
 	@RequestMapping(value = "/all",
 			method = RequestMethod.GET)
+	@PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN')")
 	public List<User> getUsers() {
 		return userService.getUsers();
 	}
 	
 	@RequestMapping(value="/editRole/{kind}",
 			method = RequestMethod.POST)
+	@PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN')")
 	public @ResponseBody ResponseEntity<Boolean> editRole(HttpServletRequest request, @PathVariable int kind, @RequestBody String username){
 		//boolean reg=userService.activate(username);
 		
@@ -158,10 +163,6 @@ public class UserController {
 		
 		if (uname.equals(username)) {
 			return new ResponseEntity<Boolean>(false, HttpStatus.BAD_REQUEST);
-		}
-		
-		if (!user.getAuthorities().contains(userService.getAuthority("ROLE_SYSTEM_ADMIN"))) {
-			return new ResponseEntity<Boolean>(false, HttpStatus.UNAUTHORIZED);
 		}
 		
 		List<Authority> authorities = userService.getAuthorities();

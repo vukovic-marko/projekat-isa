@@ -15,7 +15,9 @@ function setView() {
 		url : 'user/authorities',
 		type : 'get',
 		success : function(data) {
-			if (data.some(obj => obj.authority == "ROLE_SYSTEM_ADMIN")) {
+			if (data == null) {
+				$('.logged-out-navbar').show();
+			} else if (data.some(obj => obj.authority == "ROLE_SYSTEM_ADMIN")) {
 				$('.system-admin-navbar').show();
 				$('.homepage-system-admin').show();
 				$.ajax({
@@ -47,11 +49,6 @@ function setView() {
 					});
 				});
 				
-			}
-		},
-		statusCode : {
-			401 : function(data) {
-				$('.logged-out-navbar').show();
 			}
 		}
 	});
