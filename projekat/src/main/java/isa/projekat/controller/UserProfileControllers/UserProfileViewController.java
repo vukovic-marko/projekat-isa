@@ -5,20 +5,15 @@ import isa.projekat.model.User;
 import isa.projekat.service.CustomUserDetailsService;
 import isa.projekat.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
-import sun.plugin.liveconnect.SecurityContextHelper;
 
 import java.security.Principal;
 
 @Controller
 @RequestMapping(value = "/user/profile")
-@PreAuthorize("hasRole('ROLE_USER')")
 public class UserProfileViewController {
 
     @Autowired
@@ -39,11 +34,11 @@ public class UserProfileViewController {
 
         // insert profile info into model
 
-        String username = principal.getName();
+        String username = "admin";
         User user = (User)userDetailsService.loadUserByUsername(username);
 
-        model.addAttribute("title", user);
-
+        model.addAttribute("title", "Profile info");
+        model.addAttribute("user", user);
         return "user/fragments/profileInfo :: profileInfoForm";
     }
 
