@@ -29,8 +29,11 @@ public class MainController {
         User u = (User) userDetailsService.loadUserByUsername(un);
         if (u != null) {
             List<Authority> li = (List<Authority>) u.getAuthorities();
+            System.out.println(li.get(0).getName() + " <-----------");
             if (li.get(0).getName().equals("ROLE_RENT_A_CAR_ADMIN"))
                 return new ModelAndView("redirect:" + "racadmin.html");
+            if (li.get(0).getName().equals("ROLE_SYSTEM_ADMIN"))
+            	return new ModelAndView("redirect:" + "sysadmin.html");
         }
         return new ModelAndView("redirect:" + "index.html");
 	}
