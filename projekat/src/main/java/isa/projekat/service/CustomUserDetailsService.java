@@ -15,6 +15,9 @@ import org.springframework.stereotype.Service;
 
 import isa.projekat.model.User;
 
+import javax.validation.Valid;
+import java.util.Map;
+
 @Service
 public class CustomUserDetailsService implements UserDetailsService {
 
@@ -65,5 +68,21 @@ public class CustomUserDetailsService implements UserDetailsService {
 		user.setPassword(passwordEncoder.encode(newPassword));
 		userRepository.save(user);
 
+	}
+
+	/**
+	 * Cuvaju se izmjenjeni podaci korisnika
+	 * @param user
+	 */
+	public boolean changeUserInfo(@Valid User user) {
+
+		boolean userExists = userRepository.exists(user.getId());
+
+		if(userExists) {
+
+			userRepository.save(user);
+		}
+
+		return userExists;
 	}
 }

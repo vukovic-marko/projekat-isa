@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en"
+      xmlns:th="http://www.thymeleaf.org/"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+      xmlns="http://www.w3.org/1999/xhtml">
+<head>
+
+    <div th:fragment="head-default">
+        <title th:text="${title}">Default title</title>
+
+        <meta http-equiv='Content-Type' content='text/html; charset=UTF-8' />
+
+        <link type="text/css" rel="stylesheet" href="css/jquery-ui.min.css" th:href="@{/css/jquery-ui.min.css}"/>
+        <link type="text/css" rel="stylesheet" href="css/styles.css" th:href="@{/css/styles.css}"/>
+        <link type="text/css" rel="stylesheet" href="css/bootstrap.css" th:href="@{/css/bootstrap.css}"/>
+        <link type="text/css" rel="stylesheet" href="css/screen.css" th:href="@{/css/screen.css}"/>
+
+        <script type="text/javascript" src="js/jquery-3.3.1.min.js" th:src="@{/js/jquery-3.3.1.min.js}"></script>
+        <script type="text/javascript" src="js/jquery-ui.min.js" th:src="@{/js/jquery-ui.min.js}"></script>
+
+        <script type="text/javascript" src="js/bootstrap.js" th:src="@{/js/bootstrap.js}"></script>
+        <script type="text/javascript" src="js/jquery.validate.js" th:src="@{/js/jquery.validate.js}"></script>
+    </div>
+
+</head>
+
+<body>
+
+    <nav class="navbar navbar-default navbar-expand-sm bg-dark navbar-dark fixed-top" th:fragment="navigation">
+
+        <p>Navigavija placeholder</p>
+    </nav>
+
+</body>
+
+</html>
