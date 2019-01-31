@@ -19,6 +19,8 @@ import javax.persistence.Version;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 @Entity
 @Table(name = "USER")
 public class User implements UserDetails {
@@ -28,8 +30,10 @@ public class User implements UserDetails {
 	 */
 	private static final long serialVersionUID = 6882427434891133050L;
 
+	
 	@Version
 	private Long version;
+	@JsonIgnore
 	@ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
 	@JoinTable(name = "user_authority", joinColumns = @JoinColumn(name = "user_id", referencedColumnName = "id"), inverseJoinColumns = @JoinColumn(name = "authority_id", referencedColumnName = "id"))
 	private List<Authority> authorities;

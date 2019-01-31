@@ -2,8 +2,8 @@
 -- Lozinka za oba user-a je 123
 
 --INSERT INTO USER (id, username, password, first_name, last_name, email, enabled, last_password_reset_date) VALUES (2, 'admin', '$2a$04$Vbug2lwwJGrvUXTj6z7ff.97IzVBkrJ1XfApfGNl.Z695zqcnPYra', 'Nikola', 'Nikolic', 'admin@example.com', true, '2017-10-01 18:57:58.508-07');
-INSERT INTO user (id, activated, city, email, first_name, last_name, password, phone, username) VALUES ('1', true, 's', 'admin@admin.admin', 's', 'ss', '$2a$10$BjZ8Ihb955YG9AiR4JvkL.k9WUR7/oGa8LIF6Q0ys7k.EVrbOtRqe', '123/456-78-99', 'admin');
-INSERT INTO user (id, activated, city, email, first_name, last_name, password, phone, username) VALUES ('2', true, 's', 'admin@admin.admin', 's', 'ss', '$2a$10$BjZ8Ihb955YG9AiR4JvkL.k9WUR7/oGa8LIF6Q0ys7k.EVrbOtRqe', '123/456-78-99', 'rcaadmin');
+INSERT INTO user (id, activated, city, email, first_name, last_name, password, phone, username,version) VALUES ('1', true, 's', 'admin@admin.admin', 's', 'ss', '$2a$10$BjZ8Ihb955YG9AiR4JvkL.k9WUR7/oGa8LIF6Q0ys7k.EVrbOtRqe', '123/456-78-99', 'admin','1');
+INSERT INTO user (id, activated, city, email, first_name, last_name, password, phone, username,version) VALUES ('2', true, 's', 'admin@admin.admin', 's', 'ss', '$2a$10$BjZ8Ihb955YG9AiR4JvkL.k9WUR7/oGa8LIF6Q0ys7k.EVrbOtRqe', '123/456-78-99', 'rcaadmin','1');
 
 INSERT INTO AUTHORITY (id, name) VALUES (1, 'ROLE_USER');
 INSERT INTO AUTHORITY (id, name) VALUES (2, 'ROLE_SYSTEM_ADMIN');

@@ -8,6 +8,7 @@ import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -40,18 +41,17 @@ import isa.projekat.service.CustomUserDetailsService;
 import isa.projekat.service.UserService;
 
 @RestController
-@RequestMapping(value="/user")
+@RequestMapping(value = "/user")
 public class UserController {
 	@Autowired
 	private UserService userService;
-	@RequestMapping(value = "/register",
-			method = RequestMethod.POST,
-			consumes = MediaType.APPLICATION_JSON_VALUE)
-	public @ResponseBody ResponseEntity<Boolean> register(@RequestBody User u){
-		boolean reg=userService.register(u);
-		return new ResponseEntity<Boolean>(reg,HttpStatus.OK);	
+
+	@RequestMapping(value = "/register", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE)
+	public @ResponseBody ResponseEntity<Boolean> register(@RequestBody User u) {
+		boolean reg = userService.register(u);
+		return new ResponseEntity<Boolean>(reg, HttpStatus.OK);
 	}
-	
+
 	@Autowired
 	TokenUtils tokenUtils;
 
@@ -65,13 +65,11 @@ public class UserController {
 	private DeviceProvider deviceProvider;
 
 	@RequestMapping(value = "/login", method = RequestMethod.POST)
-	public ResponseEntity<?> createAuthenticationToken(@RequestBody JwtAuthenticationRequest authenticationRequest,
-			HttpServletResponse response, Device device) throws AuthenticationException, IOException {
+	public ResponseEntity<?> createAuthenticationToken(@RequestBody JwtAuthenticationRequest authenticationRequest, HttpServletResponse response, Device device,
+			HttpSession session) throws AuthenticationException, IOException {
 
 		final Authentication authentication = authenticationManager
-				.authenticate(new UsernamePasswordAuthenticationToken(
-						authenticationRequest.getUsername(),
-						authenticationRequest.getPassword()));
+				.authenticate(new UsernamePasswordAuthenticationToken(authenticationRequest.getUsername(), authenticationRequest.getPassword()));
 
 		// Ubaci username + password u kontext
 		SecurityContextHolder.getContext().setAuthentication(authentication);
@@ -80,17 +78,17 @@ public class UserController {
 		User user = (User) authentication.getPrincipal();
 		String jwt = tokenUtils.generateToken(user.getUsername(), device);
 		int expiresIn = tokenUtils.getExpiredIn(device);
-
+		session.setAttribute("user", user.getUsername());
 		// Vrati token kao odgovor na uspesno autentifikaciju
 		return ResponseEntity.ok(new UserTokenState(jwt, expiresIn));
 	}
-	
+
 	@RequestMapping(value = "/refresh", method = RequestMethod.POST)
 	public ResponseEntity<?> refreshAuthenticationToken(HttpServletRequest request) {
 
 		String token = tokenUtils.getToken(request);
 		String username = this.tokenUtils.getUsernameFromToken(token);
-	    User user = (User) this.userDetailsService.loadUserByUsername(username);
+		User user = (User) this.userDetailsService.loadUserByUsername(username);
 
 		Device device = deviceProvider.getCurrentDevice(request);
 
@@ -105,71 +103,68 @@ public class UserController {
 		}
 	}
 
-
 	@GetMapping(value = "/checkemail")
-	public Boolean checkEmail(@RequestParam(name="email")String email) {
+	public Boolean checkEmail(@RequestParam(name = "email") String email) {
 		return userService.checkEmail(email);
 	}
+
 	@GetMapping(value = "/checkusername")
-	public Boolean checkUsername(@RequestParam(name="username") String username) {
+	public Boolean checkUsername(@RequestParam(name = "username") String username) {
 		return userService.checkUsername(username);
 	}
 
-	@RequestMapping(value = "/activate/{username}",
-			method = RequestMethod.GET)
-	public @ResponseBody ResponseEntity<Boolean> activate(@PathVariable String username){
-		boolean reg=userService.activate(username);
-		return new ResponseEntity<Boolean>(reg,HttpStatus.OK);	
+	@RequestMapping(value = "/activate/{username}", method = RequestMethod.GET)
+	public @ResponseBody ResponseEntity<Boolean> activate(@PathVariable String username) {
+		boolean reg = userService.activate(username);
+		return new ResponseEntity<Boolean>(reg, HttpStatus.OK);
 	}
-	
-	@RequestMapping(value="/authorities", method = RequestMethod.GET)
+
+	@RequestMapping(value = "/authorities", method = RequestMethod.GET)
 	public ResponseEntity<List<? extends GrantedAuthority>> getUserAuthorities(HttpServletRequest request) {
 		String token = tokenUtils.getToken(request);
 		if (token != null) {
 			String username = this.tokenUtils.getUsernameFromToken(token);
 			if (username != null) {
 				User user = (User) this.userDetailsService.loadUserByUsername(username);
-			
+
 				if (user != null) {
 					ArrayList<? extends GrantedAuthority> lista = new ArrayList<>(user.getAuthorities());
 					return new ResponseEntity<List<? extends GrantedAuthority>>(lista, HttpStatus.OK);
 				}
 			}
 		}
-		
+
 		return new ResponseEntity<List<? extends GrantedAuthority>>(new ArrayList<>(), HttpStatus.NO_CONTENT);
 	}
-	
-	@RequestMapping(value = "/all",
-			method = RequestMethod.GET)
+
+	@RequestMapping(value = "/all", method = RequestMethod.GET)
 	@PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN')")
 	public List<User> getUsers() {
 		return userService.getUsers();
 	}
-	
-	@RequestMapping(value="/editRole/{kind}",
-			method = RequestMethod.POST)
+
+	@RequestMapping(value = "/editRole/{kind}", method = RequestMethod.POST)
 	@PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN')")
-	public @ResponseBody ResponseEntity<Boolean> editRole(HttpServletRequest request, @PathVariable int kind, @RequestBody String username){
-		//boolean reg=userService.activate(username);
-		
+	public @ResponseBody ResponseEntity<Boolean> editRole(HttpServletRequest request, @PathVariable int kind, @RequestBody String username) {
+		// boolean reg=userService.activate(username);
+
 		String token = tokenUtils.getToken(request);
 		String uname = this.tokenUtils.getUsernameFromToken(token);
-	    User user = (User) this.userDetailsService.loadUserByUsername(uname);
-		
+		User user = (User) this.userDetailsService.loadUserByUsername(uname);
+
 		System.out.println(kind);
 		username = username.replaceAll("\"", "");
 		System.out.println(username);
-		
+
 		if (uname.equals(username)) {
 			return new ResponseEntity<Boolean>(false, HttpStatus.BAD_REQUEST);
 		}
-		
+
 		List<Authority> authorities = userService.getAuthorities();
 		Authority a = authorities.get(kind);
-		
+
 		Boolean b = userService.editRole(username, a);
-		
-		return new ResponseEntity<Boolean>(b,HttpStatus.OK);	
+
+		return new ResponseEntity<Boolean>(b, HttpStatus.OK);
 	}
 }
