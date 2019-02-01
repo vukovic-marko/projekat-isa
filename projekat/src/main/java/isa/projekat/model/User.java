@@ -13,6 +13,7 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
+import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.persistence.Version;
 
@@ -29,8 +30,18 @@ public class User implements UserDetails {
 	 * 
 	 */
 	private static final long serialVersionUID = 6882427434891133050L;
+	//------------------------------------
+	//RENTA A CAR ADMINISTRATOR
+	@OneToOne
+	private RentACarCompany rentACarCompany;
+	public RentACarCompany getRentACarCompany() {
+		return rentACarCompany;
+	}
 
-	
+	public void setRentACarCompany(RentACarCompany rentACarCompany) {
+		this.rentACarCompany = rentACarCompany;
+	}
+	//-----------------------------------
 	@Version
 	private Long version;
 	@JsonIgnore
@@ -184,5 +195,7 @@ public class User implements UserDetails {
 		else
 			return true;
 	}
+
+	
 
 }
