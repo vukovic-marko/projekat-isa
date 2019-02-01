@@ -15,9 +15,84 @@ $(document).ready(
 						|| /([0-9]{3,3}\/[0-9]{3,3}-[0-9]{2,2}-[0-9]{2,2})$/
 								.test(value);
 			}
-
-			addRCAButtons();
+			$.ajax({
+				url: 'user/checkactivated',
+				type: 'get'
+			}).then(function(data) {
+				if (data == true) {
+					addRCAButtons();
+				} else {
+					changePassword();
+				}
+			});
+			
 		});
+
+function changePassword() {
+	$("#changePasswordModal").modal({
+		show: true,
+		backdrop: 'static',
+		keyboard: false
+	});
+	
+	$('#changePasswordForm')
+	.validate(
+			{
+				rules : {
+					
+					changepassword : "required",
+					changepassword2 : {
+						required : true,
+						equalTo : "#changepassword"
+					}
+
+				},
+				messages : {
+					changepassword : "Lozinka nije uneta",
+
+					changepassword2 : {
+						required : "Unesite ponovo lozinku",
+						equalTo : "Lozinke se ne poklapaju"
+					}
+				}
+			});
+	
+	$('#changePasswordButton').click(
+
+			function() {
+				if ($('#changePasswordForm').valid()) {
+					var d = {};
+					d.username = "";
+					d.password = $('#changepassword').val();
+					d.firstName = "";
+					d.lastName = "";
+					d.phone = "";
+					d.email = "";
+					d.city = "";
+					role = "";
+
+					$.ajax({
+						url : '/user/changePassword',
+						type : 'post',
+						contentType : 'application/json',
+						data : JSON.stringify(d),
+
+						success : function(data) {
+							if (data == true) {
+								$("#changePasswordModal").modal('hide');
+								addRCAButtons();
+							} else {
+								$('#regbtn-error').show().html(
+										'Promena lozinke nije uspela').fadeOut(
+										5000);
+
+							}
+						}
+					});
+
+				}
+			});
+}
 
 $(window).resize(adjust_body_offset);
 adjust_body_offset();

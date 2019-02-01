@@ -34,6 +34,40 @@
 	</div>
 	
 	
+	<!-- MODAL ZA PROMENU LOZINKE -->
+		<div class="modal fade" id="changePasswordModal">
+		<div class="modal-dialog modal-md">
+			<div class="modal-content">
+
+				<div class="modal-header">
+					<h4 class="modal-title">Obavezna promena lozinke</h4>
+				</div>
+				<div class="modal-body">
+					<form id="changePasswordForm">
+						
+						<div class="form-group">
+							<label for="regpassword">Lozinka:</label> <input type="password"
+								class="form-control" id="changepassword" name="changepassword">
+						</div>
+						<div class="form-group">
+							<label for="regpassword2">Ponovljena lozinka:</label> <input
+								type="password" class="form-control" id="changeregpassword2"
+								name="changepassword2">
+						</div>
+					</form>
+				</div>
+
+				<div class="modal-footer">
+					<button type="button" id="changePasswordButton" class="btn btn-primary">Promeni
+					lozinku </button>
+					<label style="display: none" id="regbtn-error" class="error"
+						for="register"></label>
+				</div>
+
+			</div>
+		</div>
+	</div>
+	
 	
 </body>
 </html>
