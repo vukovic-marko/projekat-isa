@@ -38,15 +38,19 @@ public class UserService {
 	
 	//registruje novog korisnika
 	@Transactional(readOnly=false,isolation=Isolation.READ_COMMITTED)
-	public Boolean register(User u) {
+	public Boolean register(User u, Integer i) {
 		u.setActivated(false);
 		u.setPassword(passwordEncoder.encode(u.getPassword()));
 		ArrayList<Authority> lista = new ArrayList<Authority>();
-		lista.add(authorityRepository.findOneByName("ROLE_USER"));
+		if (i == null)	
+			lista.add(authorityRepository.findOneByName("ROLE_USER"));
+		else
+			lista.add(authorityRepository.findOne(i.longValue()));
 		u.setAuthorities(lista);
 		User ret = userRepository.save(u);
 		if (ret != null) {
-			emailService.sendActivationEmail(ret);
+			if (i == null)
+				emailService.sendActivationEmail(ret);
 			return true;
 		}
 		return false;
@@ -59,6 +63,17 @@ public class UserService {
 		if(u==null)
 			return false;
 		u.setActivated(true);
+		return true;
+	}
+	
+	//menja lozinku
+	@Transactional(readOnly=false,isolation=Isolation.READ_COMMITTED)
+	public Boolean changePassword(String newPassword, User u) {
+		User user=userRepository.findOneByUsername(u.getUsername());
+		if(user==null)
+			return false;
+		user.setPassword(passwordEncoder.encode(newPassword));
+		user.setActivated(true);
 		return true;
 	}
 	
@@ -77,20 +92,4 @@ public class UserService {
 	public Authority getAuthority(String name) {
 		return authorityRepository.findOneByName(name);
 	}
-	
-	//menja ulogu korisnika
-	public Boolean editRole(String username, Authority role) {
-		User u = userRepository.findOneByUsername(username);
-		if (u == null) 
-			return false;
-		ArrayList<Authority> lista = new ArrayList<Authority>();
-		lista.add(role);
-		u.setAuthorities(lista);
-		userRepository.save(u);
-		
-		return true;
-
-	}
-
-
 }

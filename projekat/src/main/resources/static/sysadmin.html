@@ -24,25 +24,146 @@
 
 		</ul>
 	</nav>
+	
+	<div class="modal fade" id="changePasswordModal">
+		<div class="modal-dialog modal-md">
+			<div class="modal-content">
 
-	<div class="container mt-5 homepage-system-admin">
-		<table class="table table-system-admin">
-		  <thead>
-		    <tr>
-		      <th scope="col">#</th>
-		      <th scope="col">Korisnicko ime</th>
-		      <th scope="col">Korisnik</th>
-		      <th scope="col">Administrator sistema</th>
-		      <th scope="col">Administrator aviokompanija</th>
-		      <th scope="col">Administrator hotela</th>
-		      <th scope="col">Administrator rent-a-car servisa</th>
-		    </tr>
-		  </thead>
-		  <tbody>
-		  </tbody>
-		</table>
-		
-		
+				<div class="modal-header">
+					<h4 class="modal-title">Obavezna promena lozinke</h4>
+<!-- 					<button type="button" aria-hidden="true" class="close" data-dismiss="modal">×</button> -->
+				</div>
+				<div class="modal-body">
+					<form id="changePasswordForm">
+						
+						<div class="form-group">
+							<label for="regpassword">Lozinka:</label> <input type="password"
+								class="form-control" id="changepassword" name="changepassword">
+						</div>
+						<div class="form-group">
+							<label for="regpassword2">Ponovljena lozinka:</label> <input
+								type="password" class="form-control" id="changeregpassword2"
+								name="changepassword2">
+						</div>
+					</form>
+				</div>
+
+				<div class="modal-footer">
+					<button type="button" id="changePasswordButton" class="btn btn-primary">Promeni
+					lozinku </button>
+					<label style="display: none" id="regbtn-error" class="error"
+						for="register"></label>
+<!-- 					<button type="button" class="btn btn-danger" data-dismiss="modal">Zatvori</button> -->
+				</div>
+
+			</div>
+		</div>
 	</div>
+	
+	<div class="modal fade" id="registerAdminModal">
+		<div class="modal-dialog modal-lg">
+			<div class="modal-content">
+
+				<div class="modal-header">
+					<h4 class="modal-title">Registruj administratora</h4>
+					<button type="button" class="close" data-dismiss="modal">×</button>
+				</div>
+				<div class="modal-body">
+					<form id="registerAdminForm">
+						<div class="form-group">
+							<label for="regemail">Email:</label> <input type="email"
+								class="form-control" id="regemail" name="email">
+
+						</div>
+						<div class="form-group">
+							<label for="regusername">Korisničko ime:</label> <input
+								type="text" class="form-control" name="username"
+								id="regusername">
+						</div>
+						<div class="form-group">
+							<label for="regpassword">Lozinka:</label> <input type="password"
+								class="form-control" id="regpassword" name="password">
+						</div>
+						<div class="form-group">
+							<label for="regpassword2">Ponovljena lozinka:</label> <input
+								type="password" class="form-control" id="regpassword2"
+								name="password2">
+						</div>
+
+						<div class="form-group">
+							<label for="regfirstNname">Ime:</label> <input type="text"
+								class="form-control" name="firstName" id="regfirstName">
+						</div>
+						<div class="form-group">
+							<label for="reglastName">Prezime:</label> <input type="text"
+								class="form-control" name="lastName" id="reglastName">
+						</div>
+						<div class="form-group">
+							<label for="regphone">Telefon:</label> <input type="text"
+								class="form-control" name="phone" id="regphone">
+						</div>
+						<div class="form-group">
+							<label for="regcity">Grad:</label> <input type="text"
+								class="form-control" name="city" id="regcity">
+						</div>
+						<div class="form-group">
+							<label for="regrole">Uloga:</label> <select class="form-control"
+								name="role" id="regrole">
+									<option value="2" selected="selected">Administrator sistema</option>
+									<option value="3">Administrator avio kompanije</option>
+									<option value="4">Administrator hotela</option>
+									<option value="5">Administrator rent-a-car servisa</option>
+							</select>
+						</div>
+					</form>
+				</div>
+
+				<div class="modal-footer">
+					<button type="button" id="registerButton" class="btn btn-primary">Registruj
+						administratora</button>
+					<label style="display: none" id="regbtn-error" class="error"
+						for="register"></label>
+					<button type="button" class="btn btn-danger" data-dismiss="modal">Zatvori</button>
+				</div>
+
+			</div>
+		</div>
+	</div>
+	<div class="modal fade" id="successModal">
+		<div id="sucModal" class="modal-dialog modal-lg">
+			<div class="modal-content">
+
+				<div class="modal-header">
+					<h4 class="modal-title">Usepešna registracija</h4>
+					<button type="button" class="close" data-dismiss="modal">×</button>
+				</div>
+				<div class="modal-body">Uspešno ste se registrovali administratora!
+				 </div>
+
+				<div class="modal-footer">
+					<button type="button" class="btn btn-danger" data-dismiss="modal">Zatvori</button>
+				</div>
+
+			</div>
+		</div>
+	</div>
+
+<!-- 	<div class="container mt-5 homepage-system-admin"> -->
+<!-- 		<table class="table table-system-admin"> -->
+<!-- 		  <thead> -->
+<!-- 		    <tr> -->
+<!-- 		      <th scope="col">#</th> -->
+<!-- 		      <th scope="col">Korisnicko ime</th> -->
+<!-- 		      <th scope="col">Korisnik</th> -->
+<!-- 		      <th scope="col">Administrator sistema</th> -->
+<!-- 		      <th scope="col">Administrator aviokompanija</th> -->
+<!-- 		      <th scope="col">Administrator hotela</th> -->
+<!-- 		      <th scope="col">Administrator rent-a-car servisa</th> -->
+<!-- 		    </tr> -->
+<!-- 		  </thead> -->
+<!-- 		  <tbody> -->
+<!-- 		  </tbody> -->
+<!-- 		</table> -->
+<!-- 	</div> -->
 </body>
 </html>

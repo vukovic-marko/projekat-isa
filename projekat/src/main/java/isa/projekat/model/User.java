@@ -179,7 +179,10 @@ public class User implements UserDetails {
 	@Override
 	public boolean isEnabled() {
 		// TODO Auto-generated method stub
-		return getActivated();
+		if (getAuthorities().iterator().next().getAuthority().equals("ROLE_USER"))
+			return getActivated();
+		else
+			return true;
 	}
 
 }

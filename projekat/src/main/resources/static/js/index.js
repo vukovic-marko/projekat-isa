@@ -7,33 +7,6 @@ $(document).ajaxSend(function(event, jqxhr, settings) {
 		jqxhr.setRequestHeader('Authorization', 'Bearer ' + token);
 });
 
-$(document).on("click", ".table-system-admin input[type=\"radio\"]", function(e) {
-	var username =e.target.attributes["meta-username"].value;
-	var kind = e.target.attributes["meta-kind"].value;
-	var obj = username;
-	
-	$.ajax({
-		url: 'user/editRole/' + kind,
-		type: 'post',
-		contentType : 'application/json',
-		data : JSON.stringify(obj),
-		success: function(e) {
-			alert("Uspesno promenjena uloga.");
-		},
-		statusCode : {
-			400: function(data) {
-				alert("Nije moguce promeniti svoj tip.");
-				setView();
-			},
-			401: function(data) {
-				alert("Samo administratori sistema mogu menjati uloge korisnika.");
-				setView();
-			}
-		}
-		
-	});
-	//e.preventDefault();
-});
 
 
 $(document).ready(
