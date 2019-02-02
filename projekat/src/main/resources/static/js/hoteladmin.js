@@ -36,11 +36,38 @@ $(document).ready(function() {
 	}
 	
 	
-	
+	$('#addRoomButton').click(function() {
+		addRoom();
+		if ($('#addRoomForm').valid()) {
+			var room = {};
+			room.roomNumber = $('#addroomnumber').val();
+			room.floorNumber = $('#addroomfloor').val();
+			room.size = $('#addsize').val();
+			
+			$.ajax({
+				url: 'hoteladmin/addroom',
+				type: 'post',
+				contentType: 'application/json',
+				data: JSON.stringify(room),
+				success: function(data) {
+					if (data == true) {
+						loadRooms();
+					} else {
+						alert('U hotelu vec postoji soba sa unetim brojem sobe.')
+					}
+				}
+			});
+			
+			//console.log(room);
+		}
+
+	});
 	
 });
 
 function changePassword() {
+	
+	
 	$("#changePasswordModal").modal({
 		show: true,
 		backdrop: 'static',
@@ -107,6 +134,37 @@ function changePassword() {
 			});
 }
 
+function addRoom() {
+	$('#addRoomForm')
+	.validate(
+			{
+				rules : {
+					
+					roomnumber : {
+						required: true
+					},
+					roomfloor : {
+						required: true
+					},
+					size: {
+						required: true
+					}
+
+				},
+				messages : {
+					roomnumber : {
+						required: "Broj sobe nije unet"
+					},
+					roomfloor: {
+						required: "Sprat nije unet"
+					},
+					size: {
+						required: "Broj kreveta nije unet"
+					}
+				}
+			});
+}
+
 function addHotelAdminButtons() {
 	$('#editProfileForm')
 	.validate(
@@ -125,6 +183,8 @@ function addHotelAdminButtons() {
 				}
 			});
 	
+	
+	
 	$('.hotel-admin-navbar .navbar-nav').append(
 			'<li class="nav-item">' + ' <button id="logout"'
 					+ '  class="btn btn-primary">Odjavi se</button> </li>');
@@ -138,10 +198,21 @@ function addHotelAdminButtons() {
 	.append(
 			'<li class="nav-item">'
 					+ ' <button id="editModalShow" href="#"'
-					+ '  class="btn btn-primary">Izmeni profil</button> </li>');
+					+ '  class="btn btn-primary">Profil</button> </li>');
+	
+	$('.hotel-admin-navbar .navbar-nav')
+	.append(
+			'<li class="nav-item">'
+					+ ' <button id="editRoomsModalShow" href="#"'
+					+ '  class="btn btn-primary">Sobe</button> </li>');
+	
+	$('.hotel-admin-navbar #editRoomsModalShow').click(function() {
+		loadRooms();
+	});
+	
 	
 	$('.hotel-admin-navbar #editModalShow').click(function() {
-		console.log('klik');
+		//console.log('klik');
 		//$('#editProfileModal').modal('show');
 		$.ajax({
 			url: 'hoteladmin/details',
@@ -206,6 +277,34 @@ function addHotelAdminButtons() {
 				}
 			});
 	
+}
+
+function loadRooms() {
+	$.ajax({
+		url: '/hoteladmin/rooms',
+		type: 'get',
+		success: function(data) {
+			$('#editRoomsModal tbody').empty();
+			$('#editRoomsModal thead').empty();
+			if (data == null || data.length == 0) {
+				$('#editRoomsModal tbody').append('Nema dodatih soba.');
+			} else {
+				$('#editRoomsModal thead').append('<tr><th>Broj sobe</th><th>Sprat</th><th>Broj kreveta (velicina)</th></tr>');
+				$.each(data, function(i, v) {
+					$('#editRoomsModal tbody').append('<tr>' + 
+							'<td>' + v.roomNumber + '</td>' + 
+							'<td>' + v.floorNumber + '</td>' + 
+							'<td>' + v.size + '</td></tr>');
+				});
+			}
+			$('#editRoomsModal').modal('show');
+		},
+		statusCode: {
+			400: function(data) {
+				alert('Potrebno je kreirati profil putem kartice Profil pre rada sa sobama.');
+			}
+		}
+	});
 }
 
 

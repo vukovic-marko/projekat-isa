@@ -1,7 +1,9 @@
 package isa.projekat.model;
 
 import java.io.Serializable;
+import java.util.List;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -9,6 +11,8 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
@@ -28,8 +32,15 @@ public class Hotel {
 	@Column(nullable = false)
 	private String address;
 	
-	@OneToOne(fetch = FetchType.EAGER, optional=false)
-	@JoinColumn(name="address_id", nullable=false)
+	@OneToMany(cascade = CascadeType.ALL,
+            fetch = FetchType.LAZY,
+            mappedBy = "hotel")
+	private List<HotelRoom> rooms;
+	
+//	@OneToOne(fetch = FetchType.EAGER, optional=false)
+//	@JoinColumn(name="address_id", nullable=false)
+	@ManyToOne(fetch = FetchType.EAGER, optional=false)
+    @JoinColumn(name = "address_id", nullable=false)
 	private Destination destination;
 	
 	public Destination getDestination() {
@@ -97,5 +108,13 @@ public class Hotel {
 
 	public void setHotelAdministrator(User admin) {
 		this.admin = admin;
+	}
+
+	public List<HotelRoom> getRooms() {
+		return rooms;
+	}
+
+	public void setRooms(List<HotelRoom> rooms) {
+		this.rooms = rooms;
 	}
 }

@@ -1,5 +1,7 @@
 package isa.projekat.service;
 
+import java.util.ArrayList;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
@@ -7,9 +9,11 @@ import org.springframework.transaction.annotation.Transactional;
 
 import isa.projekat.model.Destination;
 import isa.projekat.model.Hotel;
+import isa.projekat.model.HotelRoom;
 import isa.projekat.model.User;
 import isa.projekat.repository.DestinationRepository;
 import isa.projekat.repository.HotelRepository;
+import isa.projekat.repository.HotelRoomRepository;
 import isa.projekat.repository.UserRepository;
 
 @Service
@@ -21,15 +25,44 @@ public class HotelAdminService {
 	private HotelRepository hotelRepository;
 	
 	@Autowired
+	private HotelRoomRepository hotelRoomRepository;
+	
+	@Autowired
 	private DestinationRepository destinationRepository;
+	
+	@Transactional(readOnly=false, isolation=Isolation.READ_COMMITTED)
+	public Boolean addRoom(Hotel h, HotelRoom r) {
+		
+		Hotel hotel = hotelRepository.getOne(h.getId());
+		
+		if (hotelRoomRepository.findByRoomNumberAndHotel(r.getRoomNumber(), hotel) != null)
+			return false;
+		
+		
+		
+		hotel.getRooms().add(r);
+		
+		r.setHotel(hotel);
+		
+		hotelRoomRepository.save(r);
+		
+		hotelRepository.save(hotel);
+		
+		
+		
+		return true;
+	}
 	
 	@Transactional(readOnly=false, isolation=Isolation.READ_COMMITTED)
 	public Boolean editHotel(User u, Hotel h) {
 		if (u.getHotel() == null) {
-			Destination destination = new Destination();
-			destination.setCity(h.getDestination().getCity());
-			destination.setCountry(h.getDestination().getCountry());
-			destinationRepository.save(destination);
+			Destination destination = destinationRepository.findByCountryAndCity(h.getDestination().getCountry(), h.getDestination().getCity());
+			if (destination == null) {
+				destination = new Destination();
+				destination.setCity(h.getDestination().getCity());
+				destination.setCountry(h.getDestination().getCountry());
+				destinationRepository.save(destination);
+			}
 			
 			Hotel hotel = new Hotel();
 			hotel.setName(h.getName());
@@ -37,6 +70,7 @@ public class HotelAdminService {
 			hotel.setPromoDescription(h.getPromoDescription());
 			hotel.setDestination(destination);
 			hotel.setAdmin(u);
+			hotel.setRooms(new ArrayList<HotelRoom>());
 			hotelRepository.save(hotel);
 			
 			return true;

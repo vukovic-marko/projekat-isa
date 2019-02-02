@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import isa.projekat.model.Destination;
 import isa.projekat.model.Hotel;
+import isa.projekat.model.HotelRoom;
 import isa.projekat.model.User;
 import isa.projekat.repository.DestinationRepository;
 import isa.projekat.repository.HotelRepository;
@@ -52,45 +53,21 @@ public class HotelAdminController {
 			consumes = MediaType.APPLICATION_JSON_VALUE)
 	@PreAuthorize("hasRole('ROLE_HOTEL_ADMIN')")
 	public @ResponseBody ResponseEntity<Boolean> editProfile(@RequestBody Hotel h, HttpServletRequest request) {
-		System.out.println("*********************");
-		System.out.println(h.getName());
-		System.out.println(h.getAddress());
-		System.out.println(h.getPromoDescription());
-		System.out.println("---------------------");
-		System.out.println(h.getDestination().getCountry());
-		System.out.println(h.getDestination().getCity());
-		System.out.println("*********************");
+		
+		if (h.getName().equals("") || h.getName() == null ||
+				h.getAddress().equals("") || h.getAddress() == null ||
+				h.getPromoDescription().equals("") || h.getPromoDescription() == null ||
+				h.getDestination() == null || h.getDestination().getCity().equals("") || h.getDestination().getCity() == null ||
+				h.getDestination().getCountry().equals("") || h.getDestination().getCountry() == null) {
+			return new ResponseEntity<Boolean>(false, HttpStatus.BAD_REQUEST);
+		}
 		
 		String token = tokenUtils.getToken(request);
 		String username = this.tokenUtils.getUsernameFromToken(token);
 		User user = (User) this.userDetailsService.loadUserByUsername(username);
 		
-//		System.out.println("*********************");
-//		System.out.println("**** STARI HOTEL ****");
-//		System.out.println(user.getHotel().getName());
-//		System.out.println(user.getHotel().getAddress());
-//		System.out.println(user.getHotel().getPromoDescription());
-//		System.out.println("---------------------");
-//		System.out.println(user.getHotel().getDestination().getCountry());
-//		System.out.println(user.getHotel().getDestination().getCity());
-//		System.out.println("*********************");
 		
-		Boolean edit = hotelAdminService.editHotel(user, h);
-		
-//		Destination destination = destinationRepository.getOne(user.getHotel().getDestination().getId());
-//		destination.setCity(h.getDestination().getCity());
-//		destination.setCountry(h.getDestination().getCountry());
-//		
-//		destinationRepository.save(destination);
-		
-//		Hotel hotel = hotelRepository.getOne(user.getHotel().getId());
-//		hotel.setName(h.getName());
-//		hotel.setAddress(h.getAddress());
-//		hotel.setPromoDescription(h.getPromoDescription());
-//		hotel.setDestination(destination);
-//		
-//		hotelRepository.save(hotel);
-		
+		Boolean edit = hotelAdminService.editHotel(user, h);		
 		return new ResponseEntity<Boolean>(edit, HttpStatus.OK);
 	}
 	
@@ -106,4 +83,42 @@ public class HotelAdminController {
 		return user.getHotel();
 	}
 	
+	@RequestMapping(value="/rooms", method=RequestMethod.GET)
+	public @ResponseBody ResponseEntity<List<HotelRoom>> getRooms(HttpServletRequest request) {
+		System.out.println("pogodio");
+		
+		String token = tokenUtils.getToken(request);
+		String username = this.tokenUtils.getUsernameFromToken(token);
+		User user = (User) this.userDetailsService.loadUserByUsername(username);
+		
+		List<HotelRoom> lista = new ArrayList<HotelRoom>();
+		
+		if (user.getHotel() == null)
+			return new ResponseEntity<List<HotelRoom>>(lista, HttpStatus.BAD_REQUEST);
+		
+		lista = user.getHotel().getRooms();
+		
+		return new ResponseEntity<List<HotelRoom>>(lista, HttpStatus.OK);
+	}
+	
+	@RequestMapping(value="/addroom", method=RequestMethod.POST, consumes=MediaType.APPLICATION_JSON_VALUE)
+	public @ResponseBody ResponseEntity<Boolean> addRoom(@RequestBody HotelRoom room, HttpServletRequest request) {
+		
+		System.out.println("-----------------");
+		System.out.println(room.getRoomNumber());
+		System.out.println(room.getFloorNumber());
+		System.out.println(room.getSize());
+		
+		String token = tokenUtils.getToken(request);
+		String username = this.tokenUtils.getUsernameFromToken(token);
+		User user = (User) this.userDetailsService.loadUserByUsername(username);
+		
+		if (user.getHotel() == null || user.getHotel().getRooms() == null) {
+			return new ResponseEntity<Boolean>(false, HttpStatus.BAD_REQUEST);
+		}
+		
+		Boolean success = hotelAdminService.addRoom(user.getHotel(), room);
+		
+		return new ResponseEntity<Boolean>(success, HttpStatus.OK);
+	}
 }
