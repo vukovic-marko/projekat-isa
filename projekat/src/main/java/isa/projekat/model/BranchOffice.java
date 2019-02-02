@@ -2,24 +2,31 @@ package isa.projekat.model;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.ManyToOne;
+
+import org.hibernate.annotations.GeneratorType;
+
+import javax.persistence.CascadeType;
 @Entity
 public class BranchOffice {
 	@Id
-	private long id;
+	@GeneratedValue(strategy=GenerationType.AUTO)
+	private Long id;
 
 	@Column
 	private String address;
 	
-	@ManyToOne
-	private Destination destination;
+	@ManyToOne(cascade=CascadeType.ALL)
+	private Destination location;
 
-	public long getId() {
+	public Long getId() {
 		return id;
 	}
 
-	public void setId(long id) {
+	public void setId(Long id) {
 		this.id = id;
 	}
 
@@ -31,12 +38,13 @@ public class BranchOffice {
 		this.address = address;
 	}
 
-	public Destination getDestination() {
-		return destination;
+	public Destination getLocation() {
+		return location;
 	}
 
-	public void setDestination(Destination destination) {
-		this.destination = destination;
+	public void setLocation(Destination location) {
+		this.location = location;
 	}
+
 	
 }

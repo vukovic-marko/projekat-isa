@@ -30,18 +30,7 @@ public class User implements UserDetails {
 	 * 
 	 */
 	private static final long serialVersionUID = 6882427434891133050L;
-	//------------------------------------
-	//RENTA A CAR ADMINISTRATOR
-	@OneToOne
-	private RentACarCompany rentACarCompany;
-	public RentACarCompany getRentACarCompany() {
-		return rentACarCompany;
-	}
 
-	public void setRentACarCompany(RentACarCompany rentACarCompany) {
-		this.rentACarCompany = rentACarCompany;
-	}
-	//-----------------------------------
 	@Version
 	private Long version;
 	@JsonIgnore
@@ -67,6 +56,7 @@ public class User implements UserDetails {
 	@Column(nullable = false)
 	private String firstName;
 
+	@JsonIgnore
 	@Column(nullable = false)
 	private String password;
 

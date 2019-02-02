@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html>
+<head>
+
+
+<meta http-equiv='Content-Type' content='text/html; charset=UTF-8' />
+</head>
+<body>
+	<div class="row row-eq-height bakground collapse show"
+		style="margin: auto; width: -webkit-fill-available;" id="prof">
+		<div class="col-md-8">
+			<form id="editForm" novalidate="novalidate">
+				<div class="form-group">
+					<label for="name">Naziv:</label> <input type="text"
+						class="form-control" id="name" name="name">
+
+				</div>
+				<div class="form-group">
+					<label for="description">Promotivni opis:</label>
+					<textarea type="text" class="form-control" name="description"
+						id="description"></textarea>
+				</div>
+
+				<div class="form-group">
+					<label for="address">Adresa:</label> <input type="text"
+						class="form-control" name="address" id="address">
+				</div>
+				<div class="form-group">
+					<label for="city">Grad:</label> <input type="text"
+						class="form-control" name="city" id="city">
+				</div>
+				<div class="form-group">
+					<label for="country">Drzava:</label> <input type="text"
+						class="form-control" name="country" id="country">
+				</div>
+				<button type="button" id="editBtn" class="btn btn-primary">Izmeni</button>
+				<label style="display: none" id="btn-error" class="error"
+					for="editBtn"></label>
+			</form>
+		</div>
+		<div class="col-md-4">
+			<div id="mapid" style="height: 200px"></div>
+		</div>
+	</div>
+
+
+
+	<div class="row row-eq-height bakground collapse show"
+		style="margin: auto; width: -webkit-fill-available;" id="prof2">
+		<form style="margin: auto; width: -webkit-fill-available;"
+			id="editForm" novalidate="novalidate">
+			<div class="form-group">
+				<label for="regemail">Email:</label> <input type="email" disabled=""
+					class="form-control" id="regemail" name="email">
+
+			</div>
+			<div class="form-group">
+				<label for="regusername">Korisničko ime:</label> <input disabled=""
+					type="text" class="form-control" name="username" id="regusername">
+			</div>
+
+			<div class="form-group">
+				<label for="regfirstNname">Ime:</label> <input type="text"
+					class="form-control" name="firstName" id="regfirstName">
+			</div>
+			<div class="form-group">
+				<label for="reglastName">Prezime:</label> <input type="text"
+					class="form-control" name="lastName" id="reglastName">
+			</div>
+			<div class="form-group">
+				<label for="regphone">Telefon:</label> <input type="text"
+					class="form-control" name="phone" id="regphone">
+			</div>
+			<div class="form-group">
+				<label for="regcity">Grad:</label> <input type="text"
+					class="form-control" name="city" id="regcity">
+			</div>
+			<button type="button" id="editBtn" class="btn btn-primary">Izmeni</button>
+			<label style="display: none" id="btn-error" class="error"
+				for="editBtn"></label>
+		</form>
+	</div>
+
+
+
+	<div class="row row-eq-height bakground collapse show"
+		style="margin: auto; width: -webkit-fill-available;" id="branches">
+		<table id="btable" class="table table-bordered">
+			<thead class="thead-dark">
+				<tr>
+					<th>Adresa</th>
+					<th>Grad</th>
+					<th>Država</th>
+					<th></th>
+				</tr>
+			</thead>
+			<tbody>
+				
+			</tbody>
+		</table>
+	</div>
+
+
+		<div class="modal fade" id="modalBO" style="display: block;">
+			<div class="modal-dialog modal-lg">
+				<div class="modal-content">
+					<div class="modal-header">
+						<h4 class="modal-title">Nova filijala</h4>
+						<button type="button" class="close" data-dismiss="modal">×</button>
+					</div>
+					<div class="modal-body">
+						<form id="newboForm">
+							<div class="form-group">
+								<label for="modaladdress">Adresa:</label> <input type="text"
+									class="form-control" name="modaladdress" id="modaladdress">
+							</div>
+							<div class="form-group">
+								<label for="modalcity">Grad:</label> <input type="text"
+									class="form-control" id="modalcity" name="modalcity">
+							</div>
+							<div class="form-group">
+								<label for="modalcountry">Država:</label> <input type="text"
+									class="form-control" id="modalcountry" name="modalcountry">
+							</div>
+							<button type="button" id="addbo" class="btn btn-primary">Dodaj
+								filijalu</button>
+								<label style="display: none;" id="btn-error2" class="error" for="addbo"></label>
+						</form>
+					</div>
+					<div class="modal-footer">
+						<button type="button" class="btn btn-danger" data-dismiss="modal">Zatvori</button>
+					</div>
+				</div>
+			</div>
+
+		</div>
+
+
+
+
+
+
+</body>
