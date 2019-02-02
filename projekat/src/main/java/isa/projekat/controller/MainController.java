@@ -34,6 +34,12 @@ public class MainController {
                 return new ModelAndView("redirect:" + "racadmin.html");
             if (li.get(0).getName().equals("ROLE_SYSTEM_ADMIN"))
             	return new ModelAndView("redirect:" + "sysadmin.html");
+            //------------------------------------------------------
+            // dodata stranica za administratora hotela, Marko
+            if (li.get(0).getName().equals("ROLE_HOTEL_ADMIN"))
+            	return new ModelAndView("redirect:" + "hoteladmin.html");
+            
+            //------------------------------------------------------
         }
         return new ModelAndView("redirect:" + "index.html");
 	}

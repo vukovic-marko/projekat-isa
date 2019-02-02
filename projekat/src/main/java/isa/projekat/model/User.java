@@ -31,6 +31,25 @@ public class User implements UserDetails {
 	 */
 	private static final long serialVersionUID = 6882427434891133050L;
 	//------------------------------------
+	// HOTEL ADMINISTRATOR
+	// Marko
+	@OneToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER, mappedBy = "admin")
+	private Hotel hotel;
+	
+	public Hotel getHotel() {
+		return hotel;
+	}
+
+	public void setHotel(Hotel hotel) {
+		this.hotel = hotel;
+	}
+	
+	//____________________________________
+	
+	
+	
+	
+	//------------------------------------
 	//RENTA A CAR ADMINISTRATOR
 	@OneToOne
 	private RentACarCompany rentACarCompany;

@@ -2,6 +2,8 @@ package isa.projekat.model;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
 @Entity
 public class Destination {
@@ -26,15 +28,16 @@ public class Destination {
 		this.city = city;
 	}
 
-	public long getId() {
+	public Long getId() {
 		return id;
 	}
 
-	public void setId(long id) {
+	public void setId(Long id) {
 		this.id = id;
 	}
 
 	@Id
-	private long id;
+	@GeneratedValue(strategy = GenerationType.AUTO)
+	private Long id;
 
 }

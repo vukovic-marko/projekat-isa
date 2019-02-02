@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html>
+<head>
+
+
+<meta http-equiv='Content-Type' content='text/html; charset=UTF-8' />
+<title>ISA projekat</title>
+<script type="text/javascript" src="js/jquery-3.3.1.min.js"></script>
+<script type="text/javascript" src="js/bootstrap.js"></script>
+<link type="text/css" rel="stylesheet" href="css/styles.css">
+<link type="text/css" rel="stylesheet" href="css/bootstrap.css">
+<link type="text/css" rel="stylesheet" href="css/screen.css">
+<script type="text/javascript" src="js/hoteladmin.js"></script>
+<script type="text/javascript" src="js/jquery.validate.js"></script>
+<script>
+	
+</script>
+</head>
+<body style="background-color: #e9ebee;">
+
+	<nav
+		class="navbar navbar-default navbar-expand-sm bg-dark navbar-dark fixed-top hotel-admin-navbar">
+		<ul class="navbar-nav">
+
+		</ul>
+	</nav>
+		
+	<!-- Modal za izmenu informacija o hotelu -->
+	<div class="modal fade" id="editProfileModal">
+		<div class="modal-dialog modal-lg">
+			<div class="modal-content">
+
+				<div class="modal-header">
+					<h4 class="modal-title">Izmeni profil</h4>
+					<button type="button" class="close" data-dismiss="modal">×</button>
+				</div>
+				<div class="modal-body">
+					<form id="editProfileForm">
+						<div class="form-group">
+							<label for="editname">Naziv hotela:</label> <input type="text"
+								class="form-control" id="editname" name="name">
+
+						</div>
+						<div class="form-group">
+							<label for="editaddress">Adresa:</label> <input
+								type="text" class="form-control" name="address"
+								id="editaddress">
+						</div>
+						<div class="form-group">
+							<label for="editcity">Grad:</label> <input
+								type="text" class="form-control" name="city"
+								id="editcity">
+						</div>
+						<div class="form-group">
+							<label for="editcountry">Drzava:</label> <input
+								type="text" class="form-control" name="country"
+								id="editcountry">
+						</div>
+						<div class="form-group">
+							<label for="editpromodescription">Promotivni opis:</label> <input type="text"
+								class="form-control" id="editpromodescription" name="promodescription">
+						</div>
+					</form>
+				</div>
+
+				<div class="modal-footer">
+					<button type="button" id="editProfileButton" class="btn btn-primary">Izmeni</button>
+					<label style="display: none" id="regbtn-error" class="error"
+						for="register"></label>
+					<button type="button" class="btn btn-danger" data-dismiss="modal">Zatvori</button>
+				</div>
+
+			</div>
+		</div>
+	</div>
+		
+	<div class="modal fade" id="changePasswordModal">
+		<div class="modal-dialog modal-md">
+			<div class="modal-content">
+
+				<div class="modal-header">
+					<h4 class="modal-title">Obavezna promena lozinke</h4>
+<!-- 					<button type="button" aria-hidden="true" class="close" data-dismiss="modal">×</button> -->
+				</div>
+				<div class="modal-body">
+					<form id="changePasswordForm">
+						
+						<div class="form-group">
+							<label for="regpassword">Lozinka:</label> <input type="password"
+								class="form-control" id="changepassword" name="changepassword">
+						</div>
+						<div class="form-group">
+							<label for="regpassword2">Ponovljena lozinka:</label> <input
+								type="password" class="form-control" id="changeregpassword2"
+								name="changepassword2">
+						</div>
+					</form>
+				</div>
+
+				<div class="modal-footer">
+					<button type="button" id="changePasswordButton" class="btn btn-primary">Promeni
+					lozinku </button>
+					<label style="display: none" id="regbtn-error" class="error"
+						for="register"></label>
+<!-- 					<button type="button" class="btn btn-danger" data-dismiss="modal">Zatvori</button> -->
+				</div>
+
+			</div>
+		</div>
+	</div>
+
+</body>
+</html>

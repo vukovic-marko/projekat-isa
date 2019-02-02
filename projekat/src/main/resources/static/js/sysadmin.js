@@ -178,7 +178,14 @@ $(document).ready(function() {
 	
 	$.ajax({
 		url: 'user/checkactivated',
-		type: 'get'
+		type: 'get',
+		statusCode: {
+			401: function() {
+				alert('Potrebno je da se ponovo ulogujete');
+				localStorage.setItem('jwtToken', null);
+				window.location.href = '/index.html';
+			}
+		}
 	}).then(function(data) {
 		if (data == true) {
 			addSysAdminButtons();
