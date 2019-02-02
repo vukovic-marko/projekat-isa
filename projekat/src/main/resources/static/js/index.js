@@ -125,8 +125,7 @@ function fillButtons() {
 				data : JSON.stringify(d),
 				success : function(data) {
 					localStorage.setItem('jwtToken',data.accessToken);
-					window.location.replace("/");
-
+					window.location.replace("/"+"?token="+getToken());
 				},
 				statusCode : {
 					401 : function(data) {

@@ -17,7 +17,7 @@
 				</div>
 				<div class="form-group">
 					<label for="description">Promotivni opis:</label>
-					<textarea type="text" class="form-control" name="description"
+					<textarea class="form-control" name="description"
 						id="description"></textarea>
 				</div>
 
@@ -50,12 +50,12 @@
 		<form style="margin: auto; width: -webkit-fill-available;"
 			id="editForm" novalidate="novalidate">
 			<div class="form-group">
-				<label for="regemail">Email:</label> <input type="email" disabled=""
+				<label for="regemail">Email:</label> <input type="email" disabled
 					class="form-control" id="regemail" name="email">
 
 			</div>
 			<div class="form-group">
-				<label for="regusername">Korisničko ime:</label> <input disabled=""
+				<label for="regusername">Korisničko ime:</label> <input disabled
 					type="text" class="form-control" name="username" id="regusername">
 			</div>
 
@@ -95,46 +95,146 @@
 				</tr>
 			</thead>
 			<tbody>
-				
+
 			</tbody>
 		</table>
 	</div>
 
 
-		<div class="modal fade" id="modalBO" style="display: block;">
-			<div class="modal-dialog modal-lg">
-				<div class="modal-content">
-					<div class="modal-header">
-						<h4 class="modal-title">Nova filijala</h4>
-						<button type="button" class="close" data-dismiss="modal">×</button>
-					</div>
-					<div class="modal-body">
-						<form id="newboForm">
-							<div class="form-group">
-								<label for="modaladdress">Adresa:</label> <input type="text"
-									class="form-control" name="modaladdress" id="modaladdress">
-							</div>
-							<div class="form-group">
-								<label for="modalcity">Grad:</label> <input type="text"
-									class="form-control" id="modalcity" name="modalcity">
-							</div>
-							<div class="form-group">
-								<label for="modalcountry">Država:</label> <input type="text"
-									class="form-control" id="modalcountry" name="modalcountry">
-							</div>
-							<button type="button" id="addbo" class="btn btn-primary">Dodaj
-								filijalu</button>
-								<label style="display: none;" id="btn-error2" class="error" for="addbo"></label>
-						</form>
-					</div>
-					<div class="modal-footer">
-						<button type="button" class="btn btn-danger" data-dismiss="modal">Zatvori</button>
-					</div>
+	<div class="modal fade" id="modalBO" style="display: block;">
+		<div class="modal-dialog modal-lg">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h4 class="modal-title">Nova filijala</h4>
+					<button type="button" class="close" data-dismiss="modal">×</button>
+				</div>
+				<div class="modal-body">
+					<form id="newboForm">
+						<div class="form-group">
+							<label for="modaladdress">Adresa:</label> <input type="text"
+								class="form-control" name="modaladdress" id="modaladdress">
+						</div>
+						<div class="form-group">
+							<label for="modalcity">Grad:</label> <input type="text"
+								class="form-control" id="modalcity" name="modalcity">
+						</div>
+						<div class="form-group">
+							<label for="modalcountry">Država:</label> <input type="text"
+								class="form-control" id="modalcountry" name="modalcountry">
+						</div>
+						<button type="button" id="addbo" class="btn btn-primary">Dodaj
+							filijalu</button>
+						<label style="display: none;" id="btn-error2" class="error"
+							for="addbo"></label>
+					</form>
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-danger" data-dismiss="modal">Zatvori</button>
 				</div>
 			</div>
-
 		</div>
 
+	</div>
+
+
+	<table id="carsTable" class="table table-bordered">
+		<thead class="thead-dark">
+			<tr>
+				<th>Naziv</th>
+				<!-- sta god to bilo -->
+				<th>Marka</th>
+				<th>Model</th>
+				<th>Sedišta</th>
+				<th>Godina proizvodnje</th>
+				<th>Tip</th>
+				<th>Broj vrata</th>
+				<th>Menjač</th>
+				
+				<th>Cena po danu</th>
+				<th></th>
+			</tr>
+		</thead>
+		<tbody>
+
+		</tbody>
+	</table>
+
+
+
+	<div class="modal fade" id="modalCar" style="display: block;">
+		<div class="modal-dialog modal-lg">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h4 class="modal-title">Novi auto</h4>
+					<button type="button" class="close" data-dismiss="modal">×</button>
+				</div>
+				<div class="modal-body">
+					<form id="newcarform">
+						<div class="form-group">
+							<label for="modalname">Naziv:</label> <input type="text"
+								class="form-control" name="modalname" id="modalname">
+						</div>
+						<div class="form-group">
+							<label for="modalbrand">Marka:</label> <input type="text"
+								class="form-control" id="modalbrand" name="modalbrand">
+						</div>
+						<div class="form-group">
+							<label for="modalmodel">Model:</label> <input type="text"
+								class="form-control" id="modalmodel" name="modalmodel">
+						</div>
+						<div class="form-group">
+							<label for="modaldoors">Broj vrata:</label> <input type="number"
+								min="2" max="5" value="2" class="form-control" id="modaldoors"
+								name="modaldoors">
+						</div>
+						<div class="form-group">
+							<label for="modalyear">Godina proizvodnje:</label> <input
+								type="number" min="1950" max="2019" value="2000"
+								class="form-control" id="modalyear" name="modalyear">
+						</div>
+						<div class="form-group">
+							<label for="modaltype">Tip:</label> <select class="form-control"
+								id="modaltype" name="modaltype">
+								<option value="Karavan">Karavan</option>
+								<option value="Kupe">Kupe</option>
+								<option value="SUV">SUV</option>
+								<option selected value="Hečbek">Hečbek</option>
+								<option value="Limuzina ">Limuzina</option>
+								<option value="Pikap">Pikap</option>
+							</select>
+						</div>
+						
+						
+						<div class="form-group">
+							<label for="modalseats">Broj sedišta:</label> <input
+								type="number" min="2" max="6" value="5" class="form-control" id="modalseats"
+								name="modalseats">
+						</div>
+						<div class="form-group">
+							<label for="modaltransmission">Tip menjača:</label> <select class="form-control"
+								id="modaltransmission" name="modaltransmission">
+								<option value="Automatski">Automatski</option>
+								<option selected value="Manuelni">Manuelni</option>
+							</select>
+						</div>
+						<div class="form-group">
+							<label for="modalprice">Cena po danu (€):</label> <input
+								type="number" min="1" step="0.5" class="form-control" id="modalprice"
+								name="modalprice">
+						</div>
+						<button type="button" id="addbo" class="btn btn-primary">Dodaj
+							auto</button>
+						<label style="display: none;" id="btn-error2" class="error"
+							for="addbo"></label>
+					</form>
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-danger" data-dismiss="modal">Zatvori</button>
+				</div>
+			</div>
+		</div>
+
+	</div>
 
 
 

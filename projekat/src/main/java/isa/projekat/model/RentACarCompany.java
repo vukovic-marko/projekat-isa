@@ -30,6 +30,15 @@ public class RentACarCompany {
 	@OneToMany(fetch=FetchType.EAGER,cascade= CascadeType.ALL,orphanRemoval = true)
 	private Set<BranchOffice> branchOffices;
 	
+	@OneToMany(fetch=FetchType.EAGER,cascade= CascadeType.ALL,orphanRemoval = true)
+	private Set<Car> cars;
+	
+	public Set<Car> getCars() {
+		return cars;
+	}
+	public void setCars(Set<Car> cars) {
+		this.cars = cars;
+	}
 	@ManyToOne(fetch=FetchType.EAGER,cascade=CascadeType.ALL)
 	private Destination location;
 	

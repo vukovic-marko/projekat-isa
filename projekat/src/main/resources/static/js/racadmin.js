@@ -1,15 +1,37 @@
+/**
+ * ovde su funckije za:
+ * uzimanje tokena
+ * preomenu sifre prilikom prvog logovanja
+ * dodavanje dugmica u nav bar
+ * prikaz profila admina
+ * prikaz kompanije i njenih filijala
+ * i neke pomocne xD
+ */
+
 function getToken() {
     return localStorage.getItem('jwtToken');
 }
+function refreshToken(){
+	$.ajax({
+		   url: '/user/refresh',
+           type: 'post',
+           success: function (data) {
+        	   localStorage.setItem('jwtToken',data.accessToken);
+        	   }
+	});
+}
+
 $(document).ajaxSend(function (event, jqxhr, settings) {
     var token = getToken();
     if (token != null)
         jqxhr.setRequestHeader('Authorization', 'Bearer ' + token);
+    
 });
 
 $(document).ready(
-
+	
     function () {
+      setInterval(refreshToken, 60000); //svaki min
         $.validator.methods.phoneCheck = function (value, element) {
             return this.optional(element)
                 || /([0-9]{3,3}\/[0-9]{3,3}-[0-9]{2,2}-[0-9]{2,2})$/
@@ -108,9 +130,13 @@ function addRCAButtons() {
     $('.logged-out-navbar .navbar-nav').append(
         '<li class="nav-item">' + ' <button id="myCompany"'
         + '  class="btn btn-primary">Kompanija</button> </li>');
+    $('.logged-out-navbar .navbar-nav').append(
+            '<li class="nav-item">' + ' <button id="myCars"'
+            + '  class="btn btn-primary">Automobili</button> </li>');
 
-
-
+    $('#myCars').click(function () {
+        location.hash = 'mycars';
+    });
     $('#myProfRcaAdmin').click(function () {
         location.hash = 'myprofile';
     });
@@ -128,7 +154,9 @@ function addRCAButtons() {
             myProfileRCAAdmin();
         } else if (location.hash === '#mycompany') {
             myCompanyRACAdmin();
-        }
+        }else if (location.hash === '#mycars') {
+            myCarsRACAdmin();
+            }
     });
 
 }
@@ -402,7 +430,7 @@ function deleteListeners() {
 
     });
 }
-
+//prikazuje modal za dodavanje/izmenu filijale
 function showModal(flag,id,cb) {
     $('body').append('<div id="modalcont"></div><button id="hbtn" hidden data-toggle="modal" href="#modalBO"></button>');
     $('#modalcont').load("rent/parts.html #modalBO", function () {
@@ -445,6 +473,11 @@ function showModal(flag,id,cb) {
         	  if(cb!=undefined)
               	cb();
         });
+        if(flag=='edit'){
+        	$('#modal-title').html('Izmeni filijalu');
+        	$('#addbo').html('Izmeni');
+        	
+        }
         
         $('#hbtn').trigger("click");
         $('#addbo').click(function () {
@@ -516,7 +549,7 @@ function showModal(flag,id,cb) {
     
 
 }
-
+//validacija forme za izmenu /dodavanje
 function editFormValidation() {
     $('#editForm')
         .validate(
@@ -557,7 +590,7 @@ function editFormValidation() {
             });
 
 }
-
+//pomera page dole, da se vidi navbar
 function adjust_body_offset() {
     $('#page').css('padding-top', $('.navbar').outerHeight(true) + 'px');
 }

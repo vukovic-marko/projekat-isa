@@ -1,17 +1,20 @@
 package isa.projekat.service;
 
+import java.util.Set;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Service;
 
 import isa.projekat.model.BranchOffice;
+import isa.projekat.model.Car;
 import isa.projekat.model.Destination;
 import isa.projekat.model.RentACarCompany;
 import isa.projekat.model.User;
 import isa.projekat.repository.BranchesRepository;
+import isa.projekat.repository.CarRepository;
 import isa.projekat.repository.DestinationRepository;
 import isa.projekat.repository.RentACarCompanyRepository;
 import isa.projekat.repository.UserRepository;
@@ -31,6 +34,9 @@ public class RentACarAdminService {
 	@Autowired
 	private UserRepository userRepository;
 
+	@Autowired
+	private CarRepository carRepository;
+	
 	@Autowired
 	private BranchesRepository branchRepository;
 	
@@ -126,6 +132,8 @@ public class RentACarAdminService {
 		if (token == null)
 			return false;
 		BranchOffice bo=branchRepository.findOne(Long.parseLong(id));
+		if(bo==null)
+			return false;
 		String uname = this.tokenUtils.getUsernameFromToken(token);
 		User user = (User) this.userDetailsService.loadUserByUsername(uname);
 		RentACarCompany c=rentACarCompanyRepository.findOneByAdmin(user);
@@ -150,6 +158,61 @@ public class RentACarAdminService {
 		}
 		bo2.setLocation(d);
 		branchRepository.save(bo2);
+		return true;
+	}
+
+	public Set<Car> getCars(HttpServletRequest request) {
+		String token = tokenUtils.getToken(request);
+		if (token == null)
+			return null;
+		String uname = this.tokenUtils.getUsernameFromToken(token);
+		User user = (User) this.userDetailsService.loadUserByUsername(uname);
+		
+		RentACarCompany c=rentACarCompanyRepository.findOneByAdmin(user);
+		if(c==null)
+			return null;
+		return c.getCars();
+	}
+
+	public Long addCar(HttpServletRequest request,@Valid Car c) {
+		String token = tokenUtils.getToken(request);
+		if (token == null)
+			return null;
+		String uname = this.tokenUtils.getUsernameFromToken(token);
+		User user = (User) this.userDetailsService.loadUserByUsername(uname);
+		
+		RentACarCompany comp=rentACarCompanyRepository.findOneByAdmin(user);
+		if(comp==null)
+			return null;
+		comp.getCars().add(c);
+		rentACarCompanyRepository.save(comp);
+		return c.getId();
+	}
+
+	public boolean editCar(HttpServletRequest request, Car c) {
+	String token = tokenUtils.getToken(request);
+		if (token == null)
+			return false;
+		Car c2=carRepository.findOne(c.getId());
+		if(c2==null)
+			return false;
+		c.setId(c2.getId());
+		carRepository.save(c);
+		return true;
+	}
+
+	public boolean deleteCar(HttpServletRequest request, String id) {
+		String token = tokenUtils.getToken(request);
+		if (token == null)
+			return false;
+		Car c=carRepository.findOne(Long.parseLong(id));
+		if(c==null)
+			return false;
+		String uname = this.tokenUtils.getUsernameFromToken(token);
+		User user = (User) this.userDetailsService.loadUserByUsername(uname);
+		RentACarCompany co=rentACarCompanyRepository.findOneByAdmin(user);
+		co.getCars().remove(c);
+		rentACarCompanyRepository.save(co);
 		return true;
 	}
 

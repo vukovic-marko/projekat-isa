@@ -1,5 +1,7 @@
 package isa.projekat.controller;
 
+import java.util.Set;
+
 import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,16 +17,13 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import isa.projekat.model.BranchOffice;
+import isa.projekat.model.Car;
 import isa.projekat.model.RentACarCompany;
 import isa.projekat.model.User;
 import isa.projekat.service.RentACarAdminService;
 @RestController
 @RequestMapping(value="/racadmin")
 public class RentACarAdminController {
-
-	
-	
-	
 	
 	@Autowired
 	private RentACarAdminService rentACarAdminService;
@@ -73,4 +72,30 @@ public class RentACarAdminController {
 		return rentACarAdminService.editCompany(request, c);
 	}
 		
+	@PreAuthorize("hasRole('ROLE_RENT_A_CAR_ADMIN')")
+	@GetMapping(value = "/cars",produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+	public Set<Car> getCars(HttpServletRequest request) {
+		return rentACarAdminService.getCars(request);
+	}
+	
+	@PreAuthorize("hasRole('ROLE_RENT_A_CAR_ADMIN')")
+	@PostMapping(value = "/car",consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
+	public Long addCar(HttpServletRequest request,@RequestBody Car c) {
+		return rentACarAdminService.addCar(request,c);
+	}
+	
+	@PreAuthorize("hasRole('ROLE_RENT_A_CAR_ADMIN')")
+	@PutMapping(value = "/car",consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
+	public boolean editCar(HttpServletRequest request,@RequestBody Car c) {
+		return rentACarAdminService.editCar(request,c);
+	}
+	
+
+	@PreAuthorize("hasRole('ROLE_RENT_A_CAR_ADMIN')")
+	@DeleteMapping(value = "/car/{id}",produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+	public boolean deleteCar(HttpServletRequest request, @PathVariable(value = "id") String id) {
+		return rentACarAdminService.deleteCar(request,id);
+	}
+	
+	
 }
