@@ -75,6 +75,8 @@ function loadRoomPrices(roomnumber) {
 	$('#addRoomPriceModal .modal-title').empty();
 	$('#addRoomPriceModal .modal-title').append(roomnumber);
 	
+	$('#addRoomPriceForm').trigger("reset");	
+	
 	var room = {};
 	room.roomNumber = roomnumber;
 	room.floorNumber = "";
@@ -110,27 +112,35 @@ function loadRoomPrices(roomnumber) {
 	});
 	
 	$('#addRoomPriceModal .closeAddPriceModal').click(function() {
+		$('#addRoomPriceForm').trigger("reset");	
 		$('#addRoomPriceModal').modal('hide');
 		$('#editRoomsModal').modal('show');
 	});
 	
-	$('#addRoomPriceButton').click(function() {
+	$(document).on("click", "#addRoomPriceButton",function() {
 		var roomnumber = $('#addRoomPriceModal .modal-title').text();
 		addRoomPriceButton(roomnumber);
 	});
 }
 
-function addRoomPriceButton() {
+function addRoomPriceButton(roomnumber) {
+	$.validator.methods.dateCheck = function(value, element) {
+		return value > $('#addstartdate').val();
+	}
+	
 	$('#addRoomPriceForm')
 	.validate(
 			{
 				rules : {
 					
 					startdate : {
-						required: true
+						required: true,
+						remote: '/hoteladmin/checkstartdate/' + roomnumber
 					},
 					enddate : {
-						required: true
+						required: true,
+						remote: '/hoteladmin/checkenddate/' + roomnumber,
+						dateCheck: true
 					},
 					price: {
 						required: true
@@ -139,14 +149,43 @@ function addRoomPriceButton() {
 				},
 				messages : {
 					startdate : {
-						required: "Datum pocetka nije unet"
+						required: "Datum pocetka nije unet",
+						remote: "Datum vazenja cene se preklapa sa unetim datumima"
 					},
 					enddate: {
-						required: "Datum zavrsetka nije unet"
+						required: "Datum zavrsetka nije unet",
+						remote: "Datum vazenja cene se preklapa sa unetim datumima",
+						dateCheck: "Datum zavrsetka mora biti kasniji od datuma pocetka"
 					},
 					price: {
 						required: "Cena sobe nije uneta"
 					}
 				}
 			});
+	
+	if ($('#addRoomPriceForm').valid()) {
+		
+		var url = '/hoteladmin/addroomprice/' + roomnumber;
+		console.log(url);
+		//var roomnumber = $('#addRoomPriceModal .modal-title').text();
+		var price = {};
+		price.startDate = $('#addstartdate').val();
+		price.endDate = $('#addenddate').val();
+		price.price = $('#addprice').val();
+		
+		$('#addRoomPriceForm').trigger("reset");
+		
+		$.ajax({
+			url: url,
+			type: 'post',
+			data: JSON.stringify(price),
+			contentType: 'application/json',
+			success: function(data) {
+				console.log(data);
+				loadRoomPrices(roomnumber);
+			}
+		}).then(function() {
+			$('#addRoomPriceForm').trigger("reset");
+		});
+	} 
 }
