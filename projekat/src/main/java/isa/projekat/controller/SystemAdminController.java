@@ -19,8 +19,6 @@ import isa.projekat.service.UserService;
 @RestController
 @RequestMapping(value="/sysadmin")
 public class SystemAdminController {
-	@Autowired
-	private TokenUtils tokenUtils;
 	
 	@Autowired
 	private UserService userService;
