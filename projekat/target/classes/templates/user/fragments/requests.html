@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en"
+      xmlns:th="http://www.thymeleaf.org/"
+      xmlns="http://www.w3.org/1999/xhtml">
+<head>
+
+    <!-- Ukljuceni bootstrap i jquery, i <title/> ocekuje u modelu 'title' -->
+    <th:block th:include="fragments/main-fragment :: head-default">
+    </th:block>
+
+</head>
+
+<body>
+
+    <div class="container-fluid" th:fragment="sentRequestsList">
+        <div class="row">
+            <div class="col-md-12">
+                <h1>Lista poslatih zahtjeva</h1>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-12">
+            <!-- Lista -->
+            </div>
+        </div>
+    </div>
+
+    <div class="container-fluid" th:fragment="pendingRequestsList">
+        <div class="row">
+            <div class="col-md-12">
+                <h1>Lista primljenih zahtjeva</h1>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-12">
+                <!-- lista -->
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

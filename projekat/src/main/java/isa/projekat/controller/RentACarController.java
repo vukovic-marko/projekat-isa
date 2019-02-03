@@ -1,13 +1,16 @@
 package isa.projekat.controller;
 
 import java.util.List;
+import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import isa.projekat.model.Destination;
 import isa.projekat.model.RentACarCompany;
 import isa.projekat.service.RentACarService;
 @RestController
@@ -23,6 +26,18 @@ public class RentACarController {
 		return rentACarService.getAll();
 	}
 	
+	@GetMapping(value = "/{id}/destinations",produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+	public Set<Destination> delete( @PathVariable(value = "id") String id) {
+		return rentACarService.getDestinations(id);
+	}
+	
+	
+	/*//vraca automobile koji su dostupni
+	@GetMapping(value = "/cars/{id}",produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+	public boolean delete(HttpServletRequest request, @PathVariable(value = "id") String id) {
+		return rentACarAdminService.delete(request,id);
+	}
+	*/
 /*
 	@PreAuthorize("hasRole('ROLE_RENT_A_CAR_ADMIN')")
 	@PostMapping(value = "/branch",consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)

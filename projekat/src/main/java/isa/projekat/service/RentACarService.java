@@ -1,5 +1,6 @@
 package isa.projekat.service;
 
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -219,6 +220,17 @@ public class RentACarService {
 
 	public List<RentACarCompany> getAll() {
 		return rentACarCompanyRepository.findAll();
+	}
+
+	public Set<Destination> getDestinations(String id) {
+		Set<Destination> ret=new HashSet<>();
+		RentACarCompany c=rentACarCompanyRepository.getOne(Long.parseLong(id));
+		if(c==null)
+			return ret;
+		ret.add(c.getLocation());
+		for(BranchOffice bo:c.getBranchOffices())
+			ret.add(bo.getLocation());
+		return ret;
 	}
 
 }
