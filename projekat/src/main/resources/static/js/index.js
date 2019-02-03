@@ -6,13 +6,22 @@ $(document).ajaxSend(function(event, jqxhr, settings) {
 	if (token != null)
 		jqxhr.setRequestHeader('Authorization', 'Bearer ' + token);
 });
+function refreshToken(){
+	$.ajax({
+		   url: '/user/refresh',
+           type: 'post',
+           success: function (data) {
+        	   localStorage.setItem('jwtToken',data.accessToken);
+        	   }
+	});
+}
 
 
 
 $(document).ready(
 
 		function() {
-			
+			  setInterval(refreshToken, 60000); //svaki min
 			$.validator.methods.phoneCheck = function(value, element) {
 				return this.optional(element)
 						|| /([0-9]{3,3}\/[0-9]{3,3}-[0-9]{2,2}-[0-9]{2,2})$/

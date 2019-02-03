@@ -43,8 +43,8 @@ public class MainController {
                 return new ModelAndView("redirect:" + "racadmin.html");
             if (li.get(0).getName().equals("ROLE_SYSTEM_ADMIN"))
             	return new ModelAndView("redirect:" + "sysadmin.html");
-            if (li.get(0).getName().equals("ROLE_SYSTEM_USER"))
-            	return new ModelAndView("redirect:" + "sysadmin.html");
+            if (li.get(0).getName().equals("ROLE_USER"))
+            	return new ModelAndView("redirect:" + "user.html");
         }
         return new ModelAndView("redirect:" + "index.html");
 	}

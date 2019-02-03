@@ -17,8 +17,7 @@
 				</div>
 				<div class="form-group">
 					<label for="description">Promotivni opis:</label>
-					<textarea class="form-control" name="description"
-						id="description"></textarea>
+					<textarea class="form-control" name="description" id="description"></textarea>
 				</div>
 
 				<div class="form-group">
@@ -39,7 +38,8 @@
 			</form>
 		</div>
 		<div class="col-md-4">
-			<div id="mapid" style="height: 200px"></div>
+			<div id="map" style="height: 450px"></div>
+
 		</div>
 	</div>
 
@@ -47,38 +47,41 @@
 
 	<div class="row row-eq-height bakground collapse show"
 		style="margin: auto; width: -webkit-fill-available;" id="prof2">
-		<form style="margin: auto; width: -webkit-fill-available;"
-			id="editForm" novalidate="novalidate">
-			<div class="form-group">
-				<label for="regemail">Email:</label> <input type="email" disabled
-					class="form-control" id="regemail" name="email">
+		<div class="col-md-12">
+			<form style="margin: auto; width: -webkit-fill-available;"
+				id="editForm" novalidate="novalidate">
+				<div class="form-group">
+					<label for="regemail">Email:</label> <input type="email" disabled
+						class="form-control" id="regemail" name="email">
 
-			</div>
-			<div class="form-group">
-				<label for="regusername">Korisničko ime:</label> <input disabled
-					type="text" class="form-control" name="username" id="regusername">
-			</div>
+				</div>
+				<div class="form-group">
+					<label for="regusername">Korisničko ime:</label> <input disabled
+						type="text" class="form-control" name="username" id="regusername">
+				</div>
 
-			<div class="form-group">
-				<label for="regfirstNname">Ime:</label> <input type="text"
-					class="form-control" name="firstName" id="regfirstName">
-			</div>
-			<div class="form-group">
-				<label for="reglastName">Prezime:</label> <input type="text"
-					class="form-control" name="lastName" id="reglastName">
-			</div>
-			<div class="form-group">
-				<label for="regphone">Telefon:</label> <input type="text"
-					class="form-control" name="phone" id="regphone">
-			</div>
-			<div class="form-group">
-				<label for="regcity">Grad:</label> <input type="text"
-					class="form-control" name="city" id="regcity">
-			</div>
-			<button type="button" id="editBtn" class="btn btn-primary">Izmeni</button>
-			<label style="display: none" id="btn-error" class="error"
-				for="editBtn"></label>
-		</form>
+				<div class="form-group">
+					<label for="regfirstNname">Ime:</label> <input type="text"
+						class="form-control" name="firstName" id="regfirstName">
+				</div>
+				<div class="form-group">
+					<label for="reglastName">Prezime:</label> <input type="text"
+						class="form-control" name="lastName" id="reglastName">
+				</div>
+				<div class="form-group">
+					<label for="regphone">Telefon:</label> <input type="text"
+						class="form-control" name="phone" id="regphone">
+				</div>
+				<div class="form-group">
+					<label for="regcity">Grad:</label> <input type="text"
+						class="form-control" name="city" id="regcity">
+				</div>
+				<div><button type="button" id="editBtn" class="btn btn-primary">Izmeni</button>
+				<label style="display: none" id="btn-error" class="error"
+					for="editBtn"></label></div>
+			</form>
+		</div>
+
 	</div>
 
 
@@ -124,6 +127,7 @@
 						</div>
 						<button type="button" id="addbo" class="btn btn-primary">Dodaj
 							filijalu</button>
+
 						<label style="display: none;" id="btn-error2" class="error"
 							for="addbo"></label>
 					</form>
@@ -149,7 +153,7 @@
 				<th>Tip</th>
 				<th>Broj vrata</th>
 				<th>Menjač</th>
-				
+
 				<th>Cena po danu</th>
 				<th></th>
 			</tr>
@@ -203,24 +207,25 @@
 								<option value="Pikap">Pikap</option>
 							</select>
 						</div>
-						
-						
+
+
 						<div class="form-group">
 							<label for="modalseats">Broj sedišta:</label> <input
-								type="number" min="2" max="6" value="5" class="form-control" id="modalseats"
-								name="modalseats">
+								type="number" min="2" max="6" value="5" class="form-control"
+								id="modalseats" name="modalseats">
 						</div>
 						<div class="form-group">
-							<label for="modaltransmission">Tip menjača:</label> <select class="form-control"
-								id="modaltransmission" name="modaltransmission">
+							<label for="modaltransmission">Tip menjača:</label> <select
+								class="form-control" id="modaltransmission"
+								name="modaltransmission">
 								<option value="Automatski">Automatski</option>
 								<option selected value="Manuelni">Manuelni</option>
 							</select>
 						</div>
 						<div class="form-group">
 							<label for="modalprice">Cena po danu (€):</label> <input
-								type="number" min="1" step="0.5" class="form-control" id="modalprice"
-								name="modalprice">
+								type="number" min="1" step="0.5" class="form-control"
+								id="modalprice" name="modalprice">
 						</div>
 						<button type="button" id="addbo" class="btn btn-primary">Dodaj
 							auto</button>
@@ -236,6 +241,26 @@
 
 	</div>
 
+
+	<div class="col-md-12" id="chPass">
+		<form id="passform">
+
+			<div class="form-group">
+				<label for="pass1">Lozinka:</label> <input type="password"
+					class="form-control" id="pass1" name="pass1">
+			</div>
+			<div class="form-group">
+				<label for="pass2">Ponovljena lozinka:</label> <input
+					type="password" class="form-control" id="pass2" name="pass2">
+			</div>
+		</form>
+		<div >
+			<button type="button" id="btnch" class="btn btn-primary">Promeni
+				lozinku</button>
+			<label style="display: none" id="ermsg" class="error"
+				for="btnch"></label>
+		</div>
+	</div>
 
 
 

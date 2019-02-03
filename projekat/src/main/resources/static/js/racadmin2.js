@@ -15,7 +15,7 @@ function myCarsRACAdmin() {
 
 					html = '<div row row-eq-height bakground >';
 					html += '<button class="btn btn-primary" id="newCar">Novi auto</button>';
-					html += '<div id="cars"  class="container" ></div>';
+					html += '<div id="cars"  class="" ></div>';
 					$('#items').append(html);
 					$('#newCar')
 							.click(

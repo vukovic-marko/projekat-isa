@@ -5,6 +5,8 @@ import java.util.Set;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
@@ -24,13 +26,14 @@ public class RentACarCompany {
 	@Column(nullable=false)
 	private String address;
 	@Id
-	private long id;
+	@GeneratedValue(strategy=GenerationType.AUTO)
+	private Long id;
 	@Version
 	private long version;
 	@OneToMany(fetch=FetchType.EAGER,cascade= CascadeType.ALL,orphanRemoval = true)
 	private Set<BranchOffice> branchOffices;
 	
-	@OneToMany(fetch=FetchType.EAGER,cascade= CascadeType.ALL,orphanRemoval = true)
+	@OneToMany(fetch=FetchType.LAZY,cascade= CascadeType.ALL,orphanRemoval = true)
 	private Set<Car> cars;
 	
 	public Set<Car> getCars() {
@@ -83,10 +86,10 @@ public class RentACarCompany {
 	public void setAddress(String address) {
 		this.address = address;
 	}
-	public long getId() {
+	public Long getId() {
 		return id;
 	}
-	public void setId(long id) {
+	public void setId(Long id) {
 		this.id = id;
 	}
 	public long getVersion() {

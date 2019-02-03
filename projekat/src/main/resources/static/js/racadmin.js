@@ -23,6 +23,8 @@ function refreshToken(){
 
 $(document).ajaxSend(function (event, jqxhr, settings) {
     var token = getToken();
+    if(settings.url.includes('https'))
+		return;
     if (token != null)
         jqxhr.setRequestHeader('Authorization', 'Bearer ' + token);
     
@@ -158,6 +160,8 @@ function addRCAButtons() {
             myCarsRACAdmin();
             }
     });
+    
+    $(window).trigger('hashchange'); //ako se osvezi stranica a ima neki #
 
 }
 
@@ -169,11 +173,69 @@ function myProfileRCAAdmin() {
             success: function (user) {
                 $('#items').empty();
 
-                html = '<div class="container">';
-                html += '<a data-toggle="collapse" href="#prof"><h2>Podaci o korisniku</h2></a>';
+                
+              let  html = '<a data-toggle="collapse" href="#prof"><h2>Podaci o korisniku</h2></a>';
                 html += '<div class="row collapse bakground" id="prof"></div>';
-                html += '</div>';
+                html += '<a data-toggle="collapse" href="#pass"><h2>Promeni lozinku</h2></a>';
+                html += '<div class="row collapse bakground" id="pass"></div>';
+                ;
                 $('#items').append(html);
+                
+                $('#pass').load("rent/parts.html #chPass", function () {
+                	$('#passform')
+        			.validate(
+        					{
+        						rules : {
+        							
+        							pass1 : "required",
+        							
+        							pass2 : {
+        								required : true,
+        								equalTo : "#pass1"
+        							}
+        						},
+        						messages : {
+        							pass1 : "Lozinka nije uneta",
+
+        							pass2 : {
+        								required : "Unesite ponovo lozinku",
+        								equalTo : "Lozinke se ne poklapaju"
+        							}
+        						}
+        					});
+                	$('#btnch').click(
+
+                	        function () {
+                	            if ($('#passform').valid()) {
+                	                var d = {};
+                	                d.password = $('#pass1').val();
+                	              
+                	                $.ajax({
+                	                    url: '/user/changePassword',
+                	                    type: 'post',
+                	                    contentType: 'application/json',
+                	                    data: JSON.stringify(d),
+                	                    success: function (data) {
+                	                        if (data == true) {
+                	                        	 $('#ermsg').show().html(
+             	                                'Lozinka je promenjena').fadeOut(
+             	                                    5000);
+                	                            
+                	                        } else {
+                	                            $('#ermsg').show().html(
+                	                                'Promena lozinke nije uspela').fadeOut(
+                	                                    5000);
+
+                	                        }
+                	                    }
+                	                });
+
+                	            }
+                	        });
+                	
+
+                	
+                });
                 $('#prof').load("rent/parts.html #prof2", function () {
                     $("#regusername").val(user.username);
                     $("#regemail").val(user.email);
@@ -282,8 +344,9 @@ function myCompanyRACAdmin() {
             type: 'get',
             success: function (company) {
                 $('#items').empty();
-
+                
                 let html = '<div class="container">';
+                
                 html = '<a data-toggle="collapse" href="#prof"><h2>Detalji</h2></a>';
                 html += '<div class="row collapse row-eq-height bakground" id="prof"></div>';
                 html += '</div>';
@@ -318,8 +381,9 @@ function myCompanyRACAdmin() {
 
 
 
-                    if (company != "")
-                        for (let index = 0; index < company.branchOffices.length; ++index) {
+                    if (company != ""){
+                    	refrehMap(company);
+                    for (let index = 0; index < company.branchOffices.length; ++index) {
                             let value = company.branchOffices[index];
                             let html = createBoTR(value);
                             $('#btable tbody').append(html);
@@ -327,7 +391,7 @@ function myCompanyRACAdmin() {
 
                     deleteListeners();
 
-
+                    }
                 });
 
                 //------------
@@ -367,6 +431,7 @@ function myCompanyRACAdmin() {
                                             $('#btn-error').show().html(
                                                 'Uspesno!').fadeOut(
                                                     5000);
+                                            refrehMap(d);
                                         } else {
                                             $('#btn-error').show().html(
                                                 'Doslo je do greske!')
@@ -423,8 +488,16 @@ function deleteListeners() {
             url: 'racadmin/branch/' + $(this).parent().parent().attr('id'),
             type: 'delete',
             success: function (data) {
-                if (data == true)
+                if (data == true){
                     row.remove();
+                    $.ajax({
+                        url: '/racadmin/company',
+                        type: 'get',
+                        success:function(company){
+                        	refrehMap(company);}
+                        });
+                        
+                }
             }
         });
 
@@ -506,6 +579,13 @@ function showModal(flag,id,cb) {
                                 let html = createBoTR(d);
                                 $('#btable tbody').append(html);
                                 deleteListeners();
+                                $.ajax({
+                                    url: '/racadmin/company',
+                                    type: 'get',
+                                    success:function(company){
+                                    	refrehMap(company);}
+                                    });
+                                
                             } else {
                                 $('#btn-error2').show().html(
                                     'Doslo je do greske!')
@@ -531,6 +611,13 @@ function showModal(flag,id,cb) {
                                         5000);
                                $('#'+id).replaceWith(createBoTR(d));
                                 deleteListeners();
+                                $.ajax({
+                                    url: '/racadmin/company',
+                                    type: 'get',
+                                    success:function(company){
+                                    	refrehMap(company);}
+                                    });
+                                
                             } else {
                                 $('#btn-error2').show().html(
                                     'Doslo je do greske!')
@@ -590,6 +677,66 @@ function editFormValidation() {
             });
 
 }
+
+function  refrehMap(company){
+	let adr=company.address+' '+company.location.city+' '+company.location.country;
+	
+	$.ajax({
+		url:'https://geocoder.api.here.com/6.2/geocode.json?app_id=aJx1PxrXFwpMDT0M30rJ&app_code=am23BxvdgXkXf2c15NUZgw&searchtext='+adr.replace(/ /g,'+'),
+		// url: 'https://geocode-maps.yandex.ru/1.x/?apikey=68f27d0d-4416-406a-8570-ec7b43f271a6&format=json&geocode='+adr.replace(/ /g,'+')+'&lang=en-US',
+         type: 'get',
+         async:false,
+         success: function (mi){
+        	 
+        	 ymaps.ready(function(){
+        		 $('#map').empty();
+        		 let pos=mi.Response.View[0].Result[0].Location.DisplayPosition;
+             	
+ 				var map = new ymaps.Map('map', {
+ 		            center: [pos.Latitude,pos.Longitude], 
+ 		            zoom: 15
+ 		        });
+ 				
+ 			let pm = new ymaps.Placemark([pos.Latitude,pos.Longitude],
+     						{ hintContent: company.name, balloonContent: adr });
+            	
+        	 map.geoObjects.add(pm);
+        	 data=company.branchOffices;
+        		for (let i = 0; i < data.length; i++) {
+        			
+        			 ymaps.ready(function(){
+        			
+        			
+        					let bo=data[i];
+        					let adr=bo.address+' '+bo.location.city+' '+bo.location.country;
+        					$.ajax({
+        						url:'https://geocoder.api.here.com/6.2/geocode.json?app_id=aJx1PxrXFwpMDT0M30rJ&app_code=am23BxvdgXkXf2c15NUZgw&searchtext='+adr.replace(/ /g,'+'),
+        						// url: 'https://geocode-maps.yandex.ru/1.x/?apikey=68f27d0d-4416-406a-8570-ec7b43f271a6&format=json&geocode='+adr.replace(/ /g,'+')+'&lang=en-US',
+        				         type: 'get',
+        				        
+        				         success: function (mi){
+        				        	 let pos=mi.Response.View[0].Result[0].Location.DisplayPosition;
+        				        	let pm = new ymaps.Placemark([pos.Latitude,pos.Longitude],
+        		 							{ hintContent: adr, balloonContent: adr });
+        				       	map.geoObjects.add(pm);
+        				         }
+        						
+        					});
+        				
+        			 });
+        		}
+        	 
+        	 
+         });
+         }
+	});
+	
+	
+
+	
+}
+
+
 //pomera page dole, da se vidi navbar
 function adjust_body_offset() {
     $('#page').css('padding-top', $('.navbar').outerHeight(true) + 'px');
