@@ -1,6 +1,7 @@
 package isa.projekat.service;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -9,10 +10,14 @@ import org.springframework.transaction.annotation.Transactional;
 
 import isa.projekat.model.Destination;
 import isa.projekat.model.Hotel;
+import isa.projekat.model.HotelAdditionalService;
 import isa.projekat.model.HotelRoom;
+import isa.projekat.model.HotelRoomPrice;
 import isa.projekat.model.User;
 import isa.projekat.repository.DestinationRepository;
+import isa.projekat.repository.HotelAdditionalServiceRepository;
 import isa.projekat.repository.HotelRepository;
+import isa.projekat.repository.HotelRoomPriceRepository;
 import isa.projekat.repository.HotelRoomRepository;
 import isa.projekat.repository.UserRepository;
 
@@ -28,7 +33,27 @@ public class HotelAdminService {
 	private HotelRoomRepository hotelRoomRepository;
 	
 	@Autowired
+	private HotelAdditionalServiceRepository hotelAdditionalServiceRepository;
+	
+	@Autowired
+	private HotelRoomPriceRepository hotelRoomPriceRepository;
+	
+	@Autowired
 	private DestinationRepository destinationRepository;
+	
+	@Transactional(readOnly=true, isolation=Isolation.READ_COMMITTED)
+	public List<HotelRoomPrice> getRoomPrices(Hotel h, HotelRoom r) {
+		Hotel hotel = hotelRepository.findOne(h.getId());
+		
+		List<HotelRoomPrice> ret = new ArrayList<HotelRoomPrice>();
+		
+		HotelRoom room = hotelRoomRepository.findByRoomNumberAndHotel(r.getRoomNumber(), hotel);
+		
+		//ret = (ArrayList<HotelRoomPrice>) room.getRoomPrices();
+		ret = hotelRoomPriceRepository.findAllByHotelRoom(room);
+		
+		return ret;
+	}
 	
 	@Transactional(readOnly=false, isolation=Isolation.READ_COMMITTED)
 	public Boolean addRoom(Hotel h, HotelRoom r) {
@@ -54,6 +79,23 @@ public class HotelAdminService {
 	}
 	
 	@Transactional(readOnly=false, isolation=Isolation.READ_COMMITTED)
+	public Boolean addService(Hotel h, HotelAdditionalService s) {
+		
+		Hotel hotel = hotelRepository.getOne(h.getId());
+		
+		hotel.getAdditionalServices().add(s);
+		
+		s.setHotel(hotel);
+		
+		hotelAdditionalServiceRepository.save(s);
+		
+		hotelRepository.save(hotel);
+		
+		return true;
+		
+	}
+	
+	@Transactional(readOnly=false, isolation=Isolation.READ_COMMITTED)
 	public Boolean editHotel(User u, Hotel h) {
 		if (u.getHotel() == null) {
 			Destination destination = destinationRepository.findByCountryAndCity(h.getDestination().getCountry(), h.getDestination().getCity());
@@ -71,6 +113,7 @@ public class HotelAdminService {
 			hotel.setDestination(destination);
 			hotel.setAdmin(u);
 			hotel.setRooms(new ArrayList<HotelRoom>());
+			hotel.setAdditionalServices(new ArrayList<HotelAdditionalService>());
 			hotelRepository.save(hotel);
 			
 			return true;

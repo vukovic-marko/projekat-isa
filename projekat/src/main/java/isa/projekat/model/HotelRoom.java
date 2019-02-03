@@ -1,5 +1,8 @@
 package isa.projekat.model;
 
+import java.util.List;
+
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -15,7 +18,7 @@ import javax.persistence.UniqueConstraint;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 @Entity
-@Table(name = "HOTEL_ROOMS", 
+@Table(name = "HOTEL_ROOM", 
 	uniqueConstraints = {@UniqueConstraint(columnNames = {"hotel_id", "roomNumber"})})
 public class HotelRoom {
 	
@@ -35,6 +38,11 @@ public class HotelRoom {
 	@ManyToOne(fetch = FetchType.EAGER)
 	@JoinColumn(name = "hotel_id", nullable = false)
 	private Hotel hotel;
+	
+	@OneToMany(cascade = CascadeType.ALL,
+			fetch = FetchType.LAZY,
+			mappedBy = "hotelRoom")
+	private List<HotelRoomPrice> roomPrices;
 
 	@JsonIgnore
 	public Hotel getHotel() {
@@ -75,5 +83,13 @@ public class HotelRoom {
 
 	public void setSize(Long size) {
 		this.size = size;
+	}
+
+	public List<HotelRoomPrice> getRoomPrices() {
+		return roomPrices;
+	}
+
+	public void setRoomPrices(List<HotelRoomPrice> roomPrices) {
+		this.roomPrices = roomPrices;
 	}
 }

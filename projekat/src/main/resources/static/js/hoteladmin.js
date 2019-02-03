@@ -1,6 +1,25 @@
+/*
+ * ovde su funckije za:
+ * 	uzimanje tokena
+ * 	preomenu sifre prilikom prvog logovanja
+ * 	dodavanje dugmica u nav bar
+ * 	prikaz i uredjivanje profila admina
+ *  dodavanje soba
+ */
+
 
 function getToken() {
 	return localStorage.getItem('jwtToken');
+}
+
+function refreshToken(){
+	$.ajax({
+		   url: '/user/refresh',
+           type: 'post',
+           success: function (data) {
+        	   localStorage.setItem('jwtToken',data.accessToken);
+        	   }
+	});
 }
 
 $(document).ajaxSend(function(event, jqxhr, settings) {
@@ -10,6 +29,7 @@ $(document).ajaxSend(function(event, jqxhr, settings) {
 });
 
 $(document).ready(function() {
+	setInterval(refreshToken, 60000); //svaki min
 	
 	$.ajax({
 		url: 'user/checkactivated',
@@ -206,10 +226,23 @@ function addHotelAdminButtons() {
 					+ ' <button id="editRoomsModalShow" href="#"'
 					+ '  class="btn btn-primary">Sobe</button> </li>');
 	
+	$('.hotel-admin-navbar .navbar-nav')
+	.append(
+			'<li class="nav-item">'
+					+ ' <button id="editAdditionalServicesModalShow" href="#"'
+					+ '  class="btn btn-primary">Dodatne Usluge</button> </li>');
+	
+	$('.hotel-admin-navbar #editAdditionalServicesModalShow').click(function() {
+		loadAdditionalServices();
+	});
+	
 	$('.hotel-admin-navbar #editRoomsModalShow').click(function() {
 		loadRooms();
 	});
 	
+	$('#addAdditionalServiceButton').click(function() {
+		addAdditionalService();
+	});	
 	
 	$('.hotel-admin-navbar #editModalShow').click(function() {
 		//console.log('klik');
@@ -292,11 +325,17 @@ function loadRooms() {
 				$('#editRoomsModal thead').append('<tr><th>Broj sobe</th><th>Sprat</th><th>Broj kreveta (velicina)</th></tr>');
 				$.each(data, function(i, v) {
 					$('#editRoomsModal tbody').append('<tr>' + 
-							'<td>' + v.roomNumber + '</td>' + 
+							'<td><a class=\"roomPriceModalShow\" href=\"#\" meta-roomnumber=\"' + v.roomNumber + '\">' + v.roomNumber + '</a></td>' + 
 							'<td>' + v.floorNumber + '</td>' + 
 							'<td>' + v.size + '</td></tr>');
 				});
 			}
+			
+			$('.roomPriceModalShow').click(function(e) {
+				var roomnumber = e.target.attributes[2].value;
+				
+				loadRoomPrices(roomnumber);
+			});
 			$('#editRoomsModal').modal('show');
 		},
 		statusCode: {

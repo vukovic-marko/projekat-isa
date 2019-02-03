@@ -37,6 +37,11 @@ public class Hotel {
             mappedBy = "hotel")
 	private List<HotelRoom> rooms;
 	
+	@OneToMany(cascade = CascadeType.ALL,
+			fetch = FetchType.LAZY,
+			mappedBy = "hotel")
+	private List<HotelAdditionalService> additionalServices;
+	
 //	@OneToOne(fetch = FetchType.EAGER, optional=false)
 //	@JoinColumn(name="address_id", nullable=false)
 	@ManyToOne(fetch = FetchType.EAGER, optional=false)
@@ -116,5 +121,13 @@ public class Hotel {
 
 	public void setRooms(List<HotelRoom> rooms) {
 		this.rooms = rooms;
+	}
+
+	public List<HotelAdditionalService> getAdditionalServices() {
+		return additionalServices;
+	}
+
+	public void setAdditionalServices(List<HotelAdditionalService> additionalServices) {
+		this.additionalServices = additionalServices;
 	}
 }

@@ -17,31 +17,20 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
-import isa.projekat.model.Destination;
 import isa.projekat.model.Hotel;
+import isa.projekat.model.HotelAdditionalService;
 import isa.projekat.model.HotelRoom;
+import isa.projekat.model.HotelRoomPrice;
 import isa.projekat.model.User;
-import isa.projekat.repository.DestinationRepository;
-import isa.projekat.repository.HotelRepository;
 import isa.projekat.security.TokenUtils;
 import isa.projekat.service.CustomUserDetailsService;
 import isa.projekat.service.HotelAdminService;
-import isa.projekat.service.UserService;
 
 @RestController
 @RequestMapping(value="/hoteladmin")
 public class HotelAdminController {
 	@Autowired
 	private TokenUtils tokenUtils;
-	
-	@Autowired
-	private UserService userService;
-	
-	@Autowired
-	private HotelRepository hotelRepository;
-	
-	@Autowired
-	private DestinationRepository destinationRepository;
 	
 	@Autowired
 	private CustomUserDetailsService userDetailsService;
@@ -72,6 +61,7 @@ public class HotelAdminController {
 	}
 	
 	@RequestMapping(value="/details", method=RequestMethod.GET)
+	@PreAuthorize("hasRole('ROLE_HOTEL_ADMIN')")
 	public Hotel getDetails(HttpServletRequest request) {		
 		String token = tokenUtils.getToken(request);
 		String username = this.tokenUtils.getUsernameFromToken(token);
@@ -84,8 +74,9 @@ public class HotelAdminController {
 	}
 	
 	@RequestMapping(value="/rooms", method=RequestMethod.GET)
+	@PreAuthorize("hasRole('ROLE_HOTEL_ADMIN')")
 	public @ResponseBody ResponseEntity<List<HotelRoom>> getRooms(HttpServletRequest request) {
-		System.out.println("pogodio");
+		//System.out.println("pogodio");
 		
 		String token = tokenUtils.getToken(request);
 		String username = this.tokenUtils.getUsernameFromToken(token);
@@ -101,7 +92,60 @@ public class HotelAdminController {
 		return new ResponseEntity<List<HotelRoom>>(lista, HttpStatus.OK);
 	}
 	
+	@RequestMapping(value="/room/prices", method = RequestMethod.POST,
+			consumes = MediaType.APPLICATION_JSON_VALUE)
+	@PreAuthorize("hasRole('ROLE_HOTEL_ADMIN')")
+	public @ResponseBody ResponseEntity<List<HotelRoomPrice>> getRoomPrices(@RequestBody HotelRoom r, HttpServletRequest request) {
+		String token = tokenUtils.getToken(request);
+		String username = this.tokenUtils.getUsernameFromToken(token);
+		User user = (User) this.userDetailsService.loadUserByUsername(username);
+		
+		List<HotelRoomPrice> lista = new ArrayList<HotelRoomPrice>();
+		
+		if (user.getHotel() == null)
+			return new ResponseEntity<List<HotelRoomPrice>>(lista, HttpStatus.BAD_REQUEST);
+		
+		lista = hotelAdminService.getRoomPrices(user.getHotel(), r);
+		
+		return new ResponseEntity<List<HotelRoomPrice>>(lista, HttpStatus.OK);
+	}
+	
+	@RequestMapping(value="/additionalservices", method=RequestMethod.GET)
+	@PreAuthorize("hasRole('ROLE_HOTEL_ADMIN')")
+	public @ResponseBody ResponseEntity<List<HotelAdditionalService>> getAdditionalServices(HttpServletRequest request) {
+		String token = tokenUtils.getToken(request);
+		String username = this.tokenUtils.getUsernameFromToken(token);
+		User user = (User) this.userDetailsService.loadUserByUsername(username);
+		
+		List<HotelAdditionalService> lista = new ArrayList<HotelAdditionalService>();
+		
+		if (user.getHotel() == null) 
+			return new ResponseEntity<List<HotelAdditionalService>>(lista, HttpStatus.BAD_REQUEST);
+		
+		lista = user.getHotel().getAdditionalServices();
+		
+		return new ResponseEntity<List<HotelAdditionalService>>(lista, HttpStatus.OK);
+	}
+	
+	@RequestMapping(value="/addservice", method=RequestMethod.POST, consumes=MediaType.APPLICATION_JSON_VALUE)
+	@PreAuthorize("hasRole('ROLE_HOTEL_ADMIN')")
+	public @ResponseBody ResponseEntity<Boolean> addService(@RequestBody HotelAdditionalService service, HttpServletRequest request) {
+		String token = tokenUtils.getToken(request);
+		String username = this.tokenUtils.getUsernameFromToken(token);
+		User user = (User) this.userDetailsService.loadUserByUsername(username);
+		
+		if (user.getHotel() == null || user.getHotel().getRooms() == null) {
+			return new ResponseEntity<Boolean>(false, HttpStatus.BAD_REQUEST);
+		}
+		
+		Boolean success = hotelAdminService.addService(user.getHotel(), service);
+		
+		return new ResponseEntity<Boolean>(success, HttpStatus.OK);
+	}
+	
+	
 	@RequestMapping(value="/addroom", method=RequestMethod.POST, consumes=MediaType.APPLICATION_JSON_VALUE)
+	@PreAuthorize("hasRole('ROLE_HOTEL_ADMIN')")
 	public @ResponseBody ResponseEntity<Boolean> addRoom(@RequestBody HotelRoom room, HttpServletRequest request) {
 		
 		System.out.println("-----------------");

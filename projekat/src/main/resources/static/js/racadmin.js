@@ -1,6 +1,17 @@
 function getToken() {
 	return localStorage.getItem('jwtToken');
 }
+
+function refreshToken(){
+	$.ajax({
+		   url: '/user/refresh',
+           type: 'post',
+           success: function (data) {
+        	   localStorage.setItem('jwtToken',data.accessToken);
+        	   }
+	});
+}
+
 $(document).ajaxSend(function(event, jqxhr, settings) {
 	var token = getToken();
 	if (token != null)
