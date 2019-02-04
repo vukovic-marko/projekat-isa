@@ -21,3 +21,4 @@ INSERT INTO USER_AUTHORITY (user_id, authority_id) VALUES (3, 5);
 INSERT INTO destination (id,city,country) VALUES(1,'novi sad','srbija');
 INSERT INTO rentacar_company (id,address,description,name,version,admin,location_id) VALUES (1,'kisacka 24','ad','ad',1,3,1);
 
+INSERT INTO car (id,brand,doors,model,name,price,seats,transmission,type,year,company_id) VALUES (1,'marka',2,'modle','naziv',345,5,'Manuelni','Hečbek',2000,1);

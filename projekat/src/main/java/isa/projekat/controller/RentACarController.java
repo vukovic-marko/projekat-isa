@@ -37,7 +37,7 @@ public class RentACarController {
 	//vraca automobile koji su dostupni
 	@PostMapping(value = "/freecars",produces = MediaType.APPLICATION_JSON_UTF8_VALUE,
 			consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
-	public Set<Car> getcars( @RequestBody Map<String,String> params) {
+	public List<Car> getcars( @RequestBody Map<String,String> params) {
 		return rentACarService.getFreeCars(params);
 	}
 	

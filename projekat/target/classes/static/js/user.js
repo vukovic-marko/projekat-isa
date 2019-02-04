@@ -144,7 +144,14 @@ function createRAC(data) {
 function showService(id){
 	let d={};
 	 $('#items').empty();
-	 $('#items').load("rent/parts.html #search",function(){
+	 $('#items').append('<div id="lol">'+
+		'<a data-toggle="collapse" href="#asd"><h2>Pretraga</h2></a>'+
+		'<div class="row aria-expanded= collapse show" id="asd"></div>'+
+
+	'</div>	<div id="cars" class="row row-eq-height"></div>');
+	 
+	 
+	 $('#asd').load("rent/parts.html #search",function(){
 		 
 		 search
 		 $.validator.addMethod('ge', function(value, element, param) {
@@ -174,6 +181,7 @@ function showService(id){
 						rules : {
 							enddate : {rq:true},
 							startdate : {rq:true},
+							passengers:"required",
 							maxprice : {
 								ge:"#minprice"
 							},
@@ -189,7 +197,8 @@ function showService(id){
 							},
 							minprice:{
 								le:" Minimalna cena mora biti manja ili jednaka maksimalnoj"
-							}
+							},
+							passengers:"Unesite broj putnika"
 						}
 					});
 		 
@@ -208,9 +217,12 @@ function showService(id){
 					 d={};
 					 d.id=id;
 					 d.startDate= $( "#startdate" ).val();
+					 d.endDate= $( "#enddate" ).val();
 					 d.type= $( "#cartype" ).val();
 					 d.minprice= $( "#minprice" ).val();
 					 d.maxprice= $( "#maxprice" ).val();
+					 d.passengers= $( "#passengers" ).val();
+					
 					 $.ajax({	
 					
 						url:'rentacar/freecars',
@@ -218,8 +230,8 @@ function showService(id){
 						contentType : 'application/json',
 						data:JSON.stringify(d),
 						success:function(data){
-							
-							}
+							showCars(data);
+						}
 							
 						
 						

@@ -1,7 +1,10 @@
 package isa.projekat.service;
 
 import java.sql.Date;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -9,11 +12,13 @@ import java.util.Set;
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 
+import org.springframework.beans.factory.BeanCreationException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import isa.projekat.model.BranchOffice;
 import isa.projekat.model.Car;
+import isa.projekat.model.CarType;
 import isa.projekat.model.Destination;
 import isa.projekat.model.RentACarCompany;
 import isa.projekat.model.User;
@@ -235,14 +240,39 @@ public class RentACarService {
 		return ret;
 	}
 
-	public Set<Car> getFreeCars(Map<String, String> params) {
+	@SuppressWarnings("deprecation")
+	public List<Car> getFreeCars(Map<String, String> params) {
 		// TODO Auto-generated method stub
 		String dateStart=params.get("startDate");
 		String[] parts=dateStart.split("/");
 		Date d=new Date(Integer.parseInt(parts[2]),Integer.parseInt(parts[1]), Integer.parseInt(parts[0]));
 		RentACarCompany c=rentACarCompanyRepository.getOne(Long.parseLong(params.get("id")));
-		
-		return carRepository.findFreeCars(c, d);
+		CarType type=CarType.getValue(params.get("type"));
+		String endDate=params.get("endDate");
+		String[] parts2=endDate.split("/");
+		int seats=Integer.parseInt(params.get("passengers"));
+        java.util.Date date1 = null;
+        java.util.Date date2 = null;
+
+        SimpleDateFormat dates = new SimpleDateFormat("dd/mm/yyyy");
+
+        
+        try {
+			date1 = dates.parse(parts[0]+'/'+parts[1]+'/'+parts[2]);
+			date2 = dates.parse(parts2[0]+'/'+parts2[1]+'/'+parts2[2]);
+		} catch (Exception e) {
+			
+			e.printStackTrace();
+			throw new BeanCreationException("exc",e);
+		}
+        
+        long difference = Math.abs(date1.getTime() - date2.getTime());
+        long differenceDates = difference / (24 * 60 * 60 * 1000);
+
+        List<Car> ret=carRepository.findFreeCars(c, d,type, seats);
+        for(Car ca: ret)
+        	ca.setTotalPrice(ca.getPrice()*(1+differenceDates));
+		return ret;
 	}
 
 }

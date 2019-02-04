@@ -185,6 +185,7 @@ public class RentACarAdminService {
 		if(comp==null)
 			return null;
 		comp.getCars().add(c);
+		c.setCompany(comp);
 		rentACarCompanyRepository.save(comp);
 		return c.getId();
 	}
