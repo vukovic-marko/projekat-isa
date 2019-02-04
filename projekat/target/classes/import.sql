@@ -12,7 +12,12 @@ INSERT INTO AUTHORITY (id, name) VALUES (3, 'ROLE_AIRPORT_ADMIN');
 INSERT INTO AUTHORITY (id, name) VALUES (4, 'ROLE_HOTEL_ADMIN');
 INSERT INTO AUTHORITY (id, name) VALUES (5, 'ROLE_RENT_A_CAR_ADMIN');
 
+
 INSERT INTO user (id, activated, city, email, first_name, last_name, password, phone, username,version) VALUES ('2', true, 's', 'admin@admin.admin', 's', 'ss', '$2a$10$BjZ8Ihb955YG9AiR4JvkL.k9WUR7/oGa8LIF6Q0ys7k.EVrbOtRqe', '123/456-78-99', 'milorad','1');
 INSERT INTO USER_AUTHORITY (user_id, authority_id) VALUES (1, 2);
 INSERT INTO USER_AUTHORITY (user_id, authority_id) VALUES (2, 1);
 INSERT INTO USER_AUTHORITY (user_id, authority_id) VALUES (3, 5);
+
+INSERT INTO destination (id,city,country) VALUES(1,'novi sad','srbija');
+INSERT INTO rentacar_company (id,address,description,name,version,admin,location_id) VALUES (1,'kisacka 24','ad','ad',1,3,1);
+

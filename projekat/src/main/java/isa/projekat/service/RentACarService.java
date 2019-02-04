@@ -1,7 +1,9 @@
 package isa.projekat.service;
 
+import java.sql.Date;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
@@ -231,6 +233,16 @@ public class RentACarService {
 		for(BranchOffice bo:c.getBranchOffices())
 			ret.add(bo.getLocation());
 		return ret;
+	}
+
+	public Set<Car> getFreeCars(Map<String, String> params) {
+		// TODO Auto-generated method stub
+		String dateStart=params.get("startDate");
+		String[] parts=dateStart.split("/");
+		Date d=new Date(Integer.parseInt(parts[2]),Integer.parseInt(parts[1]), Integer.parseInt(parts[0]));
+		RentACarCompany c=rentACarCompanyRepository.getOne(Long.parseLong(params.get("id")));
+		
+		return carRepository.findFreeCars(c, d);
 	}
 
 }

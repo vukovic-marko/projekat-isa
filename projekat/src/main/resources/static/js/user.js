@@ -145,6 +145,54 @@ function showService(id){
 	let d={};
 	 $('#items').empty();
 	 $('#items').load("rent/parts.html #search",function(){
+		 
+		 search
+		 $.validator.addMethod('ge', function(value, element, param) {
+			 if( $(param).val()=="")
+				 return true;
+			 if(this.optional(element) && value=="")
+				 return true;
+			 return parseFloat(value) >= parseFloat($(param).val());
+		}, 'poruka xD');
+		 $.validator.addMethod('le', function(value, element, param) {
+			 if( $(param).val()=="")
+				 return true;
+			 if(this.optional(element) && value=="")
+				 return true;
+			 return parseFloat(value) <= parseFloat($(param).val());
+		}, 'poruka xD');
+		 $.validator.addMethod('rq', function(value, element, param) {
+			 if( value=="")
+				 return false;
+			
+			return true;
+	
+		}, 'poruka xD');
+		 $('#searchForm')
+			.validate(
+					{
+						rules : {
+							enddate : {rq:true},
+							startdate : {rq:true},
+							maxprice : {
+								ge:"#minprice"
+							},
+							minprice : {
+								le:"#maxprice"
+							}
+						},
+						messages : {
+							enddate : "Datum vraćanja nije unet",
+							startdate : "Datum preuzimanja nije unet",
+							maxprice:{
+								ge:"Maksimalna cena mora biti veca ili jednaka minimalnoj"
+							},
+							minprice:{
+								le:" Minimalna cena mora biti manja ili jednaka maksimalnoj"
+							}
+						}
+					});
+		 
 		 let t=new Date().toISOString().split("T")[0];
 		 t=t.split('-');
 		 t=t[2]+'/'+t[1]+'/'+t[0];
@@ -154,7 +202,32 @@ function showService(id){
 		 $( "#startdate" ).datepicker();
 		 $( "#startdate" ).datepicker( "option", "dateFormat", "dd/mm/yy" );
 		 $( "#startdate" ).datepicker( "option", "minDate", t );
-	
+		 $('#searchBtn').click(function(){
+			 if( $('#searchForm').valid()){
+				  let d={};
+					 d={};
+					 d.id=id;
+					 d.startDate= $( "#startdate" ).val();
+					 d.type= $( "#cartype" ).val();
+					 d.minprice= $( "#minprice" ).val();
+					 d.maxprice= $( "#maxprice" ).val();
+					 $.ajax({	
+					
+						url:'rentacar/freecars',
+						type:'post',
+						contentType : 'application/json',
+						data:JSON.stringify(d),
+						success:function(data){
+							
+							}
+							
+						
+						
+						
+					});
+			 }
+			 
+		 });
 		 $.ajax({	
 				url:'rentacar/'+id+'/destinations',
 				type:'get',

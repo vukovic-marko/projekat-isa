@@ -1,15 +1,19 @@
 package isa.projekat.controller;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import isa.projekat.model.Car;
 import isa.projekat.model.Destination;
 import isa.projekat.model.RentACarCompany;
 import isa.projekat.service.RentACarService;
@@ -30,10 +34,17 @@ public class RentACarController {
 	public Set<Destination> delete( @PathVariable(value = "id") String id) {
 		return rentACarService.getDestinations(id);
 	}
+	//vraca automobile koji su dostupni
+	@PostMapping(value = "/freecars",produces = MediaType.APPLICATION_JSON_UTF8_VALUE,
+			consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
+	public Set<Car> getcars( @RequestBody Map<String,String> params) {
+		return rentACarService.getFreeCars(params);
+	}
 	
 	
-	/*//vraca automobile koji su dostupni
-	@GetMapping(value = "/cars/{id}",produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+	
+	/*
+	//@GetMapping(value = "/cars/{id}",produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
 	public boolean delete(HttpServletRequest request, @PathVariable(value = "id") String id) {
 		return rentACarAdminService.delete(request,id);
 	}

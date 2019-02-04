@@ -1,25 +1,27 @@
-/target/
-!.mvn/wrapper/maven-wrapper.jar
+*target*
+*.jar
+*.war
+*.ear
+*.class
 
-### STS ###
-.apt_generated
-.classpath
-.factorypath
+# eclipse specific git ignore
+*.pydevproject
 .project
-.settings
-.springBeans
-.sts4-cache
+.metadata
+bin/**
+tmp/**
+tmp/**/*
+*.tmp
+*.bak
+*.swp
+*~.nib
+local.properties
+.classpath
+.settings/
+.loadpath
 
-### IntelliJ IDEA ###
-.idea
-*.iws
-*.iml
-*.ipr
+# External tool builders
+.externalToolBuilders/
 
-### NetBeans ###
-/nbproject/private/
-/build/
-/nbbuild/
-/dist/
-/nbdist/
-/.nb-gradle/
+# Locally stored "Eclipse launch configurations"
+*.launch
