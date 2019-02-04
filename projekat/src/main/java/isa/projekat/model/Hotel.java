@@ -68,7 +68,6 @@ public class Hotel {
 	@Column(nullable = false)
 	private String promoDescription;
 	
-	@JsonIgnore
 	public Long getId() {
 		return id;
 	}

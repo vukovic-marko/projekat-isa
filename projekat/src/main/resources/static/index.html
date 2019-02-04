@@ -11,6 +11,10 @@
 <link type="text/css" rel="stylesheet" href="css/bootstrap.css">
 <link type="text/css" rel="stylesheet" href="css/screen.css">
 <script type="text/javascript" src="js/index.js"></script>
+<!-- skript fajl za hotele -->
+<script type="text/javascript" src="js/indexHotels.js"></script>
+<script src="https://api-maps.yandex.ru/2.1/?apikey=68f27d0d-4416-406a-8570-ec7b43f271a6&lang=en_US" type="text/javascript"></script>
+<!-- --------------------- -->
 <script type="text/javascript" src="js/jquery.validate.js"></script>
 <script>
 	
@@ -21,11 +25,23 @@
 	<nav
 		class="navbar navbar-default navbar-expand-sm bg-dark navbar-dark fixed-top logged-out-navbar">
 		<ul class="navbar-nav">
-
+			<li class="nav-item">
+			<!-- linkovi za prikaz hotela... -->
+			<button id="hotel" class="btn btn-primary">Hoteli</button>
+			<!--  -->
+			</li>
 		</ul>
 	</nav>
+	
+	<!-- prikaz hotela -->
+	<div class="container mt-4">
+		<br/><br/>
+		<div class=card-columns id="hotelcards">
+		
+		</div>
+	</div>
 
-	<div class="container-fluid mt-4"><h1><br/><br/><a href="/user/profile/">Profil korisnika</a></h1></div>
+<!-- 	<div class="container-fluid mt-4"><h1><br/><br/><a href="/user/profile/">Profil korisnika</a></h1></div> -->
 
 <!-- 	<div class="container mt-5 homepage-system-admin"> -->
 <!-- 		<ul class="list"> -->
