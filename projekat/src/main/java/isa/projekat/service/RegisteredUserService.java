@@ -70,9 +70,10 @@ public class RegisteredUserService {
 
     public List<User> getFriendOfUser(String username) {
 
-        List<User> friends = friendshipRepository.findFriendsAsReceiver(username);
-        friends.addAll(friendshipRepository.findFriendsAsRequester(username));
+      //  List<User> friends = friendshipRepository.findFriendsAsReceiver(username);
+        //friends.addAll(friendshipRepository.findFriendsAsRequester(username));
 
-        return friends;
+       // return friends;
+    	return null;
     }
 }

@@ -11,7 +11,7 @@
 function getToken() {
     return localStorage.getItem('jwtToken');
 }
-<<<<<<< HEAD
+
 function refreshToken(){
 	$.ajax({
 		   url: '/user/refresh',
@@ -29,23 +29,7 @@ $(document).ajaxSend(function (event, jqxhr, settings) {
     if (token != null)
         jqxhr.setRequestHeader('Authorization', 'Bearer ' + token);
     
-=======
 
-function refreshToken(){
-	$.ajax({
-		   url: '/user/refresh',
-           type: 'post',
-           success: function (data) {
-        	   localStorage.setItem('jwtToken',data.accessToken);
-        	   }
-	});
-}
-
-$(document).ajaxSend(function(event, jqxhr, settings) {
-	var token = getToken();
-	if (token != null)
-		jqxhr.setRequestHeader('Authorization', 'Bearer ' + token);
->>>>>>> refs/remotes/origin/hotels
 });
 
 $(document).ready(

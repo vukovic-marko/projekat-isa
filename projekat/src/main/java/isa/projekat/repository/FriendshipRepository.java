@@ -12,16 +12,16 @@ import java.util.List;
 @Repository
 public interface FriendshipRepository extends JpaRepository<Friendship, Long> {
 
-    @Query("select Friendship.friendRequester as frReq " +
+    /*@Query("select Friendship.friendRequester as frReq " +
             "from Friendship " +
             "where frReq.username = :username and " +
             "Friendship.active = true")
     List<User> findFriendsAsReceiver(@Param("username") String username);
 
-    @Query("select Friendship.friendReceiver as frRec " +
+   @Query("select Friendship.friendReceiver as frRec " +
             "from Friendship " +
             "where frRec.username = :username and " +
             "Friendship.active = true")
-    List<User> findFriendsAsRequester(@Param("username") String username);
+    List<User> findFriendsAsRequester(@Param("username") String username);*/
 }
 
