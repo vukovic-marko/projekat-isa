@@ -1,18 +1,5 @@
 $(document).ready(function () {
 
-
-    $.ajax({
-        url: 'user/authorities',
-        type: 'get',
-        success: function (data) {
-            if (data == null || data.size() == 0) {
-                $("#logging").append($("#unlogged"));
-            } else {
-                $("#logging").append($("#logged"));
-            }
-        }
-    });
-
     // Resetovanje formi za logovanje nakon zatvaranja
     $(document).on("hidden.bs.modal", "#loginModal", function (event) {
 

@@ -1,5 +1,9 @@
 package isa.projekat.config;
 
+import isa.projekat.security.TokenUtils;
+import isa.projekat.security.auth.RestAuthenticationEntryPoint;
+import isa.projekat.security.auth.TokenAuthenticationFilter;
+import isa.projekat.service.CustomUserDetailsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -15,11 +19,6 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
-
-import isa.projekat.security.TokenUtils;
-import isa.projekat.security.auth.RestAuthenticationEntryPoint;
-import isa.projekat.security.auth.TokenAuthenticationFilter;
-import isa.projekat.service.CustomUserDetailsService;
 
 
 @Configuration
@@ -72,11 +71,13 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 			.antMatchers("/hotel/**").permitAll()
 			
 			.antMatchers("/user/**").permitAll()
+
 			.antMatchers("/rentacar").permitAll()
 			// Svi mogu pristupiti rest servisima
 			.antMatchers("/api/**").permitAll()
 
 			// svaki zahtev mora biti autorizovan
+
 			.anyRequest().authenticated().and()
 			
 			// presretni svaki zahtev filterom
@@ -91,6 +92,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 		// TokenAuthenticationFilter ce ignorisati sve ispod navedene putanje
 		web.ignoring().antMatchers(HttpMethod.POST, "/auth/login");
 		web.ignoring().antMatchers(HttpMethod.GET, "/", "/webjars/**", "/*.html", "/favicon.ico", "/**/*.html","/**/*.png", "/**/*.css", "/**/*.js");
+
 	}
 
 }

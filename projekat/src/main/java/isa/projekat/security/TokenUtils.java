@@ -1,20 +1,18 @@
 package isa.projekat.security;
 
-import java.util.Date;
-
-import javax.servlet.http.HttpServletRequest;
-
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.SignatureAlgorithm;
+import isa.projekat.common.TimeProvider;
+import isa.projekat.model.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mobile.device.Device;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
-import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
-import isa.projekat.common.TimeProvider;
-import isa.projekat.model.User;
+import javax.servlet.http.HttpServletRequest;
+import java.util.Date;
 
 @Component
 public class TokenUtils {
@@ -25,7 +23,7 @@ public class TokenUtils {
 	@Value("somesecret")
 	public String SECRET;
 
-	@Value("300")
+    @Value("3000")
 	private int EXPIRES_IN;
 
 	@Value("600")

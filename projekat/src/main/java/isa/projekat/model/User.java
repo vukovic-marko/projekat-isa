@@ -2,6 +2,7 @@ package isa.projekat.model;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Set;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -13,6 +14,7 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
+import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.persistence.Version;
@@ -20,9 +22,10 @@ import javax.persistence.Version;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonProperty.Access;
+
+import isa.projekat.model.RegisteredUser.Friendship;
 
 @Entity
 @Table(name = "USER")
@@ -89,6 +92,24 @@ public class User implements UserDetails {
 	public void setHotel(Hotel hotel) {
 		this.hotel = hotel;
 	}
+	
+	
+	
+	//------------------------------------
+	//AIRPORT ADMIN
+
+
+	//-----------------------------------
+
+	//------------------------------------
+	//REGISTERED USER
+	@OneToMany(mappedBy = "friendRequester")
+	private Set<Friendship> requestedFriends;
+
+	@OneToMany(mappedBy = "friendReceiver")
+	private Set<Friendship> receivedFriends;
+	
+	
 	
 	
 	public User() {

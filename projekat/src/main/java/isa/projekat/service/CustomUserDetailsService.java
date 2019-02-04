@@ -1,5 +1,6 @@
 package isa.projekat.service;
 
+import isa.projekat.model.User;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,11 +13,6 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-
-import isa.projekat.model.User;
-
-import javax.validation.Valid;
-import java.util.Map;
 
 @Service
 public class CustomUserDetailsService implements UserDetailsService {
@@ -70,19 +66,5 @@ public class CustomUserDetailsService implements UserDetailsService {
 
 	}
 
-	/**
-	 * Cuvaju se izmjenjeni podaci korisnika
-	 * @param user
-	 */
-	public boolean changeUserInfo(@Valid User user) {
 
-		boolean userExists = userRepository.exists(user.getId());
-
-		if(userExists) {
-
-			userRepository.save(user);
-		}
-
-		return userExists;
-	}
 }
