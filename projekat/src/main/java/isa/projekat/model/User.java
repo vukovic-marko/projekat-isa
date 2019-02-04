@@ -1,26 +1,14 @@
 package isa.projekat.model;
 
-import java.util.Collection;
-import java.util.List;
-
-import javax.persistence.CascadeType;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.JoinTable;
-import javax.persistence.ManyToMany;
-import javax.persistence.OneToOne;
-import javax.persistence.Table;
-import javax.persistence.Version;
-
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import isa.projekat.model.RegisteredUser.Friendship;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
+import javax.persistence.*;
+import java.util.Collection;
+import java.util.List;
+import java.util.Set;
 
 @Entity
 @Table(name = "USER")
@@ -30,6 +18,24 @@ public class User implements UserDetails {
 	 * 
 	 */
 	private static final long serialVersionUID = 6882427434891133050L;
+
+
+	//------------------------------------
+	//AIRPORT ADMIN
+
+
+	//-----------------------------------
+
+	//------------------------------------
+	//REGISTERED USER
+	@OneToMany(mappedBy = "friendRequester")
+	private Set<Friendship> requestedFriends;
+
+	@OneToMany(mappedBy = "friendReceiver")
+	private Set<Friendship> receivedFriends;
+	//-----------------------------------
+
+
 	//------------------------------------
 	//RENTA A CAR ADMINISTRATOR
 	@OneToOne

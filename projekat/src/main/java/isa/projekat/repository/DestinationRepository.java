@@ -1,13 +1,14 @@
 package isa.projekat.repository;
 
-import java.util.List;
-
+import isa.projekat.model.Destination;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
-import isa.projekat.model.Destination;
+import java.util.List;
 @Repository
 public interface DestinationRepository extends JpaRepository<Destination, Long>{
-	public List<Destination> findByCountry(String country);
-	public Destination findByCountryAndCity(String country, String city);
+    List<Destination> findByCountry(String country);
+
+    Destination findByCountryAndCity(String country, String city);
+
 }

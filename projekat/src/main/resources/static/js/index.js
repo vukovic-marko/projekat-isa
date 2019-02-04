@@ -7,8 +7,6 @@ $(document).ajaxSend(function(event, jqxhr, settings) {
 		jqxhr.setRequestHeader('Authorization', 'Bearer ' + token);
 });
 
-
-
 $(document).ready(
 
 		function() {
@@ -17,7 +15,7 @@ $(document).ready(
 				return this.optional(element)
 						|| /([0-9]{3,3}\/[0-9]{3,3}-[0-9]{2,2}-[0-9]{2,2})$/
 								.test(value);
-			}
+			};
 
 			fillButtons();
 		});
@@ -135,7 +133,7 @@ function fillButtons() {
 						if (flag == 0)
 							string = "Neispravno korisničko ime i/ili lozinka";
 						else
-							string = "Korisnički nalog nije aktiviran"
+							string = "Korisnički nalog nije aktiviran";
 						$('#btn-error').show().html(string).fadeOut(5000);
 					}
 				}

@@ -1,25 +1,47 @@
 package isa.projekat.controller.UserProfileControllers;
 
 
+import isa.projekat.model.Forms.RegisteredUserFormData;
 import isa.projekat.model.User;
+import isa.projekat.service.RegisteredUserService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.validation.annotation.Validated;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 @RestController
-@RequestMapping(value = "/api/user")
+@RequestMapping(value = "/api/registeredusers")
 public class UserProfileController {
+
+    @Autowired
+    private RegisteredUserService userService;
+
+    @Autowired
+    private AuthenticationManager authenticationManager;
+    private ObjectError error;
+
+    @GetMapping(value = "/", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<List<User>> getAllUsers() {
+
+        //getAllUsers
+
+        return new ResponseEntity<>(new ArrayList<>(), HttpStatus.OK);
+    }
 
     /**
      * @return username svakog od prijatelja
      */
-    @GetMapping(value = "/{username}/friends/all")
+    @GetMapping(value = "/{username}/friends")
     public ResponseEntity<List<String>> getFriends(@PathVariable("username") String username) {
 
         ArrayList<String> list = new ArrayList<String>();
@@ -40,41 +62,48 @@ public class UserProfileController {
         return booleanResponseEntity;
     }
 
-    @GetMapping(value = "/{username}/profileinfo")
+    @GetMapping(value = "/{username}", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Map<String, String>> getProfileInfo(@PathVariable("username") String username) {
 
         // authenticate username with token
         // get user from data source
         // populate map with entries
 
-        HashMap<String,String> map = new HashMap<>();
-
-        map.put("email", "a@a.com");
-        map.put("firstName", "aname");
-        map.put("lastName", "alastname");
-        map.put("city", "acity");
-        map.put("phone", "123/12-12-12");
-
-        ResponseEntity<Map<String, String>> mapResponseEntity = new ResponseEntity<Map<String, String>>(map, HttpStatus.OK);
-
-        return mapResponseEntity;
+        return new ResponseEntity<>(new HashMap<String, String>(), HttpStatus.OK);
     }
 
-    @PatchMapping(value = "/{username}/profileinfo")
-    public ResponseEntity<Boolean> updateProfileInfo(@PathVariable("username") String username, @ModelAttribute User user) {
+    @PatchMapping(value = "/{username}/edit",
+            consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE,
+            produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<Object> updateProfileInfo(@PathVariable("username") String username,
+                                                    @ModelAttribute("user") @Valid RegisteredUserFormData user,
+                                                    BindingResult bindingResult) {
 
-        // get user from data source
-        // authenticate with token
-        // change property values of user
-        // save data
+        ArrayList<String> messages = new ArrayList<>();
+        if (!bindingResult.hasErrors()) {
 
-        if(user.getFirstName() != null) {
+            boolean success = userService.changeUserInfo(user);
 
-            return new ResponseEntity<Boolean>(Boolean.TRUE, HttpStatus.OK);
+            if (success) {
+
+                messages.add("Uspješno izmjenjen korisnik " + username);
+                return new ResponseEntity<Object>(messages, HttpStatus.OK);
+            } else {
+
+                messages.add("Neodgovarajuće korisničko ime!");
+                return new ResponseEntity<Object>(messages, HttpStatus.BAD_REQUEST);
+            }
+        } else {
+
+            List<ObjectError> listaGresaka = bindingResult.getAllErrors();
+
+            for (ObjectError error : listaGresaka) {
+
+                String msg = error.getDefaultMessage();
+                messages.add(msg);
+            }
+
+            return new ResponseEntity<Object>(messages, HttpStatus.BAD_REQUEST);
         }
-
-        ResponseEntity<Boolean> booleanResponseEntity = new ResponseEntity<Boolean>(Boolean.FALSE, HttpStatus.BAD_REQUEST);
-
-        return booleanResponseEntity;
     }
 }
