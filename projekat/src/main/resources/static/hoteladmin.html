@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html>
+<head>
+
+
+<meta http-equiv='Content-Type' content='text/html; charset=UTF-8' />
+<title>ISA projekat</title>
+<script type="text/javascript" src="js/jquery-3.3.1.min.js"></script>
+<script type="text/javascript" src="js/bootstrap.js"></script>
+<link type="text/css" rel="stylesheet" href="css/styles.css">
+<link type="text/css" rel="stylesheet" href="css/bootstrap.css">
+<link type="text/css" rel="stylesheet" href="css/screen.css">
+<script type="text/javascript" src="js/hoteladmin.js"></script>
+<script type="text/javascript" src="js/hoteladmin1.js"></script>
+<script type="text/javascript" src="js/jquery.validate.js"></script>
+<script>
+	
+</script>
+</head>
+<body style="background-color: #e9ebee;">
+
+	<nav
+		class="navbar navbar-default navbar-expand-sm bg-dark navbar-dark fixed-top hotel-admin-navbar">
+		<ul class="navbar-nav">
+
+		</ul>
+	</nav>
+	
+	<!-- Modal za rad sa sobama -->
+	<div class="modal fade" id="editRoomsModal">
+		<div class="modal-dialog modal-md">
+			<div class="modal-content">
+
+				<div class="modal-header">
+					<h4 class="modal-title" id="editRoomsModalTitle">Sobe</h4>
+					<button type="button" class="close" data-dismiss="modal">×</button>
+				</div>
+				<div class="modal-body">
+					<table class="table table-striped table-sm">
+						<thead class="text-center"></thead>
+						<tbody class="text-center"></tbody>
+					</table>
+					<hr />
+					<form id="addRoomForm">
+						<div class="form-row">
+								<div class="form-group col">
+									<input
+										type="text" class="form-control" id="addroomnumber"
+										name="roomnumber" placeholder="Broj sobe">
+
+								</div>
+								<div class="form-group col">
+									<input type="number" placeholder="Sprat" min="0"
+										class="form-control" name="roomfloor" id="addroomfloor">
+								</div>
+								<div class="form-group col">
+									 <input type="number" min="1" placeholder="Broj kreveta"
+										class="form-control" name="size" id="addsize">
+								</div>
+						</div>
+						<div class="form-row text-center">
+							<div class="col">
+								<button type="button" id="addRoomButton" class="btn btn-primary">Dodaj sobu</button>
+							</div>
+						</div>
+					</form>
+				</div>
+
+
+				<div class="modal-footer">
+					<button type="button" class="btn btn-danger" data-dismiss="modal">Zatvori</button>
+				</div>
+
+			</div>
+		</div>
+	</div>
+	
+	<!-- Modal za rad sa cenama soba -->
+	<div class="modal fade" id="addRoomPriceModal">
+		<div class="modal-dialog modal-md">
+			<div class="modal-content">
+
+				<div class="modal-header">
+					<h4 class="modal-title"></h4>
+					<button type="button" class="close closeAddPriceModal" >×</button>
+				</div>
+				<div class="modal-body">
+					<table class="table table-striped table-sm">
+						<thead class="text-center"></thead>
+						<tbody class="text-center"></tbody>
+					</table>
+					<hr />
+					<form id="addRoomPriceForm">
+						<div class="form-row">
+							<div class="col">
+								<label for="addstartdate">Datum pocetka:</label>
+							</div>
+							<div class="col">
+								<label for="addenddate">Datum kraja:</label>
+							</div>
+							<div class="col">
+								<label for="addprice">Cena:</label>
+							</div>
+						</div>
+						<div class="form-row">
+								<div class="form-group col">
+									<input
+										type="date" class="form-control" id="addstartdate"
+										name="startdate" >
+
+								</div>
+								<div class="form-group col">
+									<input type="date" placeholder="Kraj" min="0"
+										class="form-control" name="enddate" id="addenddate">
+								</div>
+								<div class="form-group col">
+									 <input type="number" min="0.01" step="0.01" 
+										class="form-control" name="price" id="addprice">
+								</div>
+						</div>
+						<div class="form-row text-center">
+							<div class="col">
+								<button type="button" id="addRoomPriceButton" class="btn btn-primary">Dodaj cenu</button>
+							</div>
+						</div>
+					</form>
+				</div>
+
+
+				<div class="modal-footer">
+					<button type="button" class="btn btn-danger closeAddPriceModal">Zatvori</button>
+				</div>
+
+			</div>
+		</div>
+	</div>
+	
+	
+	
+	
+	
+
+	<!-- Modal za dodatnim uslugama sa sobama -->
+	<div class="modal fade" id="editAdditionalServicesModal">
+		<div class="modal-dialog modal-md">
+			<div class="modal-content">
+
+				<div class="modal-header">
+					<h4 class="modal-title" id="editAdditionalServicesModalTitle">Dodatne usluge</h4>
+					<button type="button" class="close" data-dismiss="modal">×</button>
+				</div>
+				<div class="modal-body">
+					<table class="table table-striped table-sm">
+						<thead class="text-center"></thead>
+						<tbody class="text-center"></tbody>
+					</table>
+					<hr />
+					<form id="addAdditionalServiceForm">
+						<div class="form-row">
+								<div class="form-group col">
+									<input
+										type="text" class="form-control" id="addservicename"
+										name="servicename" placeholder="Naziv usluge">
+
+								</div>
+								<div class="form-group col">
+									<input type="number" placeholder="Cena usluge" min="0" step="0.01"
+										class="form-control" name="serviceprice" id="addserviceprice">
+								</div>
+						</div>
+						<div class="form-row text-center">
+							<div class="col">
+								<button type="button" id="addAdditionalServiceButton" class="btn btn-primary">Dodaj uslugu</button>
+							</div>
+						</div>
+					</form>
+				</div>
+
+
+				<div class="modal-footer">
+					<button type="button" class="btn btn-danger" data-dismiss="modal">Zatvori</button>
+				</div>
+
+			</div>
+		</div>
+	</div>
+
+
+
+	<!-- Modal za izmenu informacija o hotelu -->
+	<div class="modal fade" id="editProfileModal">
+		<div class="modal-dialog modal-lg">
+			<div class="modal-content">
+
+				<div class="modal-header">
+					<h4 class="modal-title">Izmeni profil</h4>
+					<button type="button" class="close" data-dismiss="modal">×</button>
+				</div>
+				<div class="modal-body">
+					<form id="editProfileForm">
+						<div class="form-group">
+							<label for="editname">Naziv hotela:</label> <input type="text"
+								class="form-control" id="editname" name="name">
+
+						</div>
+						<div class="form-group">
+							<label for="editaddress">Adresa:</label> <input
+								type="text" class="form-control" name="address"
+								id="editaddress">
+						</div>
+						<div class="form-group">
+							<label for="editcity">Grad:</label> <input
+								type="text" class="form-control" name="city"
+								id="editcity">
+						</div>
+						<div class="form-group">
+							<label for="editcountry">Drzava:</label> <input
+								type="text" class="form-control" name="country"
+								id="editcountry">
+						</div>
+						<div class="form-group">
+							<label for="editpromodescription">Promotivni opis:</label> <input type="text"
+								class="form-control" id="editpromodescription" name="promodescription">
+						</div>
+					</form>
+				</div>
+
+				<div class="modal-footer">
+					<button type="button" id="editProfileButton" class="btn btn-primary">Izmeni</button>
+					<label style="display: none" id="regbtn-error" class="error"
+						for="register"></label>
+					<button type="button" class="btn btn-danger" data-dismiss="modal">Zatvori</button>
+				</div>
+
+			</div>
+		</div>
+	</div>
+		
+	<div class="modal fade" id="changePasswordModal">
+		<div class="modal-dialog modal-md">
+			<div class="modal-content">
+
+				<div class="modal-header">
+					<h4 class="modal-title">Obavezna promena lozinke</h4>
+<!-- 					<button type="button" aria-hidden="true" class="close" data-dismiss="modal">×</button> -->
+				</div>
+				<div class="modal-body">
+					<form id="changePasswordForm">
+						
+						<div class="form-group">
+							<label for="regpassword">Lozinka:</label> <input type="password"
+								class="form-control" id="changepassword" name="changepassword">
+						</div>
+						<div class="form-group">
+							<label for="regpassword2">Ponovljena lozinka:</label> <input
+								type="password" class="form-control" id="changeregpassword2"
+								name="changepassword2">
+						</div>
+					</form>
+				</div>
+
+				<div class="modal-footer">
+					<button type="button" id="changePasswordButton" class="btn btn-primary">Promeni
+					lozinku </button>
+					<label style="display: none" id="regbtn-error" class="error"
+						for="register"></label>
+<!-- 					<button type="button" class="btn btn-danger" data-dismiss="modal">Zatvori</button> -->
+				</div>
+
+			</div>
+		</div>
+	</div>
+
+</body>
+</html>

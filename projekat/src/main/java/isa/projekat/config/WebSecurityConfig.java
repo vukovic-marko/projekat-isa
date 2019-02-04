@@ -68,6 +68,9 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 			
 			// svim korisnicima dopusti da pristupe putanjama /auth/** i /h2-console/**
 			.authorizeRequests()
+			// dozvoljava pristum putanji /hotel/** svima
+			.antMatchers("/hotel/**").permitAll()
+			
 			.antMatchers("/user/**").permitAll()
 			.antMatchers("/rentacar").permitAll()
 			// Svi mogu pristupiti rest servisima

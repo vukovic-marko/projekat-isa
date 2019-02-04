@@ -3,6 +3,8 @@ function getToken() {
 }
 $(document).ajaxSend(function(event, jqxhr, settings) {
 	var token = getToken();
+	if(settings.url.includes('https'))
+		return;
 	if (token != null)
 		jqxhr.setRequestHeader('Authorization', 'Bearer ' + token);
 });
@@ -29,6 +31,8 @@ $(document).ready(
 			}
 
 			fillButtons();
+			
+			next();
 		});
 
 $(window).resize(adjust_body_offset);
