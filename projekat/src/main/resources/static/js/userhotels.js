@@ -3,7 +3,7 @@ function showHotel() {
 	$('#hotel').click(function() {
 		addServicesModal();
 		
-		
+		$('#items').empty();
 		
 		$('#items').append("<div class=\"card\">\r\n" + 
 				"  <div class=\"card-header\">\r\n" + 
@@ -23,6 +23,7 @@ function showHotel() {
 			url: '/hotel/all',
 			type: 'get',
 			success: function(data) {
+				console.log(data);
 				$('#hotelcards').empty();
 				$.each(data, function(i, v) {
 					c = createHotel(v);
