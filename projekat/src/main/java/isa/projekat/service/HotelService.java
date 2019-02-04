@@ -8,6 +8,7 @@ import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
 
 import isa.projekat.model.Hotel;
+import isa.projekat.model.HotelAdditionalService;
 import isa.projekat.repository.HotelRepository;
 
 @Service
@@ -19,5 +20,13 @@ public class HotelService {
 	@Transactional(readOnly=true, isolation=Isolation.READ_COMMITTED)
 	public List<Hotel> getHotels() {
 		return hotelRepository.findAll();
+	}
+	
+	//dovavlja dodatne usluge koje hotel nudi
+	@Transactional(readOnly=true, isolation=Isolation.READ_COMMITTED)
+	public List<HotelAdditionalService> getAdditionalServices(Long id) {
+		Hotel hotel = hotelRepository.findOne(id);
+		
+		return hotel.getAdditionalServices();
 	}
 }
