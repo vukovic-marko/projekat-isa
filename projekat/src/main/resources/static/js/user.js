@@ -40,6 +40,13 @@ function() {
 	        location.hash = 'rentacar';
 	    });
 	    
+	    
+	    // DODAT PRIKAZ HOTELA -------
+	    $('#hotel').click(function() {
+	    	location.hash = 'hotel';
+	    });
+	    // ---------------------------
+	    
 	    $(window).on('hashchange', function () {
 	        // alert('Changed');
 	        if (location.hash === '#rentacar') {
@@ -47,7 +54,13 @@ function() {
 	        } else if (location.hash.includes("racservice")) {
 	            let t=location.hash.split('=');
 	        	showService(t[1]);
+	        } 
+	        
+	        // dodat prikaz hotela ---------------------
+	        else if (location.hash.includes("hotel")) {
+	        	showHotel();
 	        }
+	        // -----------------------------------------
 	    });
 	
 	    
