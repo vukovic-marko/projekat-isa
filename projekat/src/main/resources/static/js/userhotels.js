@@ -58,6 +58,7 @@ function createHotel(data) {
 		      "<p class=\"card-text\">" + data.address + ", " + data.destination.city + ", " + data.destination.country + "</p>" +
 		      "<p class=\"card-text\">" + data.promoDescription + "</p>" +
 		      "<p class=\"card-text\"><a class=\"hotelServiceModalLink\" meta-id=\"" + data.id + "\" data-toggle=\"modal\" href=\"#hotelServiceModal\">Dodatne usluge</a></p>" +
+		      "<p class=\"card-text\"><a role=\"button\" class=\"btn btn-primary hotelReservationLink\" meta-id=\"" + data.id + "\" href=\"#\">Rezervisi</a></p>" +
 		      //"<p class=\"card-text\"><small class=\"text-muted\">Last updated 3 mins ago</small></p>" +
 		      //'<div  class="card-footer"><div class="map" id="map'+data.id+'" style="height: 250px"></div>' +
 		      "<div class=\"card-footer\"><div class=\"map\" id=\"map"+data.id+"\" style=\"height: 250px\"></div>" +

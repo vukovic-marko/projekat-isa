@@ -75,7 +75,7 @@ function loadRoomPrices(roomnumber) {
 	$('#addRoomPriceModal .modal-title').empty();
 	$('#addRoomPriceModal .modal-title').append(roomnumber);
 	
-	$('#addRoomPriceForm').trigger("reset");	
+	//$('#addRoomPriceForm').trigger("reset");	
 	
 	var room = {};
 	room.roomNumber = roomnumber;
@@ -117,11 +117,17 @@ function loadRoomPrices(roomnumber) {
 		$('#editRoomsModal').modal('show');
 	});
 	
-	$(document).on("click", "#addRoomPriceButton",function() {
+	$(".addRoomPriceButton").once("click", function() {
 		var roomnumber = $('#addRoomPriceModal .modal-title').text();
 		addRoomPriceButton(roomnumber);
 	});
 }
+
+$.fn.once = function(a, b) {
+    return this.each(function() {
+        $(this).off(a).on(a,b);
+    });
+};
 
 function addRoomPriceButton(roomnumber) {
 	$.validator.methods.dateCheck = function(value, element) {
@@ -173,7 +179,7 @@ function addRoomPriceButton(roomnumber) {
 		price.endDate = $('#addenddate').val();
 		price.price = $('#addprice').val();
 		
-		$('#addRoomPriceForm').trigger("reset");
+		//$('#addRoomPriceForm').trigger("reset");
 		
 		$.ajax({
 			url: url,
