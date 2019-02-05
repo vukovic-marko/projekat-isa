@@ -93,6 +93,24 @@ public class User implements UserDetails {
 		this.hotel = hotel;
 	}
 	
+	//-----------------------------------
+	// Rezervacija hotela
+	
+	@OneToMany(cascade = CascadeType.ALL,
+			fetch = FetchType.LAZY,
+            mappedBy = "user")
+	private List<HotelReservation> hotelReservations;
+	
+	public List<HotelReservation> getHotelReservations() {
+		return hotelReservations;
+	}
+
+	public void setHotelReservations(List<HotelReservation> hotelReservations) {
+		this.hotelReservations = hotelReservations;
+	}
+	
+	//-----------------------------------
+	
 	
 	
 	//------------------------------------

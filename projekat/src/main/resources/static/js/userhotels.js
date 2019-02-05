@@ -65,6 +65,29 @@ function createHotel(data) {
 		    "</div>" +
 		  "</div>";
 	
+	$('.hotelReservationLink').once('click', function(e){
+		let hotelId = e.target.attributes[2].value;
+		
+		drawReservationModal();
+		
+		$('#hotelReservationModal').modal('show');
+		$('.showAvailableRoomsButton').once('click', function(e){
+			let size = $('#ressize').val();
+			let date = [];
+			date.push($('#resDateOfArrival').val());
+			date.push($('#resDateOfDeparture').val());
+			$.ajax({
+				url: '/hotel/showavailablerooms/' + hotelId + '/' + size,
+				type: 'post',
+				data: JSON.stringify(date),
+				contentType: 'application/json',
+				success: function(e) {
+					console.log(e);
+				}
+			});
+		});
+	});
+	
 	
 	let ret={};
 	ret.html=html;
@@ -140,5 +163,52 @@ function loadHotel(id) {
 			$('#hotelServiceModal').modal('show');
 		}
 	});
+}
+
+function drawReservationModal() {
+	if ($('#hotelReservationModal').length == 0) {
+		$('body').append("<div class=\"modal fade\" id=\"hotelReservationModal\">\r\n" + 
+				"		<div class=\"modal-dialog modal-md\">\r\n" + 
+				"			<div class=\"modal-content\">\r\n" + 
+				"				<div class=\"modal-header\">\r\n" + 
+				"					<h4 class=\"modal-title\" id=\"hotelReservationModalTitle\">Rezervisi</h4>\r\n" + 
+				"					<button type=\"button\" class=\"close\" data-dismiss=\"modal\">×</button>\r\n" + 
+				"				</div>\r\n" + 
+				"				<div class=\"modal-body\">\r\n" + 
+				"					<div class=\"form-row\">\r\n" + 
+				"						<div class=\"form-group col\">\r\n" + 
+				"							<input\r\n" + 
+				"								type=\"date\" class=\"form-control\" id=\"resDateOfArrival\"\r\n" + 
+				"								name=\"dateOfArrival\" >\r\n" + 
+				"						</div>\r\n" + 
+				"						<div class=\"form-group col col-md-auto\">\r\n" + 
+				"							<label>-</label>\r\n" + 
+				"						</div>\r\n" + 
+				"						<div class=\"form-group col\">\r\n" + 
+				"							<input type=\"date\" \r\n" + 
+				"								class=\"form-control\" name=\"dateOfDeparture\" id=\"resDateOfDeparture\">\r\n" + 
+				"						</div>\r\n" + 
+				"					</div>" +
+				"					<div class=\"form-row\">\r\n" + 
+				"						<div class=\"form-group col\">\r\n" + 
+				"							<input type=\"number\" \r\n" + 
+				"								class=\"form-control\" name=\"size\" placeholder=\"Velicina sobe\" id=\"ressize\">\r\n" + 
+				"						</div>\r\n" + 
+				"					</div>" +
+				"					<div class=\"form-row\">\r\n" + 
+				"						<div class=\"form-group col\">\r\n" + 
+				"						</div>\r\n" + 
+				"						<div class=\"form-group col\">\r\n" + 
+				"							<button \r\n" + 
+				"								class=\"btn btn-primary showAvailableRoomsButton\">Prikazi dostupne sobe</button>\r\n" + 
+				"						</div>\r\n" + 
+				"						<div class=\"form-group col\">\r\n" + 
+				"						</div>\r\n" + 
+				"					</div>" +
+				"				</div>\r\n" + 
+				"			</div>\r\n" + 
+				"		</div>\r\n" + 
+				"	</div>");
+	}
 }
 
