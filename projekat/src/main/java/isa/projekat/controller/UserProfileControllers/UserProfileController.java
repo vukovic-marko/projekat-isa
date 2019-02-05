@@ -13,6 +13,7 @@ import org.springframework.validation.BindingResult;
 import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -77,12 +78,12 @@ public class UserProfileController {
             produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Object> updateProfileInfo(@PathVariable("username") String username,
                                                     @ModelAttribute("user") @Valid RegisteredUserFormData user,
-                                                    BindingResult bindingResult) {
+                                                    BindingResult bindingResult, HttpServletRequest request) {
 
         ArrayList<String> messages = new ArrayList<>();
         if (!bindingResult.hasErrors()) {
 
-            boolean success = userService.changeUserInfo(user);
+            boolean success = userService.changeUserInfo(user, request);
 
             if (success) {
 

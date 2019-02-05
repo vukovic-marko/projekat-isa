@@ -1,6 +1,7 @@
 package isa.projekat.controller.UserProfileControllers;
 
 
+import isa.projekat.model.Forms.FindFriendForm;
 import isa.projekat.model.Forms.RegisteredUserFormData;
 import isa.projekat.model.User;
 import isa.projekat.service.RegisteredUserService;
@@ -12,9 +13,11 @@ import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.validation.Valid;
+import java.util.List;
 
 @Controller
 @RequestMapping(value = "/registereduser/profile")
@@ -44,7 +47,9 @@ public class UserProfileViewController {
     @GetMapping(value = "")
     public String profileIndex() {
 
-        return "user/profile";
+//        return "user/profile :: #userProfile";
+
+        return "user/profile :: userProfileFrag";
     }
 
     @GetMapping(value = "/info")
@@ -54,16 +59,22 @@ public class UserProfileViewController {
     }
 
     @GetMapping(value = "/friends")
-    public String getFriends(Model model) {
+    public String getFriends(Model model, HttpServletRequest request) {
 
-        //
-        SecurityContext sc = SecurityContextHolder.getContext();
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        User currentUser = (User) authentication.getPrincipal();
+        List<User> friends = registeredUserService.getFriendsOfCurrentUser(request);
 
-        model.addAttribute("friendsList", registeredUserService.getFriendOfUser(currentUser.getUsername()));
+        model.addAttribute("friendsList", friends);
 
         return "user/fragments/friends :: friendsList";
+    }
+
+    @GetMapping(value = "/friends/add")
+    public String addFriend(@ModelAttribute("friendQuery") @Valid FindFriendForm findFriendsForm, Model model, HttpServletRequest request) {
+
+        //List<User> users = registeredUserService.getRegisteredUsers(findFriendsForm, request);
+
+        //model.addAttribute("users", users);
+        return "user/fragments/addFriend";
     }
 
     @GetMapping(value = "/requests/pending")
@@ -82,4 +93,17 @@ public class UserProfileViewController {
         return "user/fragments/requests :: sentRequestsList";
     }
 
+    @GetMapping(value = "/validity/checkusername")
+    @ResponseBody
+    public Boolean checkUsername(@RequestParam(name = "username") String username, HttpServletRequest request) {
+
+        return registeredUserService.checkUsername(username, request);
+    }
+
+    @GetMapping(value = "/validity/checkemail")
+    @ResponseBody
+    public Boolean checkEmail(@RequestParam(name = "email") String email, HttpServletRequest request) {
+
+        return registeredUserService.checkEmail(email, request);
+    }
 }

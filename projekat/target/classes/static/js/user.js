@@ -29,6 +29,7 @@ $(document).ajaxSend(function(event, jqxhr, settings) {
 $(document).ready(
 
 function() {
+
 	setInterval(refreshToken, 60000); // svaki min
 	// LOGOUT
 	  $('#logout').click(function () {
@@ -39,6 +40,16 @@ function() {
 	    $('#rent').click(function () {
 	        location.hash = 'rentacar';
 	    });
+
+	    $("#profile").click(function (event) {
+
+	    	location.hash = "profile";
+		});
+
+		$("#air").click(function (event) {
+
+			location.hash = "airlineSearch";
+		});
 	    
 	    $(window).on('hashchange', function () {
 	        // alert('Changed');
@@ -47,13 +58,218 @@ function() {
 	        } else if (location.hash.includes("racservice")) {
 	            let t=location.hash.split('=');
 	        	showService(t[1]);
-	        }
+	        } else if(location.hash.includes("profile")) {
+
+				if (location.hash.includes("friends")) {
+
+					console.log('friends');
+				}  else if (location.hash.includes("requestsSent")) {
+
+				} else if (location.hash.includes("requestsReceived")) {
+
+				} else if (location.hash.includes("addFriend")) {
+
+				} else {
+
+					showProfileInfo();
+				}
+
+			} else if(location.hash === "#airlineSearch") {
+
+				showAirlineSearch();
+			}
 	    });
 	
 	    
 	    $(window).trigger('hashchange');
+
+	// Provjera telefona
+	$.validator.methods.phoneCheck = function(value, element) {
+		return this.optional(element)
+			|| /([0-9]{3,3}\/[0-9]{3,3}-[0-9]{2,2}-[0-9]{2,2})$/
+				.test(value);
+	}
+	//
 });
 
+function showProfileInfo() {
+
+	$("#items").
+	load("/registereduser/profile", function() {
+
+		$("#tabs").tabs({
+
+			collapsible: true
+		});
+
+		$("#tabs").on("tabsbeforeload", function (event, ui) {
+
+			//selektovani tab
+			var indeks = $(this).tabs("option", "active");
+			var myjqxhr = ui.jqXHR;
+
+			ui.jqXHR.done(function (data) {
+				console.log("successful <" + indeks + "> tab loading, data: " + data);
+
+				if (indeks == 0) {
+					$("#username").prop("disabled", true);
+					$("#userInfoFieldset").prop("disabled", true);
+				}
+			});
+
+			ui.jqXHR.fail(function (data) {
+
+				console.log("Failed loading data!");
+			});
+		});
+
+		var validatorProfileInfo = null;
+		$("#tabs").on("tabsload", function (event, ui) {
+
+			//selektovani tab
+			var indeks = $(this).tabs("option", "active");
+
+			if (indeks == 0) {
+
+				location.hash = 'profile';
+				validatorProfileInfo = $('#profileInfoForm').validate({
+					rules: {
+						username: {
+							required: true,
+							remote: "/registereduser/profile/validity/checkusername/"
+						},
+						email: {
+							required: true,
+							email: true,
+							remote: "/registereduser/profile/validity/checkemail/"
+						},
+						firstName: {
+							required: true
+						},
+						lastName: {
+							required: true
+						},
+						phone: {
+							required: true,
+							phoneCheck: true
+						},
+						city: {
+							required: true
+						}
+
+					},
+					messages: {
+						username: {
+							required: "Ime nije uneto",
+							remote: "Korisničko ime se ne može mjenjati"
+						},
+						firstName: {
+							required: "Ime nije uneto",
+							letters: "Dozvoljena su samo slova srpske latinice i razmaci"
+						},
+						lastName: {
+							required: "Prezime nije uneto",
+							letters: "Dozvoljena su samo slova srpske latinice i razmaci"
+						},
+						email: {
+							required: "Email adresa nije uneta",
+							email: "Neispravan format adrese",
+							remote: "Email se ne može mjenjati"
+						},
+						phone: {
+							required: "Telefon nije unet",
+							phoneCheck: "Neispravan format (123/456-78-99)"
+						},
+						city: {
+							required: "Grad nije unet"
+						}
+					}
+				});
+			}
+		});
+		// Refresh taba
+		$(document).on("click", "#buttonRefresh", function (event) {
+
+			console.log('button clicked');
+
+			$("#tabs").tabs("disable");
+
+			//
+			var loadedTabs = 0;
+			$("#tabs").on("tabsload", function (event) {
+
+				loadedTabs++;
+				if (loadedTabs == 4) {
+
+					$(this).tabs("enable");
+					$(this).off("tabsload");
+				}
+			});
+
+			for (var i = 0; i < 4; i++) {
+
+				$("#tabs").tabs("load", i);
+			}
+		});
+
+		// Profile info dugmad
+		$(document).on("click", "#edit", function (event) {
+
+			$("#cityFieldset").prop("disabled", false);
+			$("#userInfoFieldset").prop("disabled", false);
+			$("#btnEdit").hide();
+			$("#btnsEditing").show();
+		});
+
+		$(document).on("click", "#cancel", function (event) {
+
+			$("#reset").trigger("click");
+
+			$("#username").prop("disabled", true);
+			$("#userInfoFieldset").prop("disabled", true);
+			$("#btnsEditing").hide();
+			$("#btnEdit").show();
+		});
+
+		$(document).on("click", "#reset", function (event) {
+
+			$("#profileInfoForm").trigger("reset");
+
+			validatorProfileInfo.resetForm();
+		});
+
+		$(document).on("click", "#submit", function (event) {
+
+			if ($("#profileInfoForm").valid()) {
+
+				var serialized = $("#profileInfoForm").serialize();
+
+				$.ajax({
+					url: "/api/registeredusers/" + $("#username").val() + "/edit",
+					data: serialized,
+					method: 'PATCH'
+				}).done(function (event, data, jqxhr) {
+
+					console.log("Uspjesno je poslan patch");
+
+					$("#cancel").trigger("click");
+
+					$("#tabs").tabs("load", 0);
+
+				})
+			} else {
+
+				console.log("Nije poslan");
+			}
+		});
+
+		// $("#tabs").tabs("load", 0);
+	});
+}
+
+function showAirlineSearch() {
+	// $.load("/registereduser/profile")
+}
 
 function showRentACar(){
 	

@@ -1,8 +1,14 @@
 package isa.projekat.repository;
 
+import isa.projekat.model.Authority;
 import isa.projekat.model.User;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.stereotype.Repository;
+
+import java.util.Collection;
+import java.util.List;
+
 @Repository
 public interface UserRepository extends JpaRepository<User, Long>{
     User findOneByUsername(String username);
@@ -11,5 +17,10 @@ public interface UserRepository extends JpaRepository<User, Long>{
 
     //***************************************
     boolean existsByUsername(String username);
+    boolean existsByEmail(String email);
+    Long countDistinctByEmail(String email);
+
+    List<User> findByFirstNameContainsOrLastNameContainsOrEmailContainsAndActivatedIsTrueAndUsernameIsNotAndAuthoritiesIn(String firstName, String lastName, String email, String myUsername, Collection<? extends GrantedAuthority> userAuthorities);
+
     //***************************************
 }
