@@ -29,4 +29,15 @@ public interface HotelRoomRepository extends JpaRepository<HotelRoom, Long> {
 			@Param("dateOfDeparture") Date dateOfDeparture, 
 			@Param("size") Long size, 
 			@Param("hotelId") Long hotelId);
+	
+	@Query(value = "SELECT r FROM HotelRoom r " 
+				 + "JOIN r.hotel h JOIN r.roomReservations res "
+				 + "WHERE r.roomNumber = :roomNumber AND h.id = :hotelId "
+				 + "AND ((res.dateOfArrival <= :dateOfArrival AND res.dateOfDeparture >= :dateOfArrival) "
+				 + "OR (res.dateOfArrival <= :dateOfDeparture AND res.dateOfDeparture >= :dateOfDeparture) "
+				 + "OR (res.dateOfArrival >= :dateOfArrival AND res.dateOfDeparture <= :dateOfDeparture)) ")
+	public List<HotelRoom> findRooms(@Param("dateOfArrival") Date dateOfArrival, 
+			@Param("dateOfDeparture") Date dateOfDeparture, 
+			@Param("roomNumber") String roomNumber,
+			@Param("hotelId") Long hotelId);
 }
