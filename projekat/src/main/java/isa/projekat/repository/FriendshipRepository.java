@@ -12,16 +12,20 @@ import java.util.List;
 @Repository
 public interface FriendshipRepository extends JpaRepository<Friendship, Long> {
 
-    /*@Query("select Friendship.friendRequester as frReq " +
-            "from Friendship " +
-            "where frReq.username = :username and " +
-            "Friendship.active = true")
-    List<User> findFriendsAsReceiver(@Param("username") String username);
+    // Neprihvaceni zahtjevi
+    List<Friendship> findByFriendRequester_IdAndConfirmedFalse(Long requesterId);
+    List<Friendship> findByFriendReceiver_IdAndConfirmedFalse(Long receiverId);
 
-   @Query("select Friendship.friendReceiver as frRec " +
-            "from Friendship " +
-            "where frRec.username = :username and " +
-            "Friendship.active = true")
-    List<User> findFriendsAsRequester(@Param("username") String username);*/
+    // Po jednom korisniku
+    List<Friendship> findByFriendRequester_Id(Long id);
+    List<Friendship> findByFriendReceiver_Id(Long id);
+
+    List<Friendship> findByFriendRequester_IdAndConfirmedTrue(Long id);
+    List<Friendship> findByFriendReceiver_IdAndConfirmedTrue(Long id);
+
+    // Po oba korisnika
+    Friendship findByFriendReceiver_IdAndFriendRequester_IdAndConfirmedFalse(Long receiverId, Long requesterId);
+
+    Friendship findByFriendReceiver_IdAndFriendRequester_IdAndConfirmedTrue(Long receiverId, Long requesterId);
 }
 

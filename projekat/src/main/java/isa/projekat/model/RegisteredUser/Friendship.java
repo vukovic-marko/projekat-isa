@@ -14,6 +14,7 @@ import java.io.Serializable;
 public class Friendship implements Serializable {
 
     @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
     @Column
     private long id;
 

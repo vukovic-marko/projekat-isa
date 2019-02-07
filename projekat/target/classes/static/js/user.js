@@ -52,6 +52,13 @@ function() {
 		});
 	    
 	    $(window).on('hashchange', function () {
+
+			if(!location.hash.includes("profile")) {
+
+				shownTab = false;
+			}
+
+
 	        // alert('Changed');
 	        if (location.hash === '#rentacar') {
 	            showRentACar();
@@ -60,25 +67,38 @@ function() {
 	        	showService(t[1]);
 	        } else if(location.hash.includes("profile")) {
 
+
 				if (location.hash.includes("friends")) {
 
 					console.log('friends');
+					indexOfActiveTab = 1;
 				}  else if (location.hash.includes("requestsSent")) {
 
+					indexOfActiveTab = 2;
 				} else if (location.hash.includes("requestsReceived")) {
 
+					indexOfActiveTab = 3;
 				} else if (location.hash.includes("addFriend")) {
 
+					indexOfActiveTab = 4;
 				} else {
 
-					showProfileInfo();
+					indexOfActiveTab = 0;
+					$("#tabs").tabs("enable", indexOfActiveTab);
 				}
 
+				if(!shownTab) {
+
+					showProfileInfo();
+					shownTab = true;
+				}
 			} else if(location.hash === "#airlineSearch") {
 
 				showAirlineSearch();
 			}
 	    });
+
+	    $(window).on('refresh')
 	
 	    
 	    $(window).trigger('hashchange');
@@ -92,46 +112,55 @@ function() {
 	//
 });
 
+var indexOfActiveTab = 0;
+var shownTab = false;
+var validatorProfileInfo = null;
 function showProfileInfo() {
 
 	$("#items").
 	load("/registereduser/profile", function() {
 
-		$("#tabs").tabs({
+			$("#tabs").hide();
 
-			collapsible: true
-		});
+			$("#tabs").tabs({
+				active: indexOfActiveTab,
+				collapsible: true,
+				show: 400
+			});
 
-		$("#tabs").on("tabsbeforeload", function (event, ui) {
+			$("#tabs").on("tabsbeforeload", function (event, ui) {
 
-			//selektovani tab
-			var indeks = $(this).tabs("option", "active");
-			var myjqxhr = ui.jqXHR;
-
-			ui.jqXHR.done(function (data) {
-				console.log("successful <" + indeks + "> tab loading, data: " + data);
+				//selektovani tab
+				var indeks = $(this).tabs("option", "active");
+				var myjqxhr = ui.jqXHR;
 
 				if (indeks == 0) {
-					$("#username").prop("disabled", true);
-					$("#userInfoFieldset").prop("disabled", true);
+
+					location.hash = 'profile';
+				} else if (indeks == 1) {
+
+					location.hash = 'profile#friends';
+				}  else if (indeks == 2) {
+
+					location.hash = 'profile#requestsSent';
+				} else if (indeks == 3) {
+
+					location.hash = 'profile#requestsReceived';
+				} else if (indeks == 4) {
+
+					location.hash = 'profile#addFriend';
 				}
 			});
 
-			ui.jqXHR.fail(function (data) {
-
-				console.log("Failed loading data!");
-			});
-		});
-
-		var validatorProfileInfo = null;
 		$("#tabs").on("tabsload", function (event, ui) {
 
-			//selektovani tab
 			var indeks = $(this).tabs("option", "active");
 
 			if (indeks == 0) {
 
-				location.hash = 'profile';
+				$("#username").prop("disabled", true);
+				$("#userInfoFieldset").prop("disabled", true);
+
 				validatorProfileInfo = $('#profileInfoForm').validate({
 					rules: {
 						username: {
@@ -185,8 +214,248 @@ function showProfileInfo() {
 						}
 					}
 				});
+
+				// Profile info dugmad
+				$(document).on("click", "#edit", function (event) {
+
+					$("#cityFieldset").prop("disabled", false);
+					$("#userInfoFieldset").prop("disabled", false);
+					$("#btnEdit").hide();
+					$("#btnsEditing").show();
+				});
+
+				$(document).on("click", "#cancel", function (event) {
+
+					$("#reset").trigger("click");
+
+					$("#username").prop("disabled", true);
+					$("#userInfoFieldset").prop("disabled", true);
+					$("#btnsEditing").hide();
+					$("#btnEdit").show();
+				});
+
+				$(document).on("click", "#reset", function (event) {
+
+					$("#profileInfoForm").trigger("reset");
+
+					validatorProfileInfo.resetForm();
+				});
+
+				$(document).on("click", "#submit", function (event) {
+
+					if ($("#profileInfoForm").valid()) {
+
+						var myform = $('#profileInfoForm');
+
+						// Find disabled inputs, and remove the "disabled" attribute
+						var disabled = myform.find(':input:disabled').removeAttr('disabled');
+
+						// serialize the form
+						var serialized = myform.serialize();
+
+						// re-disabled the set of inputs that you previously enabled
+						disabled.attr('disabled','disabled');
+
+
+						$.ajax({
+							url: "/api/registeredusers/edit",
+							data: serialized,
+							method: 'PATCH'
+						}).done(function (event, data, jqxhr) {
+
+							console.log("Uspjesno je poslan patch");
+
+							$("#cancel").trigger("click");
+
+							$("#tabs").tabs("load", 0);
+
+						})
+					} else {
+
+						console.log("Nije poslan");
+					}
+				});
+			}
+			else if (indeks == 1) {
+
+				$("button[id^='friendDelete_']").one("click", function(event) {
+
+					event.preventDefault();
+					$(this).hide();
+
+					var context = $(this);
+
+					var payload = {};
+					payload.idFriend = ((context[0].id).split('_'))[1];
+
+					payload = JSON.stringify(payload);
+					$.ajax({
+						url: '/api/registeredusers/friends/delete',
+						method: 'DELETE',
+						data: payload,
+						contentType: 'application/json',
+						headers: {Authorization : 'Bearer ' + getToken()}
+
+					}).done(function () {
+
+						var $par = context.parent(".card-body");
+						$par.addClass("bg-danger");
+						$par.delay(1000).hide('fade', 500, function() {
+
+							$(this).closest('div .col-md-3').remove();
+						});
+					});
+				});
+			}
+			else if (indeks == 2) {
+
+				$("button[id^='reqSent_']").one("click", function(event) {
+
+					event.preventDefault();
+					$(this).hide();
+
+					var context = $(this);
+
+					var payload = {};
+					payload.idReceiver = ((context[0].id).split('_'))[1];
+
+					payload = JSON.stringify(payload);
+					$.ajax({
+						url: '/api/registeredusers/requests/cancelRequest',
+						method: 'DELETE',
+						data: payload,
+						contentType: 'application/json',
+						headers: {Authorization : 'Bearer ' + getToken()}
+
+					}).done(function () {
+
+						var $par = context.parent(".card-body");
+						$par.addClass("bg-danger");
+						$par.delay(1000).hide('fade', 500, function() {
+
+							$(this).closest('div .col-md-3').remove();
+						});
+					});
+				});
+			}
+			else if (indeks == 3) {
+
+				$("button[id^='reqReceived_']").one("click", function(event) {
+
+					event.preventDefault();
+					$(this).hide();
+
+					var context = $(this);
+
+					var payload = {};
+					payload.idRequester = ((context[0].id).split('_'))[1];
+
+					payload = JSON.stringify(payload);
+					$.ajax({
+						url: '/api/registeredusers/requests/acceptRequest',
+						method: 'PATCH',
+						data: payload,
+						contentType: 'application/json',
+						headers: {Authorization : 'Bearer ' + getToken()}
+
+					}).done(function () {
+
+						var $par = context.parent(".card-body");
+						$par.addClass("bg-success");
+						$par.delay(1000).hide('fade', 500, function() {
+
+							$(this).closest('div .col-md-3').remove();
+						});
+					});
+				});
+			}
+			else if (indeks == 4) {
+
+				$("#loadingAlert").hide();
+				$("#loadedAlert").hide();
+				$("#friendAddedAlert").hide();
+				$("#emptyAlert").show();
+
+				$("#submitFriends").off('click');
+
+				$("#submitFriends").on("click", function (event) {
+
+					event.preventDefault();
+
+					//
+					var friendQuery = $("#findFriendsForm").serialize();
+
+					$("#emptyAlert").hide("fade");
+					$("#loadedAlert").hide("fade");
+					$("#loadingAlert").show('fade', 500);
+					// Dodati handler za klik za svaku od dugmadi
+
+					$("#resultsUsers").load("/registereduser/profile/friends/add/results", friendQuery, function () {
+
+						if($("#tmpUserList").children().length == 0) {
+
+							$("#emptyAlert").show("fade", 1000);
+						} else {
+
+							$("#loadedAlert").show("fade", 1000);
+						}
+
+						$("#loadingAlert").hide("fade");
+
+						$("button[id^='add_']").one("click", function (event) {
+
+							event.preventDefault();
+
+							var context = $(this);
+							context.hide();
+
+							var $target = event.target;
+							var idButton = ($target.id).split("_");
+
+							var vid =  parseInt(idButton[1]);
+							var payload = {id:  vid};
+
+
+							payload = JSON.stringify(payload);
+							// Salje se zahtjev useru sa id
+							$.ajax({
+
+								url: "/api/registeredusers/friends/add",
+								method: 'POST',
+								data: payload,
+								contentType: 'application/json',
+								success: function(data, textStatus, jqxhr) {
+									// console.log("=========================\nSUCCESS ADD FRIEND");
+									// console.log("=========================");
+
+									$("#loadedAlert")
+										.hide("fade", 50).delay(2100).show("fade", 100);
+
+									$("#friendAddedAlert")
+										.show("fade", 2000)
+										.hide("fade", 100);
+
+								},
+								error: function(data, textStatus, jqxhr) {
+									// console.log("=========================\nFAIL ADD FRIEND");
+									// console.log("=========================");
+								}
+							}).done(function(event) {
+
+								// Iskljucuje se dugme
+								context.off("click");
+								context.hide();
+
+								var $b = context.parent(".card-body");
+								$b.addClass("bg-success");
+							});
+						});
+
+					});
+				});
 			}
 		});
+
 		// Refresh taba
 		$(document).on("click", "#buttonRefresh", function (event) {
 
@@ -202,7 +471,7 @@ function showProfileInfo() {
 				if (loadedTabs == 4) {
 
 					$(this).tabs("enable");
-					$(this).off("tabsload");
+					//$(this).off("tabsload");
 				}
 			});
 
@@ -212,58 +481,7 @@ function showProfileInfo() {
 			}
 		});
 
-		// Profile info dugmad
-		$(document).on("click", "#edit", function (event) {
-
-			$("#cityFieldset").prop("disabled", false);
-			$("#userInfoFieldset").prop("disabled", false);
-			$("#btnEdit").hide();
-			$("#btnsEditing").show();
-		});
-
-		$(document).on("click", "#cancel", function (event) {
-
-			$("#reset").trigger("click");
-
-			$("#username").prop("disabled", true);
-			$("#userInfoFieldset").prop("disabled", true);
-			$("#btnsEditing").hide();
-			$("#btnEdit").show();
-		});
-
-		$(document).on("click", "#reset", function (event) {
-
-			$("#profileInfoForm").trigger("reset");
-
-			validatorProfileInfo.resetForm();
-		});
-
-		$(document).on("click", "#submit", function (event) {
-
-			if ($("#profileInfoForm").valid()) {
-
-				var serialized = $("#profileInfoForm").serialize();
-
-				$.ajax({
-					url: "/api/registeredusers/" + $("#username").val() + "/edit",
-					data: serialized,
-					method: 'PATCH'
-				}).done(function (event, data, jqxhr) {
-
-					console.log("Uspjesno je poslan patch");
-
-					$("#cancel").trigger("click");
-
-					$("#tabs").tabs("load", 0);
-
-				})
-			} else {
-
-				console.log("Nije poslan");
-			}
-		});
-
-		// $("#tabs").tabs("load", 0);
+		$("#tabs").tabs("load", indexOfActiveTab).show("fade", {}, 400, function() {});
 	});
 }
 

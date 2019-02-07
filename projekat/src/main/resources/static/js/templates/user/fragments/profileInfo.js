@@ -149,7 +149,7 @@ $(document).ready(function () {
             var serialized = $("#profileInfoForm").serialize();
 
             $.ajax({
-                url: "/api/registeredusers/" + $("#username").val() + "/edit",
+                url: "/edit",
                 data: serialized,
                 method: 'PATCH'
             }).done(function (event, data, jqxhr) {

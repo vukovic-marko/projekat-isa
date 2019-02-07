@@ -1,8 +1,8 @@
 <!DOCTYPE html>
 <html lang="en"
-      xmlns:th="http://www.thymeleaf.org/"
+      xmlns="http://www.w3.org/1999/xhtml"
       xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
-      xmlns="http://www.w3.org/1999/xhtml">
+      xmlns:th="http://www.thymeleaf.org/">
 <head>
 
     <!-- ../static -->
@@ -24,7 +24,7 @@
 
 <body>
 
-<div class="container-fluid" th:fragment="profileInfoForm">
+<div class="container-fluid" th:fragment="searchUsersForm">
 
     <div class="row">
         <div class="col-md-12">
@@ -41,37 +41,75 @@
                 <div class="row">
                     <div class="col-md-12">
                         <!-- update korisnickih informacija -->
-                        <form th:object="${friendQuery}" id="findFriendsForm">
+                        <form id="findFriendsForm" th:object="${friendQuery}">
                             <fieldset id="findFriendFieldset" style="border: hidden">
 
                                 <!-- first, last name, email -->
                                 <div class="form-row justify-content-left">
                                     <div class="form-group col-md-3">
                                         <label for="firstName">Ime</label>
-                                        <input type="text" value="first name" placeholder="Ime"
-                                               class="form-control" id="firstName" th:field="*{firstName}"/>
+                                        <input class="form-control" id="firstName" placeholder="Ime"
+                                               th:field="*{firstName}" type="text" value="first name"/>
                                     </div>
                                     <div class="form-group col-md-3">
                                         <label for="lastName">Prezime</label>
-                                        <input type="text" value="last name" placeholder="Prezime"
-                                               class="form-control" id="lastName" th:field="*{lastName}"/>
+                                        <input class="form-control" id="lastName" placeholder="Prezime"
+                                               th:field="*{lastName}" type="text" value="last name"/>
                                     </div>
                                     <div class="form-group col-md-3">
                                         <label for="email">Email</label>
-                                        <input type="text" value="" placeholder="Email" class="form-control"
-                                               id="email" th:field="*{email}"/>
+                                        <input class="form-control" id="email" placeholder="Email" th:field="*{email}"
+                                               type="text" value=""/>
                                     </div>
                                 </div>
 
                                 <!-- buttons, edit mode-->
-                                <div class="form-row justify-content-left" >
+                                <div class="form-row">
 
-                                    <div class="col-md-auto">
-                                        <button id="submit" class="btn btn-success">Potvrdi</button>
+                                    <div class="col-md-5">
+                                        <div class="container-fluid">
+                                            <div class="row">
+                                                <div class="col-md-auto">
+                                                    <button class="btn btn-lg btn-success" id="submitFriends">Potvrdi</button>
+                                                </div>
+
+                                                <div class="col-md-auto">
+                                                    <button type="reset" class="btn btn-lg btn-info ml-5" id="reset">Reset</button>
+                                                </div>
+                                            </div>
+                                        </div>
                                     </div>
+                                    <div class="col-md-2">
+                                        <div class="alert alert-success alert-dismissible" role="alert"
+                                             id="fillerAlert" style="visibility: hidden">
+                                            Filler
+                                        </div>
+                                        <div class="alert alert-success alert-dismissible" role="alert"
+                                             id="fillerAlert2" style="visibility: hidden">
+                                            Filler
+                                        </div>
+                                    </div>
+                                    <div class="col-md-5">
+                                        <div class="container-fluid justify-content-end">
+                                            <!-- poruke -->
+                                            <div class="alert alert-info" role="alert" id="loadingAlert">
+                                                Loading...
+                                            </div>
 
-                                    <div class="col-md-auto">
-                                        <button id="reset" class="btn btn-info ml-5">Reset</button>
+                                            <div class="alert alert-info" role="alert" id="emptyAlert"
+                                                 th:if="${#lists.isEmpty(addFriendUsers)}">
+                                                Prazna lista korisnika
+                                            </div>
+
+                                            <div class="alert alert-success alert-dismissible" role="alert"
+                                                 id="loadedAlert">
+                                                Učitani korisnici
+                                            </div>
+
+                                            <div class="alert alert-success" role="alert" id="friendAddedAlert">
+                                                Dodan prijatelj
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
 
@@ -86,34 +124,42 @@
 
     <hr/>
 
+    <div id="resultsUsers">
+
+    </div>
+</div>
+
+<div th:fragment="usersList" id="tmpUserList">
+
     <!-- Rezultati -->
-    <div class="users" th:remove="all-but-first">
+    <div class="container-fluid" th:unless="${#lists.isEmpty(addFriendUsers)}">
 
-        <div class="card">
 
-            <div class="card-body">
-                <h5 class="card-title">Special title treatment</h5>
-                <p class="card-text">With supporting text below as a natural lead-in to additional content.</p>
-                <a href="#" class="btn btn-primary">Go somewhere</a>
+        <div class="row mb-2" th:each="userFriend : ${addFriendUsers}" th:with="numColumns=${#numbers.sequence(0,3)}" th:if="${userFriendStat.index} % 4 == 0">
+
+            <div class="col-md-3"
+                 th:each="indexNumLoop : ${numColumns}"
+                 th:with="indexNum = (${userFriendStat.index} + ${indexNumLoop})">
+
+                <div class="card"
+                     th:if="${indexNum} lt ${userFriendStat.size}">
+
+                    <div class="card-body" th:with="currentElement = ${addFriendUsers[indexNum]}">
+                        <h5 class="card-title" th:text="${currentElement.firstName}">Special title treatment</h5>
+                        <h5 class="card-title" th:text="${currentElement.lastName}">Special title treatment</h5>
+                        <p class="card-text" th:text="${currentElement.email}">With supporting text below as a natural
+                            lead-in
+                            to additional content.</p>
+                        <button class="btn btn-primary" th:id="'add_' + ${currentElement.id}">Dodaj prijatelja</button>
+                    </div>
+
+                </div>
+
             </div>
-        </div>
-        <div class="card">
-            <h5 class="card-header">Featured</h5>
-            <div class="card-body">
-                <h5 class="card-title">Special title treatment</h5>
-                <p class="card-text">With supporting text below as a natural lead-in to additional content.</p>
-                <a href="#" class="btn btn-primary">Go somewhere</a>
-            </div>
-        </div>
-        <div class="card">
-            <h5 class="card-header">Featured</h5>
-            <div class="card-body">
-                <h5 class="card-title">Special title treatment</h5>
-                <p class="card-text">With supporting text below as a natural lead-in to additional content.</p>
-                <a href="#" class="btn btn-primary">Go somewhere</a>
-            </div>
+
         </div>
     </div>
+
 
 </div>
 

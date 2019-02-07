@@ -10,17 +10,22 @@ import java.util.Collection;
 import java.util.List;
 
 @Repository
-public interface UserRepository extends JpaRepository<User, Long>{
+public interface UserRepository extends JpaRepository<User, Long> {
     User findOneByUsername(String username);
 
     User findOneByEmail(String email);
 
     //***************************************
     boolean existsByUsername(String username);
+
     boolean existsByEmail(String email);
+
     Long countDistinctByEmail(String email);
 
-    List<User> findByFirstNameContainsOrLastNameContainsOrEmailContainsAndActivatedIsTrueAndUsernameIsNotAndAuthoritiesIn(String firstName, String lastName, String email, String myUsername, Collection<? extends GrantedAuthority> userAuthorities);
-
+    // Filter registered users by firstName, lastName, email and of same authority
+    List<User> findByFirstNameContainingAndLastNameContainingAndEmailContainingAndActivatedIsTrueAndAuthoritiesIsInAndIdIsNotInAllIgnoreCase(
+            String firstName, String lastName, String email,
+            Collection<? extends GrantedAuthority> userAuthorities,
+            List<Long> friendsIdList);
     //***************************************
 }

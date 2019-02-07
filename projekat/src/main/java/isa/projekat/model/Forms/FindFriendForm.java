@@ -5,10 +5,15 @@ import org.hibernate.validator.constraints.Email;
 public class FindFriendForm {
 
     private String firstName;
-
-    @Email
     private String email;
     private String lastName;
+
+    public FindFriendForm() {
+
+        firstName = "";
+        lastName = "";
+        email = "";
+    }
 
     public String getFirstName() {
         return firstName;
