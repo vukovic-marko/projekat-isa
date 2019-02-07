@@ -10,6 +10,8 @@ import java.util.Map;
 import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.transaction.Transactional;
+import javax.transaction.Transactional.TxType;
 import javax.validation.Valid;
 
 import org.springframework.beans.factory.BeanCreationException;
@@ -293,5 +295,32 @@ public class RentACarService {
 	public List<Destination> getAllDestinations() {
 		return destinationRepository.findAllByOrderByCountryAscCityAsc();
 	}
+	
+	@Transactional(value=TxType.REQUIRED)
+	public boolean checkCar(Map<String, String> params) {
+		String id=params.get("id");
+		if(id==null)
+			return false;
+		Car car=carRepository.findOne(Long.parseLong(id));
+		if(car==null)
+			return false;
+		String dateStart = params.get("startDate");
+		if(dateStart==null)
+			return false;
+		String[] parts = dateStart.split("/");
+		java.sql.Date date = new java.sql.Date(Integer.parseInt(parts[2]) - 1900, Integer.parseInt(parts[1]) - 1, Integer.parseInt(parts[0]));
+		Car car2=carRepository.checkIfReserved(car, date);
+		if(car2!=null)
+			return false;
+		return true;
+	}
+	
+	@Transactional(value=TxType.REQUIRED)
+	public boolean reserve(HttpServletRequest request, Map<String,String> params) {
+		
+		return true;
+	}
+	
+	
 
 }

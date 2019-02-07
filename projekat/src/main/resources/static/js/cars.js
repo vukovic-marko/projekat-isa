@@ -4,7 +4,29 @@ function showCars(data) {
 		let html = createCar(data[i]);
 		$('#cars').append(html)
 	}
-	
+	$('.rsv-car').click(function(){
+		let id=$(this).attr('id');
+		let carReservation={};
+		carReservation.startDate=$('#startdate').val();
+		carReservation.endDate=$('#enddate').val();
+		carReservation.id=id;
+		
+		$.ajax({
+			success:function(data){
+				if(data==false){
+					toastr.error('Auto je vec rezervisan!')
+					return;
+				}
+				localStorage.setItem('carReservation', carReservation);
+				toastr.info('Dodato u rezervacije!')
+			},
+			url:'rentacar/checkiffree',
+			type:'post',
+			contentType: "application/json; charset=utf-8",
+      
+			data:JSON.stringify(carReservation)
+		});
+	});
 
 }
 

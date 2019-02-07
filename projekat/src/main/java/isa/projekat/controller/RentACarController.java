@@ -52,6 +52,11 @@ public class RentACarController {
 		return rentACarService.getCompanies(params);
 	}
 	
+	
+	@PostMapping(value = "/checkiffree",produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+	public boolean chekcIfFree(@RequestBody Map<String,String> params) {
+		return rentACarService.checkCar(params);
+	}
 	/*
 	//@GetMapping(value = "/cars/{id}",produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
 	public boolean delete(HttpServletRequest request, @PathVariable(value = "id") String id) {
