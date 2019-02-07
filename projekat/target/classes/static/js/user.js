@@ -39,6 +39,10 @@ $(document).ready(
         $('#rent').click(function () {
             location.hash = 'rentacar';
         });
+        
+        $('#hotel').click(function() {
+	    	location.hash = 'hotel';
+	    });
 
         $(window).on('hashchange', function () {
             // alert('Changed');
@@ -48,6 +52,8 @@ $(document).ready(
                 let t = location.hash.split('=');
                 showService(t[1]);
             }
+            else if (location.hash.includes("hotel")) {
+	        	showHotel();
         });
 
         $(window).trigger('hashchange');
