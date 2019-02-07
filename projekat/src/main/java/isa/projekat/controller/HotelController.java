@@ -7,6 +7,9 @@ import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Example;
+import org.springframework.data.domain.ExampleMatcher;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -18,6 +21,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import isa.projekat.model.Destination;
 import isa.projekat.model.Hotel;
 import isa.projekat.model.HotelAdditionalService;
 import isa.projekat.model.HotelReservation;
@@ -25,6 +29,7 @@ import isa.projekat.model.HotelReservationHelperClass;
 import isa.projekat.model.HotelRoom;
 import isa.projekat.model.HotelRoomPrice;
 import isa.projekat.model.User;
+import isa.projekat.repository.DestinationRepository;
 import isa.projekat.repository.HotelAdditionalServiceRepository;
 import isa.projekat.repository.HotelRepository;
 import isa.projekat.repository.HotelReservationRepository;
@@ -61,6 +66,9 @@ public class HotelController {
 	@Autowired
 	private HotelRoomPriceRepository roomPriceRepository;
 	
+	@Autowired
+	private DestinationRepository destinationRepository;
+	
 	@RequestMapping(value="/all", method = RequestMethod.GET)
 	public List<Hotel> getHotels() {
 		return hotelService.getHotels(); 
@@ -69,6 +77,54 @@ public class HotelController {
 	@RequestMapping(value="/{id}/additionalservices", method = RequestMethod.GET)
 	public List<HotelAdditionalService> getAdditionalServices(@PathVariable Long id) {
 		return hotelService.getAdditionalServices(id);
+	}
+	
+	@RequestMapping(value="/search", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE)
+	public List<Hotel> searchHotels(@RequestBody HotelReservationHelperClass query) {
+
+//		System.out.println("\t" + query.getHotel().getName());
+//		System.out.println("\t" + query.getHotel().getAddress());
+//		System.out.println("\t" + query.getHotel().getDestination().getCity());
+//		System.out.println("\t" + query.getHotel().getDestination().getCountry());
+//		System.out.println("\t" + query.getDateOfArrival() + " - " + query.getDateOfDeparture());
+//		
+//		Hotel h = new Hotel();
+//		h.setName(query.getHotel().getName());
+//		h.setAddress(query.getHotel().getAddress());
+//		
+//		System.out.println(h.getName());
+//		System.out.println(h.getAddress() == null);
+//		System.out.println(h.getAddress().equals(""));
+//		
+//		Specification<Hotel> spec = new HotelSpecification(h);
+//
+//		List<Hotel> result = hotelRepository.findAll(spec);
+//		
+//		System.out.println(result);
+		
+		Hotel h = new Hotel();
+		h.setName(query.getHotel().getName());
+		h.setAddress(query.getHotel().getAddress());
+		Destination d = new Destination();
+		d.setCity(query.getHotel().getDestination().getCity());
+		d.setCountry(query.getHotel().getDestination().getCountry());
+		h.setDestination(d);
+		
+
+
+		ExampleMatcher matcher = ExampleMatcher.matching()
+		  .withMatcher("name", match -> match.contains())
+		  .withMatcher("address", match -> match.contains())
+		  .withMatcher("destination.city", match -> match.contains())
+		  .withMatcher("destination.country", match -> match.contains());
+		
+		Example<Hotel> example = Example.of(h, matcher); 
+		
+		List<Hotel> hots = hotelRepository.findAll(example);
+
+
+		
+		return hots;
 	}
 	
 //	@RequestMapping(value="/showavailablerooms/{hotelId}/{size}", method = RequestMethod.POST, 

@@ -1,17 +1,83 @@
 
+$(document).ready(function() {
+	// TODO
+	$('.search-button').click(function(){
+		let search = {};
+		search.dateOfArrival = $('#sDateOfArrival').val();
+		search.dateOfDeparture = $('#sDateOfDeparture').val();
+		search.hotel = {};
+		search.hotel.name = $('#sname').val();
+		search.hotel.address = $('#saddress').val();
+		search.hotel.destination = {};
+		search.hotel.destination.city = $('#scity').val();
+		search.hotel.destination.country = $('#scountry').val();
+
+		$.ajax({
+			url: '/hotel/search',
+			type: 'post',
+			contentType: 'application/json',
+			data: JSON.stringify(search),
+			success: function(data) {
+				alert('ok');
+				console.log(data);
+			}
+		});
+	});
+});
+
+
 function showHotel() {
 	addServicesModal();
 
 	$('#items').empty();
 
-	$('#items').append("<div class=\"card\">\r\n" + 
+	$('#items').append("<div class=\"card mx-auto\" style=\"width: 40rem;\">\r\n" + 
 			"  <div class=\"card-header\">\r\n" + 
-			"    Pretraga hotela\r\n" + 
+			"    <h4>Pretraga hotela</h4>\r\n" + 
 			"  </div>\r\n" + 
 			"  <div class=\"card-body\">\r\n" + 
-			"    <h5 class=\"card-title\">U izradi</h5>\r\n" + 
-			"    <p class=\"card-text\">**</p>\r\n" + 
-			"    <a href=\"#\" class=\"btn btn-primary\">**</a>\r\n" + 
+//			"    <h5 class=\"card-title\">U izradi</h5>\r\n" + 
+//			"    <p class=\"card-text\">**</p>\r\n" + 
+//			"    <a href=\"#\" class=\"btn btn-primary\">**</a>\r\n" + 
+			"					<div class=\"form-row\">\r\n" + 
+			"						<div class=\"form-group col\">\r\n" + 
+			"							<input\r\n" + 
+			"								type=\"date\" class=\"form-control\" id=\"sDateOfArrival\"\r\n" + 
+			"								name=\"dateOfArrival\" >\r\n" + 
+			"						</div>\r\n" + 
+			"						<div class=\"form-group col col-md-auto\">\r\n" + 
+			"							<label>-</label>\r\n" + 
+			"						</div>\r\n" + 
+			"						<div class=\"form-group col\">\r\n" + 
+			"							<input type=\"date\" \r\n" + 
+			"								class=\"form-control\" name=\"dateOfDeparture\" id=\"sDateOfDeparture\">\r\n" + 
+			"						</div>\r\n" + 
+			"					</div>" +
+			"					<div class=\"form-row\">\r\n" + 
+			"						<div class=\"form-group col\">\r\n" + 
+			"							<input type=\"text\" \r\n" + 
+			"								class=\"form-control\" name=\"name\" placeholder=\"Naziv hotela\" id=\"sname\">\r\n" + 
+			"						</div>\r\n" + 
+			"					</div>" +
+			"					<div class=\"form-row\">\r\n" + 
+			"						<div class=\"form-group col-md-6\">\r\n" + 
+			"							<input type=\"text\" \r\n" + 
+			"								class=\"form-control\" name=\"address\" placeholder=\"Adresa hotela\" id=\"saddress\">\r\n" + 
+			"						</div>\r\n" + 
+			"						<div class=\"form-group col-md-3\">\r\n" + 
+			"							<input type=\"text\" \r\n" + 
+			"								class=\"form-control\" name=\"city\" placeholder=\"Grad\" id=\"scity\">\r\n" + 
+			"						</div>\r\n" + 
+			"						<div class=\"form-group col-md-3\">\r\n" + 
+			"							<input type=\"text\" \r\n" + 
+			"								class=\"form-control\" name=\"country\" placeholder=\"Drzava\" id=\"scountry\">\r\n" + 
+			"						</div>\r\n" + 
+			"					</div>" +
+			"					<div class=\"form-row\">\r\n" + 
+			"						<div class=\"form-group mx-auto\">\r\n" + 
+			" 							<button class=\"btn btn-primary search-button\" href=\"#\">Pretrazi</button>" +
+			"						</div>\r\n" + 
+			"					</div>" +
 			"  </div>\r\n" + 
 	"</div><br/>");
 

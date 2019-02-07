@@ -17,7 +17,8 @@ public class HotelReservationHelperClass {
 	private java.sql.Date dateOfArrival;
 	
 	private java.sql.Date dateOfDeparture;
-
+	
+	private Hotel hotel;
 
 	public List<Integer> getRoomConfigurations() {
 		return roomConfigurations;
@@ -73,5 +74,13 @@ public class HotelReservationHelperClass {
 
 	public void setDateOfDeparture(java.sql.Date dateOfDeparture) {
 		this.dateOfDeparture = dateOfDeparture;
+	}
+
+	public Hotel getHotel() {
+		return hotel;
+	}
+
+	public void setHotel(Hotel hotel) {
+		this.hotel = hotel;
 	}
 }
