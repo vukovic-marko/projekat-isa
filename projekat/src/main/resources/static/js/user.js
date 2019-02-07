@@ -54,6 +54,7 @@ $(document).ready(
             }
             else if (location.hash.includes("hotel")) {
 	        	showHotel();
+            }
         });
 
         $(window).trigger('hashchange');
