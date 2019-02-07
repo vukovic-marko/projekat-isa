@@ -82,7 +82,7 @@ function showHotel() {
 	"</div><br/>");
 
 	$('#items').append('<!-- prikaz hotela -->' +
-			'<div class=card-columns id="hotelcards">' +
+			'<div class="row justify-content-center" id="hotelcards">' +
 	'</div>');
 	$.ajax({
 		url: '/hotel/all',
@@ -114,7 +114,7 @@ $.fn.once = function(a, b) {
 function createHotel(data) {
  	let adr=data.address +' '+data.destination.city+' '+data.destination.country; 
  	
-	let html ="<div class=\"card\">" +
+	let html ="<div class=\"card\" style=\"width: 400px;margin: 5px 5px 5px 5px;\">" +
 		    "<div class=\"map map-container-5\" id=\"map"+data.id+"\" style=\"height: 250px\"></div>" +
 		    "<div class=\"card-body\">" +
 		      "<h5 class=\"card-title\">" + data.name + "</h5>" +
