@@ -16,4 +16,7 @@ public interface HotelRoomPriceRepository extends JpaRepository<HotelRoomPrice, 
     //@Query("SELECT priceTable FROM hotel_room_price priceTable WHERE priceTable.start_date <=(:date) AND priceTable.start_date >= (:date)")
 	@Query(value = "SELECT p FROM HotelRoomPrice p WHERE p.startDate <= :date AND p.endDate >= :date AND p.hotelRoom = :room")
 	public List<HotelRoomPrice> findBetweenDates(@Param("date") Date date, @Param("room") HotelRoom room);
+	
+	@Query(value = "SELECT p FROM HotelRoomPrice p WHERE p.hotelRoom = :room AND p.startDate <= :date AND p.endDate >= :date")
+	public HotelRoomPrice findPriceForRoomOnDate(@Param("date") Date date, @Param("room") HotelRoom room);
 }

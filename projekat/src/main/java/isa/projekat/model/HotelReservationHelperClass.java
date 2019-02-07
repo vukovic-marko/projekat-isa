@@ -10,6 +10,8 @@ public class HotelReservationHelperClass {
 	
 	private List<String> roomNumbers;
 	
+	private List<Long> services;
+	
 	private Long hotelId;
 	
 	private java.sql.Date dateOfArrival;
@@ -39,6 +41,14 @@ public class HotelReservationHelperClass {
 
 	public void setRoomNumbers(List<String> roomNumbers) {
 		this.roomNumbers = roomNumbers;
+	}
+
+	public List<Long> getServices() {
+		return services;
+	}
+
+	public void setServices(List<Long> services) {
+		this.services = services;
 	}
 
 	public Long getHotelId() {

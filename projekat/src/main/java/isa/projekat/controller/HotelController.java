@@ -1,7 +1,5 @@
 package isa.projekat.controller;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -27,8 +25,10 @@ import isa.projekat.model.HotelReservationHelperClass;
 import isa.projekat.model.HotelRoom;
 import isa.projekat.model.HotelRoomPrice;
 import isa.projekat.model.User;
+import isa.projekat.repository.HotelAdditionalServiceRepository;
 import isa.projekat.repository.HotelRepository;
 import isa.projekat.repository.HotelReservationRepository;
+import isa.projekat.repository.HotelRoomPriceRepository;
 import isa.projekat.repository.HotelRoomRepository;
 import isa.projekat.security.TokenUtils;
 import isa.projekat.service.CustomUserDetailsService;
@@ -54,6 +54,12 @@ public class HotelController {
 	
 	@Autowired
 	private HotelRepository hotelRepository;
+	
+	@Autowired
+	private HotelAdditionalServiceRepository additionalServiceRepository;
+	
+	@Autowired
+	private HotelRoomPriceRepository roomPriceRepository;
 	
 	@RequestMapping(value="/all", method = RequestMethod.GET)
 	public List<Hotel> getHotels() {
@@ -142,7 +148,7 @@ public class HotelController {
 			consumes = MediaType.APPLICATION_JSON_VALUE)
 	@PreAuthorize("hasRole('ROLE_USER')")
 	public @ResponseBody ResponseEntity<Boolean> addHotelReservation(@RequestBody HotelReservationHelperClass query, HttpServletRequest request) {
-
+		
 		String token = tokenUtils.getToken(request);
 		String username = this.tokenUtils.getUsernameFromToken(token);
 		User user = (User) this.userDetailsService.loadUserByUsername(username);
@@ -160,20 +166,49 @@ public class HotelController {
 			}
 		}
 		
+		List<HotelAdditionalService> additionalServices = new ArrayList<HotelAdditionalService>();
+		Double price = 0.0;
+		for (Long l : query.getServices()) {
+			HotelAdditionalService aS = additionalServiceRepository.findOne(l);
+			if (aS == null) 
+				return new ResponseEntity<Boolean>(false, HttpStatus.NOT_ACCEPTABLE);
+			else {
+				additionalServices.add(aS);
+				price += aS.getPrice();
+			}
+		}
+		
 		//if (!error) {
+		
+		
+		
+		
 		List<HotelRoom> r = new ArrayList<HotelRoom>();
 		Hotel h = hotelRepository.findOne(query.getHotelId());
 		HotelReservation res = new HotelReservation();
 		res.setDateOfArrival(dateOfArrival);
 		res.setDateOfDeparture(dateOfDeparture);
 		res.setNumberOfGuests(-1);
+		
 		res.setUser(user);
+		res.setServices(additionalServices);
 		for (String roomNumber : rooms) {
 			HotelRoom rr = hotelRoomRepository.findByRoomNumberAndHotel(roomNumber, h);
+			HotelRoomPrice rp = roomPriceRepository.findPriceForRoomOnDate(dateOfArrival, rr);
+			
+			long diff = dateOfDeparture.getTime() - dateOfArrival.getTime();
+			 
+			int diffDays = (int) (diff / (24 * 60 * 60 * 1000));
+			
+			price += diffDays * rp.getPrice();
+			//System.out.println("difference between days: " + diffDays);
+			
 			rr.getRoomReservations().add(res);
 			r.add(rr);
 		}
-
+		
+		
+		res.setPrice(price);
 		res.setRooms(r);
 
 		hotelReservationRepository.save(res);

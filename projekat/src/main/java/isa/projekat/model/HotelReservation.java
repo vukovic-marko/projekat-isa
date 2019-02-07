@@ -12,11 +12,12 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
-import javax.persistence.JoinColumns;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
@@ -34,9 +35,11 @@ public class HotelReservation implements Serializable{
 	private Long id;
 	
 	@Column(nullable = false)
+	@Temporal(TemporalType.DATE)
 	private Date dateOfArrival;
 	
 	@Column(nullable = false)
+	@Temporal(TemporalType.DATE)
 	private Date dateOfDeparture;
 	
 	@Column(nullable = false)
@@ -49,6 +52,15 @@ public class HotelReservation implements Serializable{
 			@JoinColumn(name = "reservation_id", referencedColumnName = "id")		},
 		inverseJoinColumns = @JoinColumn(name = "room_id", referencedColumnName = "id"))
 	private List<HotelRoom> rooms;
+	
+	@ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+	@JoinTable(name = "hotel_reservations_additional_services",
+			joinColumns = @JoinColumn(name = "reservation_id", referencedColumnName = "id"),
+			inverseJoinColumns = @JoinColumn(name = "service_id", referencedColumnName="id"))
+	private List<HotelAdditionalService> services;
+	
+	@Column(nullable = false)
+	private Double price;
 	
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "user_id", nullable = false)
@@ -101,5 +113,21 @@ public class HotelReservation implements Serializable{
 
 	public void setUser(User user) {
 		this.user = user;
+	}
+
+	public List<HotelAdditionalService> getServices() {
+		return services;
+	}
+
+	public void setServices(List<HotelAdditionalService> services) {
+		this.services = services;
+	}
+
+	public Double getPrice() {
+		return price;
+	}
+
+	public void setPrice(Double price) {
+		this.price = price;
 	}
 }

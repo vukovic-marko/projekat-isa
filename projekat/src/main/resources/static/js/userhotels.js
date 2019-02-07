@@ -134,7 +134,7 @@ function createHotel(data) {
 						$('#roomCards').append(
 								"<div class=\"card\">" +
 							    "	<div class=\"card-body\">" +
-							    "		<h5 class=\"card-title\"><input type=\"checkbox\" value=\"" + v.roomNumber + "\"/> " + v.roomNumber + "</h5>" +
+							    "		<h5 class=\"card-title\"><input meta-size=\"" + v.size + "\" meta-floorNumber=\"" + v.floorNumber + "\" meta-cena=\"" + cena + "\" meta-ukupnaCena=\"" + ukupnaCena + "\" type=\"checkbox\" value=\"" + v.roomNumber + "\"/> " + v.roomNumber + "</h5>" +
 							    "		<p class=\"card-text\">Broj kreveta: " + v.size + ", Sprat: " + v.floorNumber  + "</p>" +
 							    "		<p class=\"card-text\">Cena nocenja: " + cena + ", Ukupna cena: " + ukupnaCena + "</p>" +
 							    "	</div>" +
@@ -159,18 +159,36 @@ function createHotel(data) {
 					$('#addHotelReservationToCart').once("click", function(){
 						let roomCards = $('#roomCards .card input');
 						let rooms = [];
+						let roomsForStorage = [];
 						$.each(roomCards, function(i,v) {
 							if (v.checked == true) {
-								//console.log(v.value);
+//								console.log(v.attributes['meta-size'].value);
+//								console.log(v.attributes['meta-floorNumber'].value);
+//								console.log(v.attributes['meta-cena'].value);
+//								console.log(v.attributes['meta-ukupnaCena'].value);
+//								console.log(v);
 								rooms.push(v.value);
+								let rroom = {};
+								rroom.size = v.attributes['meta-size'].value;
+								rroom.floorNumber = v.attributes['meta-floorNumber'].value;
+								rroom.cena = v.attributes['meta-cena'].value;
+								rroom.ukupnaCena = v.attributes['meta-ukupnaCena'].value;
+								roomsForStorage.push(rroom);
 							}
 						});
 						
 						let servicesCards = $('#hotelServiceModal input');
 						let services = [];
+						let servicesForStorage = [];
 						$.each(servicesCards, function(i, v) {
-							if (v.checked == true)
+							if (v.checked == true) {
 								services.push(v.value);
+								let sservice = {};
+								sservice.name = v.attributes['meta-name'].value;
+								sservice.price = v.attributes['meta-price'].value;
+								servicesForStorage.push(sservice);
+							}
+								
 						});
 						
 						//console.log(rooms);
@@ -193,6 +211,8 @@ function createHotel(data) {
 						} else {
 							// ok
 							localStorage.setItem("hotelCart", JSON.stringify(hotelCart));
+							localStorage.setItem("roomsForStorage", JSON.stringify(roomsForStorage));
+							localStorage.setItem("servicesForStorage", JSON.stringify(servicesForStorage));
 							//localStorage.removeItem("hotelCart");
 							$('#availableRoomsModal').modal('toggle');
 							
@@ -201,6 +221,10 @@ function createHotel(data) {
 							
 							$('#hotelcart').once("click", function() {
 								console.log(JSON.parse(localStorage.getItem("hotelCart")));
+//								console.log("---");
+//								console.log(JSON.parse(localStorage.getItem("roomsForStorage")));
+								console.log(JSON.parse(localStorage.getItem("servicesForStorage")));
+								
 								
 								let hotelRes = JSON.parse(localStorage.getItem("hotelCart"));
 								console.log(hotelRes.dateOfArrival);
@@ -209,7 +233,37 @@ function createHotel(data) {
 								
 								drawHotelCartModal();
 								
-								$('#hotelCartModal .modal-body').append(hotelRes.dateOfArrival + " - " + hotelRes.dateOfDeparture);
+								$('#dateCart').append("<h4>" + hotelRes.dateOfArrival + "  -  " + hotelRes.dateOfDeparture + "</h4><br />");
+								//$('#hotelCartModal .modal-body').append(hotelRes.dateOfArrival + " - " + hotelRes.dateOfDeparture);
+								
+								let finalnaCena = 0;
+								
+								let roomsForStorage = JSON.parse(localStorage.getItem("roomsForStorage"));
+								$.each(roomsForStorage, function(a, b) {
+									$('#roomCardsCart').append(
+											"<div class=\"card\">" +
+										    "	<div class=\"card-body\">" +
+										    "		<h5 class=\"card-title\">Soba: " + hotelRes.roomNumbers[a] + "</h5>" +
+										    "		<p class=\"card-text\">Broj kreveta: " + b.size + ", Sprat: " + b.floorNumber  + "</p>" +
+										    "		<p class=\"card-text\">Cena nocenja: " + b.cena + ", Ukupna cena: " + b.ukupnaCena + "</p>" +
+										    "	</div>" +
+										  	"</div><br />");
+									finalnaCena += parseInt(b.ukupnaCena);
+								});
+								
+								let servicesForStorage = JSON.parse(localStorage.getItem("servicesForStorage"));
+								$.each(servicesForStorage, function(a,b) {
+									$('#servicesCart').append(
+											"<div class=\"card\">" +
+										    "	<div class=\"card-body\">" +
+										    "		<h5 class=\"card-title\">Soba: " + b.name + "</h5>" +
+										    "		<p class=\"card-text\">Cena: " + b.price + "</p>" +
+										    "	</div>" +
+										  	"</div><br />");
+									finalnaCena += parseInt(b.price);
+								});
+								
+								$('#finalPriceCart').append("<h4>Ukupna cena: " + finalnaCena  + "</h4><br/>");
 								
 								$('#hotelCartModal').modal('show');
 								
@@ -223,6 +277,7 @@ function createHotel(data) {
 										data: JSON.stringify(r),
 										success: function() {
 											alert('Rezervacija uspesno dodata!');
+											$('#hotelCartModal').modal('hide');
 										}
 									});
 									
@@ -308,7 +363,7 @@ function loadHotel(id, reservation) {
 					$('#hotelServiceModal thead').append('<tr><th></th><th>Naziv usluge</th><th>Cena usluge</th></tr>');
 					$.each(data, function(i, v) {
 						$('#hotelServiceModal tbody').append('<tr>' + 
-								'<td><input type="checkbox" value="' + v.id + '" + v.name + "\" />' +
+								'<td><input meta-name="' + v.name + '" meta-price="' + v.price + '" type="checkbox" value="' + v.id + '" + v.name + "\" />' +
 								'<td>' + v.name + '</td>' + 
 								'<td>' + v.price + '</td></tr>');
 					});
@@ -394,7 +449,7 @@ function drawAvailableRoomsModal() {
 				" 					<div  id=\"roomCards\">\r\n" +
 				" 					</div>" +
 				" 					<div class=\"text-center\"><a href=\"#\" id=\"additionalServicesReservationLink\">Dodatne usluge</a></div>"	+
-				"					<div class=\"text-center\"><hr /><button id=\"addHotelReservationToCart\" type=\"button\" class=\"btn btn-primary\">Rezervisi</button></div>\r\n" + 
+				"					<div class=\"text-center\"><hr /><button id=\"addHotelReservationToCart\" type=\"button\" class=\"btn btn-primary\">Dodaj u korpu</button></div>\r\n" + 
 				"				</div>\r\n " +
 				"			</div>\r\n" + 
 				"		</div>\r\n" + 
@@ -412,8 +467,13 @@ function drawHotelCartModal() {
 				"					<button type=\"button\" class=\"close\" data-dismiss=\"modal\">×</button>\r\n" + 
 				"				</div>\r\n" + 
 				"				<div class=\"modal-body\">\r\n" + 
-//				" 					<div  id=\"roomCards\">\r\n" +
-//				" 					</div>" +
+				"					<div id=\"dateCart\"></div>\r\n" +
+				"					<div id=\"finalPriceCart\"</div>\r\n" +
+				"					<h4>Sobe:</h4><br />" +
+				" 					<div  id=\"roomCardsCart\">\r\n" +
+				" 					</div><hr />" +
+				"					<h4>Dodatne usluge:</h4><br/>" +
+				"					<div id=\"servicesCart\"></div>\r\n" +
 				"					<div class=\"text-center\"><hr /><button id=\"makeHotelReservationButton\" type=\"button\" class=\"btn btn-primary\">Rezervisi</button></div>\r\n" + 
 				"				</div>\r\n " +
 				"			</div>\r\n" + 
