@@ -1,6 +1,11 @@
 package isa.projekat.service;
 
-import java.util.Date;
+import java.sql.Date;
+import java.util.Calendar;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
@@ -13,6 +18,7 @@ import org.springframework.stereotype.Service;
 
 import isa.projekat.model.BranchOffice;
 import isa.projekat.model.Car;
+import isa.projekat.model.CarReservation;
 import isa.projekat.model.Destination;
 import isa.projekat.model.RentACarCompany;
 import isa.projekat.model.User;
@@ -22,6 +28,7 @@ import isa.projekat.repository.DestinationRepository;
 import isa.projekat.repository.RentACarCompanyRepository;
 import isa.projekat.repository.UserRepository;
 import isa.projekat.security.TokenUtils;
+
 
 @Service
 public class RentACarAdminService {
@@ -178,12 +185,10 @@ public class RentACarAdminService {
 	}
 
 	public Long addCar(HttpServletRequest request,@Valid Car c) {
-		String token = tokenUtils.getToken(request);
-		if (token == null)
-			return null;
-		String uname = this.tokenUtils.getUsernameFromToken(token);
-		User user = (User) this.userDetailsService.loadUserByUsername(uname);
 		
+		User user=getUserFromRequestToken(request);
+		if(user==null)
+			return null;
 		RentACarCompany comp=rentACarCompanyRepository.findOneByAdmin(user);
 		if(comp==null)
 			return null;
@@ -242,6 +247,94 @@ public class RentACarAdminService {
 		if(car2!=null)
 			return false;
 		return true;
+	}
+
+	
+	public Map<String,String> getReport(HttpServletRequest request, Map<String, String> params) {
+		User u=getUserFromRequestToken(request);
+		if(u==null)
+			return null;
+		Map<String,String> ret=new LinkedHashMap<>();
+		String dateStart = params.get("startDate");
+		if(dateStart==null)
+			return null;
+		String[] parts = dateStart.split("/");
+		java.sql.Date dstart = new java.sql.Date(Integer.parseInt(parts[2]) - 1900, Integer.parseInt(parts[1]) - 1, Integer.parseInt(parts[0]));
+		dateStart = params.get("endDate");
+		if(dateStart==null)
+			return null;
+		parts = dateStart.split("/");
+		java.sql.Date dend = new java.sql.Date(Integer.parseInt(parts[2]) - 1900, Integer.parseInt(parts[1]) - 1, Integer.parseInt(parts[0]));
+		if(dend.getTime()<dstart.getTime())
+			return null;
+		String temp=params.get("type");
+		List<CarReservation> crs=carRepository.getReport(dstart, dend);
+		if(temp.equals("Dnevni"))
+			ret= getDailyReport(dstart,dend,crs,ret,24*60*60*1000);
+		else if(temp.equals("Nedeljni"))
+			ret= getDailyReport(dstart,dend,crs,ret,7*24*60*60*1000);
+		else
+			ret=getMonthly(dstart,dend,crs,ret);
+		return ret;
+	}
+	
+	private Map<String, String> getMonthly(Date dstart, Date dend, List<CarReservation> crs, Map<String, String> ret) {
+		Calendar cal=Calendar.getInstance();
+		Integer j=1;
+		
+		while(true) {
+			Integer sum=0;
+			cal.set(dstart.getYear()+1900, dstart.getMonth(), 1);
+			cal.add(Calendar.MONTH,1);
+			long end=cal.getTimeInMillis();
+			boolean flag=false;
+			if(end>dend.getTime())
+				{end=dend.getTime();flag=true;}
+			for(CarReservation cr:crs) {
+				if(cr.getStartDate().getTime()<end && cr.getStartDate().getTime()>=dstart.getTime())
+					sum++;
+			}
+			ret.put(j.toString(), sum.toString());
+			dstart.setTime(end);
+			j++;
+			if(flag)
+				break;
+		}
+		return ret;
+	}
+
+	private Map<String, String> getDailyReport(Date dstart, Date dend, List<CarReservation> crs, Map<String, String> ret,long length) {
+		
+		Integer j=1;
+		while(true) {
+			Integer sum=0;
+			long end=dstart.getTime()+length;
+			boolean flag=false;
+			if(end>dend.getTime())
+				{end=dend.getTime();flag=true;}
+			for(CarReservation cr:crs) {
+				if(cr.getStartDate().getTime()<end && cr.getStartDate().getTime()>=dstart.getTime())
+					sum++;
+
+			}
+			ret.put(j.toString(), sum.toString());
+			dstart.setTime(dstart.getTime()+length);
+			j++;
+			if(flag)
+				break;
+			
+		}
+		return ret;
+	}
+
+	private User getUserFromRequestToken(HttpServletRequest request) {
+		//TODO  izbaci ovaj kod iz ostalih metoda, premesti ovdee
+		String token = tokenUtils.getToken(request);
+		if (token == null)
+			return null;
+		String uname = this.tokenUtils.getUsernameFromToken(token);
+		User user = (User) this.userDetailsService.loadUserByUsername(uname);
+		return user;
 	}
 
 }

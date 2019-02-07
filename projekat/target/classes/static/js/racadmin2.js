@@ -257,11 +257,15 @@ function deleteCarListeners() {
 function showReports(){
 	$('#items').empty();
 
-	
+        
 	$('#items').load('rent/parts.html #reportsForm',function(){
-		 $.validator.addMethod('ge', function (value, element,
+		
+			$('#items').append('<div id="chartContainer" style="height: 300px; width: 100%;"></div>');
+    
+		$.validator.addMethod('ge', function (value, element,
                  param) {
-                 if ($(param).val() == "")
+			 
+			      if ($(param).val() == "")
                      return true;
                  if (this.optional(element) && value == "")
                      return true;
@@ -334,7 +338,42 @@ function showReports(){
                  "dd/mm/yy");
              $('#searchBtn').click(function () {
             	 if( $('#reportsForm').valid()){
-            		 
+            		 let d={};
+            		
+            		 d.endDate=$('#enddate').val();
+            		 d.startDate=$('#startdate').val();
+            		 d.type=$('#type').val();
+            		 $.ajax({
+            			 	data:JSON.stringify(d),
+            				url : 'racadmin/report',
+            				contentType : 'application/json',
+            				type : 'post',
+            				success : function(data) {
+            					let dps=[];
+            					let dps1={};
+            					dps1.x=[];
+            					dps1.y=[];
+            					dps1.type='bar';
+            					for (x in data) {
+            						dps1.x.push(x);
+            						dps1.y.push(data[x]);
+            					}
+            					dps.push(dps1);
+            				
+            					  var layout = { xaxis:
+                                  {tickformat: ',d',
+                                    fixedrange: true
+                                  },
+                                  yaxis:
+                                  {tickformat: ',d',
+                                    fixedrange: true
+                                  }
+            					  	};
+            					  
+            					
+            					Plotly.newPlot('chartContainer', dps, layout, {title: 'Izveštaj'});
+            				}
+            			});
             		 
             	 }
             	 
