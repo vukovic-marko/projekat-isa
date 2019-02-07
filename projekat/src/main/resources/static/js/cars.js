@@ -4,6 +4,7 @@ function showCars(data) {
 		let html = createCar(data[i]);
 		$('#cars').append(html)
 	}
+	
 
 }
 
@@ -29,7 +30,7 @@ function createCar(d) {
     '<div class="card-footer">'+
         '<div class="row">'+
         '<div class=" col-md-6"><h3>' + d.totalPrice + '</h3></div>'+
-        '<div class=" col-md-6"><h3><button class="btn btn-primary">Rezervisi</button></h3></div>'+
+        '<div class=" col-md-6"><h3><button class="btn rsv-car btn-primary" id="'+d.id+'">Rezervisi</button></h3></div>'+
         '</div>'+
     '</div>'+
 '</div>' +
