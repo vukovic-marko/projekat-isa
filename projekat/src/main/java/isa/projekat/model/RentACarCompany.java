@@ -33,7 +33,7 @@ public class RentACarCompany {
 	@OneToMany(fetch=FetchType.EAGER,cascade= CascadeType.ALL,orphanRemoval = true)
 	private Set<BranchOffice> branchOffices;
 	
-	@OneToMany(fetch=FetchType.LAZY,cascade= CascadeType.ALL,orphanRemoval = true)
+	@OneToMany(fetch=FetchType.EAGER,cascade= CascadeType.ALL,orphanRemoval = true)
 	private Set<Car> cars;
 	
 	public Set<Car> getCars() {

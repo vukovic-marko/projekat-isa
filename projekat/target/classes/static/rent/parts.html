@@ -304,14 +304,19 @@
 					</select>
 				</div>
 				<div class="form-group">
+					<label for="passengers">Broj putnika</label> <input type="number"
+						min="1" max="6" value="1" class="form-control" id="passengers"
+						name="passengers">
+				</div>
+				<div class="form-group">
 					<label for="minprice">Minimalna cena (€)</label> <input
-						type="number" min="1" class="form-control"
-						id="minprice" name="minprice">
+						type="number" min="1" class="form-control" id="minprice"
+						name="minprice">
 				</div>
 				<div class="form-group">
 					<label for="maxprice">Maksimalna cena (€)</label> <input
-						type="number" min="1"  class="form-control"
-						id="maxprice" name="maxprice">
+						type="number" min="1" class="form-control" id="maxprice"
+						name="maxprice">
 				</div>
 				<div>
 					<button type="button" id="searchBtn" class="btn btn-primary">Traži</button>
@@ -320,8 +325,94 @@
 				</div>
 			</form>
 		</div>
-	<div class="row" id="cars"></div>
 	</div>
+
+
+	<div class="row" id="searchRACdiv">
+		<a data-toggle="collapse" href="#asd" aria-expanded="false"
+			class="collapsed"><h2>Pretraga</h2></a>
+
+		<div class="col-md-12 collapse" id="asd"
+			style="margin: auto; width: -webkit-fill-available;" id="search">
+
+			<form style="margin: auto; width: -webkit-fill-available;"
+				id="searchForm" novalidate="novalidate">
+
+				<div class="form-group">
+					<label for="location">Lokacija</label> <select
+						class="form-control dest valid" id="location" name="location"
+						aria-invalid="false">
+						<option selected value="-1"></option>
+					</select>
+				</div>
+				<div class="form-group">
+					<label for="name">Naziv</label> <input type="text"
+						class="form-control hasDatepicker" id="name" name="name">
+				</div>
+
+				<div class="form-group">
+					<label for="startdate">Datum preuzimanja</label> <input type="text"
+						class="form-control" id="startdate" name="startdate">
+
+				</div>
+				<div class="form-group">
+					<label for="enddate">Datum vraćanja</label> <input type="text"
+						class="form-control" name="enddate" id="enddate">
+				</div>
+
+				<div>
+					<button type="button" id="searchBtn" class="btn btn-primary">Traži</button>
+					<label style="display: none" id="btn-error" class="error"
+						for="searchBtn"></label>
+				</div>
+			</form>
+
+		</div>
+	</div>
+
+
+
+	<!--    -->
+	<div class="row" id="reportsDiv">
+
+		<div class="col-md-12 collapse" id="repdiv"
+			style="margin: auto; width: -webkit-fill-available;" id="search">
+			<form style="margin: auto; width: -webkit-fill-available;"
+				id="reportsForm">
+				<div class="form-group">
+					<label for="startdate">Od</label> <input type="text"
+						class="form-control" id="startdate" name="startdate">
+				</div>
+				<div class="form-group">
+					<label for="enddate">Do</label> <input type="text"
+						class="form-control" name="enddate" id="enddate">
+				</div>
+				<div class="form-group">
+					<label for="type">Tip:</label> <select class="form-control"
+						id="type" name="type">
+						<option selected value="Dnevni">Dnevni</option>
+						<option value="Nedeljni">Nedeljni</option>
+						<option value="Mesečni">Mesečni</option>
+					</select>
+				</div>
+				
+				<div>
+					<button type="button" id="searchBtn" class="btn btn-primary">Prikaži
+						izveštaj</button>
+					<label style="display: none" id="btn-error" class="error"
+						for="searchBtn"></label>
+				</div>
+			</form>
+
+		</div>
+
+
+
+
+	</div>
+
+
+
 
 
 

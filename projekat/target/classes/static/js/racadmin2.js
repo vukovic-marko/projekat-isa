@@ -52,7 +52,19 @@ function myCarsRACAdmin() {
 }
 
 function createCarTR(value) {
-	html = '<tr class="car-row" id="' + value.id + '">';
+	let flag=true;
+	$.ajax({
+		async:false,
+		url:"racadmin/checkcar/"+value.id,
+		success:function(ret){
+			flag=ret;
+		}
+		
+	});
+	let txt="";
+	if(!flag)
+		txt="-uneditable";
+	html = '<tr class="car-row'+txt+'" id="' + value.id + '">';
 	html += '<td class="name">' + value.name + '</td>';
 	html += '<td class="brand">' + value.brand + '</td>';
 	html += '<td class="model">' + value.model + '</td>';
@@ -62,7 +74,11 @@ function createCarTR(value) {
 	html += '<td class="doors">' + value.doors + '</td>';
 	html += '<td class="transmission">' + value.transmission + '</td>';
 	html += '<td class="price">' + value.price + '</td>';
-	html += '<td><button class="btn rembtn btn-danger close">×</button></td>';
+	
+	if(flag)
+		html += '<td><button class="btn rembtn btn-danger close">×</button></td>';
+	else
+		html += '<td> </td>';
 	html += '</tr>';
 	return html;
 }
@@ -235,4 +251,135 @@ function deleteCarListeners() {
 		});
 
 	});
+}
+
+
+function showReports(){
+	$('#items').empty();
+
+        
+	$('#items').load('rent/parts.html #reportsForm',function(){
+		
+			$('#items').append('<div id="chartContainer" style="height: 300px; width: 100%;"></div>');
+    
+		$.validator.addMethod('ge', function (value, element,
+                 param) {
+			 
+			      if ($(param).val() == "")
+                     return true;
+                 if (this.optional(element) && value == "")
+                     return true;
+                 let t=value.split('/');
+                 if(t.length!=3)
+                	 return false;
+                 let t2=$(param).val().split('/');
+                 if(t2.length!=3)
+                	 return true;
+                 let date1=new Date(t[2],t[1],t[0]);
+                 let date2=new Date(t2[2],t2[1],t2[0]);
+                 return date1>=date2;
+             }, 'poruka xD');
+             $.validator.addMethod('le', function (value, element,param) {
+            		 if ($(param).val() == "")
+                         return true;
+                     if (this.optional(element) && value == "")
+                         return true;
+                     let t=value.split('/');
+                     if(t.length!=3)
+                    	 return false;
+                     let t2=$(param).val().split('/');
+                     if(t2.length!=3)
+                    	 return true;
+                     let date1=new Date(t[2],t[1],t[0]);
+                     let date2=new Date(t2[2],t2[1],t2[0]);
+                     return date1<=date2;
+             }, 'poruka xD');
+             $.validator.addMethod('rq', function (value, element,
+                 param) {
+                 if (value == "")
+                     return false;
+
+                 return true;
+
+             }, 'poruka xD');
+             $('#reportsForm')
+                 .validate(
+                     {
+                         rules: {
+                             enddate: {
+                                 ge: '#startdate',
+                                 rq: true
+                             },
+                             startdate: {
+                                 le: '#enddate',
+                                 rq: true
+                             }
+                             
+                         },
+                         messages: {
+                        	 enddate: {
+                                 ge: 'Datum kraja mora biti veći ili jednak datumu početka',
+                                 rq: 'Datum kraja je obavezan'
+                             },
+                             startdate: {
+                                 le: 'Datum početka mora biti manji ili jednak datumau kraja',
+                                 rq: 'Datum početka je obavezan'
+                             }
+      
+                         }
+                     });
+             
+          
+             $("#enddate").datepicker();
+             $("#enddate").datepicker("option", "dateFormat",
+                 "dd/mm/yy");
+             $("#startdate").datepicker();
+             $("#startdate").datepicker("option", "dateFormat",
+                 "dd/mm/yy");
+             $('#searchBtn').click(function () {
+            	 if( $('#reportsForm').valid()){
+            		 let d={};
+            		
+            		 d.endDate=$('#enddate').val();
+            		 d.startDate=$('#startdate').val();
+            		 d.type=$('#type').val();
+            		 $.ajax({
+            			 	data:JSON.stringify(d),
+            				url : 'racadmin/report',
+            				contentType : 'application/json',
+            				type : 'post',
+            				success : function(data) {
+            					let dps=[];
+            					let dps1={};
+            					dps1.x=[];
+            					dps1.y=[];
+            					dps1.type='bar';
+            					for (x in data) {
+            						dps1.x.push(x);
+            						dps1.y.push(data[x]);
+            					}
+            					dps.push(dps1);
+            				
+            					  var layout = { xaxis:
+                                  {tickformat: ',d',
+                                    fixedrange: true
+                                  },
+                                  yaxis:
+                                  {tickformat: ',d',
+                                    fixedrange: true
+                                  }
+            					  	};
+            					  
+            					
+            					Plotly.newPlot('chartContainer', dps, layout, {title: 'Izveštaj'});
+            				}
+            			});
+            		 
+            	 }
+            	 
+             });
+
+		
+	});
+	
 }

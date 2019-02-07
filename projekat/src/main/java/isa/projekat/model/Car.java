@@ -9,34 +9,51 @@ import javax.persistence.Id;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 @Entity
-@Table(name="car")
+@Table(name = "car")
 public class Car {
 	@Id
-	@GeneratedValue(strategy=GenerationType.AUTO)
+	@GeneratedValue(strategy = GenerationType.AUTO)
 	private Long id;
-	
-	@Column(nullable=false)
+
+	@Column(nullable = false)
 	private String name;
-	@Column(nullable=false)
+	@Column(nullable = false)
 	private String model;
-	@Column(nullable=false)
+	@Column(nullable = false)
 	private String brand;
-	@Column(nullable=false)
+	@Column(nullable = false)
 	private int doors;
-	@Column(nullable=false)
+	@Column(nullable = false)
 	private int year;
-	
-	@ManyToOne(fetch=FetchType.EAGER)
+	@JsonIgnore
+	@ManyToOne(fetch = FetchType.EAGER, optional = false)
 	private RentACarCompany company;
 	private CarType type;
-	
-	@Column(nullable=false)
-	private int price;
-	@Column(nullable=false)
+
+	@Column(nullable = false)
+	private double price;
+	@Column(nullable = false)
 	private int seats;
-	
-	
+	private double totalPrice;//samo kad se salje na front
+	public double getTotalPrice() {
+		return totalPrice;
+	}
+
+	public void setTotalPrice(double totalPrice) {
+		this.totalPrice = totalPrice;
+	}
+
+	public RentACarCompany getCompany() {
+		return company;
+	}
+
+	public void setCompany(RentACarCompany company) {
+		this.company = company;
+	}
+
 	private Transmission transmission;
 
 	public Long getId() {
@@ -95,11 +112,11 @@ public class Car {
 		this.type = type;
 	}
 
-	public int getPrice() {
+	public double getPrice() {
 		return price;
 	}
 
-	public void setPrice(int price) {
+	public void setPrice(double price) {
 		this.price = price;
 	}
 
@@ -118,6 +135,5 @@ public class Car {
 	public void setTransmission(Transmission transmission) {
 		this.transmission = transmission;
 	}
-	
-	
+
 }

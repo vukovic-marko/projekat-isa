@@ -10,6 +10,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
@@ -43,6 +44,9 @@ public class HotelRoom {
 			fetch = FetchType.LAZY,
 			mappedBy = "hotelRoom")
 	private List<HotelRoomPrice> roomPrices;
+	
+	@ManyToMany(mappedBy = "rooms")
+	private List<HotelReservation> roomReservations;
 
 	@JsonIgnore
 	public Hotel getHotel() {
@@ -91,5 +95,14 @@ public class HotelRoom {
 
 	public void setRoomPrices(List<HotelRoomPrice> roomPrices) {
 		this.roomPrices = roomPrices;
+	}
+	
+	@JsonIgnore
+	public List<HotelReservation> getRoomReservations() {
+		return roomReservations;
+	}
+
+	public void setRoomReservations(List<HotelReservation> roomReservations) {
+		this.roomReservations = roomReservations;
 	}
 }

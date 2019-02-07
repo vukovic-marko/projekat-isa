@@ -1,5 +1,6 @@
 package isa.projekat.controller;
 
+import java.util.Map;
 import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
@@ -97,5 +98,16 @@ public class RentACarAdminController {
 		return rentACarAdminService.deleteCar(request,id);
 	}
 	
+	@PreAuthorize("hasRole('ROLE_RENT_A_CAR_ADMIN')")
+	@GetMapping(value = "/checkcar/{id}",produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+	public boolean checkCar(HttpServletRequest request, @PathVariable(value = "id") String id) {
+		return rentACarAdminService.checkCar(request,id);
+	}
+	
+	@PreAuthorize("hasRole('ROLE_RENT_A_CAR_ADMIN')")
+	@PostMapping(value = "/report",consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
+	public Map<String,String> getReport(HttpServletRequest request,@RequestBody Map<String,String> params) {
+		return rentACarAdminService.getReport(request,params);
+	}
 	
 }

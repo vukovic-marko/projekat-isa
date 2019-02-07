@@ -38,7 +38,7 @@ public class User implements UserDetails {
 
 	@Version
 	private Long version;
-	@JsonProperty(access = Access.WRITE_ONLY)
+	//@JsonProperty(access = Access.WRITE_ONLY)
 	@ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
 	@JoinTable(name = "user_authority", joinColumns = @JoinColumn(name = "user_id", referencedColumnName = "id"), inverseJoinColumns = @JoinColumn(name = "authority_id", referencedColumnName = "id"))
 	private List<Authority> authorities;
@@ -92,6 +92,24 @@ public class User implements UserDetails {
 	public void setHotel(Hotel hotel) {
 		this.hotel = hotel;
 	}
+	
+	//-----------------------------------
+	// Rezervacija hotela
+	
+	@OneToMany(cascade = CascadeType.ALL,
+			fetch = FetchType.LAZY,
+            mappedBy = "user")
+	private List<HotelReservation> hotelReservations;
+	
+	public List<HotelReservation> getHotelReservations() {
+		return hotelReservations;
+	}
+
+	public void setHotelReservations(List<HotelReservation> hotelReservations) {
+		this.hotelReservations = hotelReservations;
+	}
+	
+	//-----------------------------------
 	
 	
 	
