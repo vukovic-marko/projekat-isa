@@ -19,6 +19,7 @@ $(document).ready(function() {
 			data: JSON.stringify(search),
 			success: function(data) {
 				alert('ok');
+				console.log(data);
 			}
 		});
 	});
