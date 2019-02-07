@@ -31,9 +31,15 @@ public class RentACarController {
 	}
 	
 	@GetMapping(value = "/{id}/destinations",produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
-	public Set<Destination> delete( @PathVariable(value = "id") String id) {
+	public Set<Destination> destinationsOfService( @PathVariable(value = "id") String id) {
 		return rentACarService.getDestinations(id);
 	}
+	
+	@GetMapping(value = "/destinations",produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+	public List<Destination> allDestinations( ) {
+		return rentACarService.getAllDestinations();
+	}
+	
 	//vraca automobile koji su dostupni
 	@PostMapping(value = "/freecars",produces = MediaType.APPLICATION_JSON_UTF8_VALUE,
 			consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
@@ -41,7 +47,10 @@ public class RentACarController {
 		return rentACarService.getFreeCars(params);
 	}
 	
-	
+	@PostMapping(value = "/findcompanies",produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+	public Set<RentACarCompany> finCompanies(@RequestBody Map<String,String> params) {
+		return rentACarService.getCompanies(params);
+	}
 	
 	/*
 	//@GetMapping(value = "/cars/{id}",produces = MediaType.APPLICATION_JSON_UTF8_VALUE)

@@ -18,6 +18,10 @@ public interface CarRepository extends JpaRepository<Car, Long> {
 	// public RentACarCompany findOneByEmail(String email);
 
 	@Query("select c from Car c "+
-	"where c.company=?1 and c.type=?3 and c.seats>=?4 and not exists (select cr.car from CarReservation cr where c.id=cr.car.id and cr.endDate<=?2)")
+	"where c.company=?1 and c.type=?3 and c.seats>=?4 and c not in (select cr.car from CarReservation cr where cr.endDate<=?2)")
 	public List<Car> findFreeCars(RentACarCompany c, Date date, CarType type,int passengers);
+	
+	@Query("select cr.car from CarReservation cr "+
+			"where cr.car=?1 and cr.endDate>=?2")
+	public Car checkIfReserved(Car c,Date d);
 }

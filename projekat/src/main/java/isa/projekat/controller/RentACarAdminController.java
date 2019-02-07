@@ -97,5 +97,10 @@ public class RentACarAdminController {
 		return rentACarAdminService.deleteCar(request,id);
 	}
 	
+	@PreAuthorize("hasRole('ROLE_RENT_A_CAR_ADMIN')")
+	@GetMapping(value = "/checkcar/{id}",produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+	public boolean checkCar(HttpServletRequest request, @PathVariable(value = "id") String id) {
+		return rentACarAdminService.checkCar(request,id);
+	}
 	
 }

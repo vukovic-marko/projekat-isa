@@ -45,10 +45,10 @@ public class RentACarService {
 
 	@Autowired
 	private CarRepository carRepository;
-	
+
 	@Autowired
 	private BranchesRepository branchRepository;
-	
+
 	public boolean edit(HttpServletRequest request, User u) {
 		String token = tokenUtils.getToken(request);
 		if (token == null)
@@ -96,41 +96,41 @@ public class RentACarService {
 			return false;
 		String uname = this.tokenUtils.getUsernameFromToken(token);
 		User user = (User) this.userDetailsService.loadUserByUsername(uname);
-		if (c.getLocation().getCity()== null || c.getLocation().getCity().equals(""))
+		if (c.getLocation().getCity() == null || c.getLocation().getCity().equals(""))
 			return false;
-		if (c.getLocation().getCountry()== null || c.getLocation().getCountry().equals(""))
+		if (c.getLocation().getCountry() == null || c.getLocation().getCountry().equals(""))
 			return false;
 		if (c.getName() == null || c.getName().equals(""))
 			return false;
 		if (c.getAddress() == null || c.getAddress().equals(""))
 			return false;
-		RentACarCompany com=rentACarCompanyRepository.findOneByAdmin(user);
-		if(com==null)
-			com=new RentACarCompany();
+		RentACarCompany com = rentACarCompanyRepository.findOneByAdmin(user);
+		if (com == null)
+			com = new RentACarCompany();
 		com.setName(c.getName());
 		com.setAddress(c.getAddress());
-		com.setDescription(c.getDescription()!=null?c.getDescription():"");
+		com.setDescription(c.getDescription() != null ? c.getDescription() : "");
 		com.setLocation(c.getLocation());
-		Destination d=destinationRepository.findByCountryAndCity(c.getLocation().getCountry(), c.getLocation().getCity());
-		if(d!=null)
+		Destination d = destinationRepository.findByCountryAndCity(c.getLocation().getCountry(), c.getLocation().getCity());
+		if (d != null)
 			com.setLocation(d);
 		com.setAdmin(user);
 		rentACarCompanyRepository.save(com);
 		return true;
 	}
 
-	public Long addBranch(HttpServletRequest request,@Valid BranchOffice bo) {
+	public Long addBranch(HttpServletRequest request, @Valid BranchOffice bo) {
 		String token = tokenUtils.getToken(request);
 		if (token == null)
 			return null;
 		String uname = this.tokenUtils.getUsernameFromToken(token);
 		User user = (User) this.userDetailsService.loadUserByUsername(uname);
-		RentACarCompany c=rentACarCompanyRepository.findOneByAdmin(user);
-		if(c==null)
+		RentACarCompany c = rentACarCompanyRepository.findOneByAdmin(user);
+		if (c == null)
 			return null;
 		c.getBranchOffices().add(bo);
-		Destination d=destinationRepository.findByCountryAndCity(bo.getLocation().getCountry(), bo.getLocation().getCity());
-		if(d!=null)
+		Destination d = destinationRepository.findByCountryAndCity(bo.getLocation().getCountry(), bo.getLocation().getCity());
+		if (d != null)
 			bo.setLocation(d);
 		rentACarCompanyRepository.save(c);
 		return bo.getId();
@@ -140,12 +140,12 @@ public class RentACarService {
 		String token = tokenUtils.getToken(request);
 		if (token == null)
 			return false;
-		BranchOffice bo=branchRepository.findOne(Long.parseLong(id));
-		if(bo==null)
+		BranchOffice bo = branchRepository.findOne(Long.parseLong(id));
+		if (bo == null)
 			return false;
 		String uname = this.tokenUtils.getUsernameFromToken(token);
 		User user = (User) this.userDetailsService.loadUserByUsername(uname);
-		RentACarCompany c=rentACarCompanyRepository.findOneByAdmin(user);
+		RentACarCompany c = rentACarCompanyRepository.findOneByAdmin(user);
 		c.getBranchOffices().remove(bo);
 		rentACarCompanyRepository.save(c);
 		return true;
@@ -155,13 +155,13 @@ public class RentACarService {
 		String token = tokenUtils.getToken(request);
 		if (token == null)
 			return false;
-		BranchOffice bo2=branchRepository.findOne((bo.getId()));
-		if(bo2==null)
+		BranchOffice bo2 = branchRepository.findOne((bo.getId()));
+		if (bo2 == null)
 			return false;
 		bo2.setAddress(bo.getAddress());
-		Destination d=destinationRepository.findByCountryAndCity(bo.getLocation().getCountry(),	bo.getLocation().getCity());
-		if(d==null) {
-			d=new Destination();
+		Destination d = destinationRepository.findByCountryAndCity(bo.getLocation().getCountry(), bo.getLocation().getCity());
+		if (d == null) {
+			d = new Destination();
 			d.setCity(bo.getLocation().getCity());
 			d.setCountry(bo.getLocation().getCountry());
 		}
@@ -176,22 +176,22 @@ public class RentACarService {
 			return null;
 		String uname = this.tokenUtils.getUsernameFromToken(token);
 		User user = (User) this.userDetailsService.loadUserByUsername(uname);
-		
-		RentACarCompany c=rentACarCompanyRepository.findOneByAdmin(user);
-		if(c==null)
+
+		RentACarCompany c = rentACarCompanyRepository.findOneByAdmin(user);
+		if (c == null)
 			return null;
 		return c.getCars();
 	}
 
-	public Long addCar(HttpServletRequest request,@Valid Car c) {
+	public Long addCar(HttpServletRequest request, @Valid Car c) {
 		String token = tokenUtils.getToken(request);
 		if (token == null)
 			return null;
 		String uname = this.tokenUtils.getUsernameFromToken(token);
 		User user = (User) this.userDetailsService.loadUserByUsername(uname);
-		
-		RentACarCompany comp=rentACarCompanyRepository.findOneByAdmin(user);
-		if(comp==null)
+
+		RentACarCompany comp = rentACarCompanyRepository.findOneByAdmin(user);
+		if (comp == null)
 			return null;
 		comp.getCars().add(c);
 		rentACarCompanyRepository.save(comp);
@@ -199,11 +199,11 @@ public class RentACarService {
 	}
 
 	public boolean editCar(HttpServletRequest request, Car c) {
-	String token = tokenUtils.getToken(request);
+		String token = tokenUtils.getToken(request);
 		if (token == null)
 			return false;
-		Car c2=carRepository.findOne(c.getId());
-		if(c2==null)
+		Car c2 = carRepository.findOne(c.getId());
+		if (c2 == null)
 			return false;
 		c.setId(c2.getId());
 		carRepository.save(c);
@@ -214,12 +214,12 @@ public class RentACarService {
 		String token = tokenUtils.getToken(request);
 		if (token == null)
 			return false;
-		Car c=carRepository.findOne(Long.parseLong(id));
-		if(c==null)
+		Car c = carRepository.findOne(Long.parseLong(id));
+		if (c == null)
 			return false;
 		String uname = this.tokenUtils.getUsernameFromToken(token);
 		User user = (User) this.userDetailsService.loadUserByUsername(uname);
-		RentACarCompany co=rentACarCompanyRepository.findOneByAdmin(user);
+		RentACarCompany co = rentACarCompanyRepository.findOneByAdmin(user);
 		co.getCars().remove(c);
 		rentACarCompanyRepository.save(co);
 		return true;
@@ -230,49 +230,68 @@ public class RentACarService {
 	}
 
 	public Set<Destination> getDestinations(String id) {
-		Set<Destination> ret=new HashSet<>();
-		RentACarCompany c=rentACarCompanyRepository.getOne(Long.parseLong(id));
-		if(c==null)
+		Set<Destination> ret = new HashSet<>();
+		RentACarCompany c = rentACarCompanyRepository.findOne(Long.parseLong(id));
+		if (c == null)
 			return ret;
 		ret.add(c.getLocation());
-		for(BranchOffice bo:c.getBranchOffices())
+		for (BranchOffice bo : c.getBranchOffices())
 			ret.add(bo.getLocation());
+		return ret;
+	}
+
+	public Set<RentACarCompany> getCompanies(Map<String, String> params) {
+		Set<RentACarCompany> ret = null;
+		String name = params.get("name");
+		if (name.equals(""))
+			name = null;
+		else
+			name="%"+name+"%";
+		String dateStart = params.get("startDate");
+		String[] parts = dateStart.split("/");
+		@SuppressWarnings("deprecation")
+		Date d = new Date(Integer.parseInt(parts[2]) - 1900, Integer.parseInt(parts[1]) - 1, Integer.parseInt(parts[0]));
+		Destination location = destinationRepository.findOne(Long.parseLong(params.get("location")));
+		ret = rentACarCompanyRepository.findByNameLike(name, location, d);
 		return ret;
 	}
 
 	@SuppressWarnings("deprecation")
 	public List<Car> getFreeCars(Map<String, String> params) {
 		// TODO Auto-generated method stub
-		String dateStart=params.get("startDate");
-		String[] parts=dateStart.split("/");
-		Date d=new Date(Integer.parseInt(parts[2]),Integer.parseInt(parts[1]), Integer.parseInt(parts[0]));
-		RentACarCompany c=rentACarCompanyRepository.getOne(Long.parseLong(params.get("id")));
-		CarType type=CarType.getValue(params.get("type"));
-		String endDate=params.get("endDate");
-		String[] parts2=endDate.split("/");
-		int seats=Integer.parseInt(params.get("passengers"));
-        java.util.Date date1 = null;
-        java.util.Date date2 = null;
+		String dateStart = params.get("startDate");
+		String[] parts = dateStart.split("/");
+		Date d = new Date(Integer.parseInt(parts[2]) - 1900, Integer.parseInt(parts[1]) - 1, Integer.parseInt(parts[0]));
+		RentACarCompany c = rentACarCompanyRepository.findOne(Long.parseLong(params.get("id")));
+		CarType type = CarType.getValue(params.get("type"));
+		String endDate = params.get("endDate");
+		String[] parts2 = endDate.split("/");
+		int seats = Integer.parseInt(params.get("passengers"));
+		java.util.Date date1 = null;
+		java.util.Date date2 = null;
 
-        SimpleDateFormat dates = new SimpleDateFormat("dd/mm/yyyy");
+		SimpleDateFormat dates = new SimpleDateFormat("dd/mm/yyyy");
 
-        
-        try {
-			date1 = dates.parse(parts[0]+'/'+parts[1]+'/'+parts[2]);
-			date2 = dates.parse(parts2[0]+'/'+parts2[1]+'/'+parts2[2]);
+		try {
+			date1 = dates.parse(parts[0] + '/' + parts[1] + '/' + parts[2]);
+			date2 = dates.parse(parts2[0] + '/' + parts2[1] + '/' + parts2[2]);
 		} catch (Exception e) {
-			
-			e.printStackTrace();
-			throw new BeanCreationException("exc",e);
-		}
-        
-        long difference = Math.abs(date1.getTime() - date2.getTime());
-        long differenceDates = difference / (24 * 60 * 60 * 1000);
 
-        List<Car> ret=carRepository.findFreeCars(c, d,type, seats);
-        for(Car ca: ret)
-        	ca.setTotalPrice(ca.getPrice()*(1+differenceDates));
+			e.printStackTrace();
+			throw new BeanCreationException("exc", e);
+		}
+
+		long difference = Math.abs(date1.getTime() - date2.getTime());
+		long differenceDates = difference / (24 * 60 * 60 * 1000);
+
+		List<Car> ret = carRepository.findFreeCars(c, d, type, seats);
+		for (Car ca : ret)
+			ca.setTotalPrice(ca.getPrice() * (1 + differenceDates));
 		return ret;
+	}
+
+	public List<Destination> getAllDestinations() {
+		return destinationRepository.findAllByOrderByCountryAscCityAsc();
 	}
 
 }

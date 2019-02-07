@@ -124,9 +124,7 @@ $(window).resize(adjust_body_offset);
 adjust_body_offset();
 function addRCAButtons() {
 
-    $('.logged-out-navbar .navbar-nav').append(
-        '<li class="nav-item">' + ' <button id="logout"'
-        + '  class="btn btn-primary">Odjavi se</button> </li>');
+   
     $('.logged-out-navbar .navbar-nav').append(
         '<li class="nav-item">' + ' <button id="myProfRcaAdmin"'
         + '  class="btn btn-primary">Moj profil</button> </li>');
@@ -137,6 +135,14 @@ function addRCAButtons() {
     $('.logged-out-navbar .navbar-nav').append(
             '<li class="nav-item">' + ' <button id="myCars"'
             + '  class="btn btn-primary">Automobili</button> </li>');
+    $('.logged-out-navbar .navbar-nav').append(
+            '<li class="nav-item">' + ' <button id="reports"'
+            + '  class="btn btn-primary">Izveštaji</button> </li>');
+    
+    
+    $('.logged-out-navbar .navbar-nav').append(
+            '<li class="nav-item">' + ' <button id="logout"'
+            + '  class="btn btn-primary">Odjavi se</button> </li>');
 
     $('#myCars').click(function () {
         location.hash = 'mycars';
@@ -151,7 +157,9 @@ function addRCAButtons() {
     $('#myCompany').click(function () {
         location.hash = 'mycompany';
     });
-
+    $('#reports').click(function () {
+        location.hash = 'reports';
+    });
     $(window).on('hashchange', function () {
         // alert('Changed');
         if (location.hash === '#myprofile') {
@@ -160,7 +168,10 @@ function addRCAButtons() {
             myCompanyRACAdmin();
         }else if (location.hash === '#mycars') {
             myCarsRACAdmin();
-            }
+        }
+        else if (location.hash === '#reports') {
+            showReports();
+        }
     });
     
     $(window).trigger('hashchange'); //ako se osvezi stranica a ima neki #

@@ -1,8 +1,11 @@
 package isa.projekat.service;
 
+import java.util.Date;
 import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.transaction.Transactional;
+import javax.transaction.Transactional.TxType;
 import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -189,8 +192,12 @@ public class RentACarAdminService {
 		rentACarCompanyRepository.save(comp);
 		return c.getId();
 	}
-
+	
+	
+	@Transactional(value=TxType.REQUIRES_NEW)
 	public boolean editCar(HttpServletRequest request, Car c) {
+		if(!checkCar(request, c.getId().toString()))
+			return false;
 	String token = tokenUtils.getToken(request);
 		if (token == null)
 			return false;
@@ -201,8 +208,10 @@ public class RentACarAdminService {
 		carRepository.save(c);
 		return true;
 	}
-
+	@Transactional(value=TxType.REQUIRES_NEW)
 	public boolean deleteCar(HttpServletRequest request, String id) {
+		if(!checkCar(request, id))
+			return false;
 		String token = tokenUtils.getToken(request);
 		if (token == null)
 			return false;
@@ -214,6 +223,24 @@ public class RentACarAdminService {
 		RentACarCompany co=rentACarCompanyRepository.findOneByAdmin(user);
 		co.getCars().remove(c);
 		rentACarCompanyRepository.save(co);
+		return true;
+	}
+	
+	@Transactional(value=TxType.REQUIRED)
+	public boolean checkCar(HttpServletRequest request, String id) {
+		String token = tokenUtils.getToken(request);
+		if (token == null)
+			return false;
+		Car c=carRepository.findOne(Long.parseLong(id));
+		if(c==null)
+			return false;
+		Car car=carRepository.findOne(Long.parseLong(id));
+		if(car==null)
+			return false;
+		java.sql.Date d=new java.sql.Date(new java.util.Date().getTime());
+		Car car2=carRepository.checkIfReserved(car, d);
+		if(car2!=null)
+			return false;
 		return true;
 	}
 
