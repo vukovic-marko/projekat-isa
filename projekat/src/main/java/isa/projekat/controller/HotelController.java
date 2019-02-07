@@ -71,6 +71,19 @@ public class HotelController {
 		return hotelService.getAdditionalServices(id);
 	}
 	
+	@RequestMapping(value="/search", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE)
+	public List<Hotel> searchHotels(@RequestBody HotelReservationHelperClass query) {
+
+//		System.out.println("\t" + query.getHotel().getName());
+//		System.out.println("\t" + query.getHotel().getAddress());
+//		System.out.println("\t" + query.getHotel().getDestination().getCity());
+//		System.out.println("\t" + query.getHotel().getDestination().getCountry());
+//		System.out.println("\t" + query.getDateOfArrival() + " - " + query.getDateOfDeparture());
+		
+		
+		return new ArrayList<Hotel>();
+	}
+	
 //	@RequestMapping(value="/showavailablerooms/{hotelId}/{size}", method = RequestMethod.POST, 
 //			consumes = MediaType.APPLICATION_JSON_VALUE)
 //	public List<HotelRoom> showAvailableRooms(@RequestBody java.sql.Date[] dates, @PathVariable Long hotelId, @PathVariable Long size) {
