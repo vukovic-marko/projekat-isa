@@ -26,9 +26,7 @@ public interface CarRepository extends JpaRepository<Car, Long> {
 			"where cr.car=?1 and cr.endDate>=?2")
 	public Car checkIfReserved(Car c,Date d);
 	
-	@Query("select cr from CarReservation cr "+
-			"where cr.startDate<=?2 and cr.endDate>=?1")
-	public List<CarReservation> getReport(Date start,Date end);
+
 	
 	
 	

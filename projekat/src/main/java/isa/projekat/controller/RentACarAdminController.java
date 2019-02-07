@@ -110,4 +110,10 @@ public class RentACarAdminController {
 		return rentACarAdminService.getReport(request,params);
 	}
 	
+	@PreAuthorize("hasRole('ROLE_RENT_A_CAR_ADMIN')")
+	@PostMapping(value = "/profit",consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
+	public Float getProfit(HttpServletRequest request,@RequestBody Map<String,String> params) {
+		return rentACarAdminService.getProfit(request,params);
+	}
+	
 }
