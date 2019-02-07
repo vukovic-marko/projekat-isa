@@ -54,6 +54,10 @@ $(document).ready(
 	    	location.hash = 'hotel';
 	    });
 
+        $('#cart').click(function() {
+        	location.hash = 'cart';
+        })
+
         $(window).on('hashchange', function () {
 
 			if(!location.hash.includes("profile")) {
@@ -101,9 +105,11 @@ $(document).ready(
             }
             else if (location.hash.includes("hotel")) {
 	        	showHotel();
+            } else if (location.hash.includes("cart")) {
+            	showCart();
             }
         });
-	
+
 
         $(window).trigger('hashchange');
 
