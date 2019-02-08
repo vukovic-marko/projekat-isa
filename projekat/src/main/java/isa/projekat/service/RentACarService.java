@@ -10,6 +10,8 @@ import java.util.Map;
 import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.transaction.Transactional;
+import javax.transaction.Transactional.TxType;
 import javax.validation.Valid;
 
 import org.springframework.beans.factory.BeanCreationException;
@@ -18,12 +20,14 @@ import org.springframework.stereotype.Service;
 
 import isa.projekat.model.BranchOffice;
 import isa.projekat.model.Car;
+import isa.projekat.model.CarReview;
 import isa.projekat.model.CarType;
 import isa.projekat.model.Destination;
 import isa.projekat.model.RentACarCompany;
 import isa.projekat.model.User;
 import isa.projekat.repository.BranchesRepository;
 import isa.projekat.repository.CarRepository;
+import isa.projekat.repository.CarReviewRepository;
 import isa.projekat.repository.DestinationRepository;
 import isa.projekat.repository.RentACarCompanyRepository;
 import isa.projekat.repository.UserRepository;
@@ -46,6 +50,10 @@ public class RentACarService {
 	@Autowired
 	private CarRepository carRepository;
 
+
+	@Autowired
+	private CarReviewRepository carReviewRepository;
+	
 	@Autowired
 	private BranchesRepository branchRepository;
 
@@ -269,7 +277,15 @@ public class RentACarService {
 		int seats = Integer.parseInt(params.get("passengers"));
 		java.util.Date date1 = null;
 		java.util.Date date2 = null;
-
+		
+		Double maxPrice=null;
+		if(params.get("maxprice")!=null&&!params.get("maxprice").equals(""))
+			maxPrice=Double.parseDouble(params.get("maxprice"));
+		Double minPrice=null;
+		if(params.get("minprice")!=null &&!params.get("minprice").equals(""))
+			minPrice=Double.parseDouble(params.get("minprice"));
+		
+		
 		SimpleDateFormat dates = new SimpleDateFormat("dd/mm/yyyy");
 
 		try {
@@ -285,13 +301,109 @@ public class RentACarService {
 		long differenceDates = difference / (24 * 60 * 60 * 1000);
 
 		List<Car> ret = carRepository.findFreeCars(c, d, type, seats);
-		for (Car ca : ret)
+		List<Car> ret2=new LinkedList<>();
+		for(Car ca:ret) {
+			
 			ca.setTotalPrice(ca.getPrice() * (1 + differenceDates));
-		return ret;
+			if(maxPrice!=null && ca.getTotalPrice()>maxPrice)
+				continue;
+			if(minPrice!=null&&ca.getTotalPrice()<minPrice)
+				continue;
+			ret2.add(ca);
+		}
+		
+		return ret2;
 	}
 
 	public List<Destination> getAllDestinations() {
 		return destinationRepository.findAllByOrderByCountryAscCityAsc();
 	}
+	
+	@Transactional(value=TxType.REQUIRED)
+	public boolean checkCar(Map<String, Object> params) {
+		String id= (String)params.get("id");
+		if(id==null)
+			return false;
+		Car car=carRepository.findOne(Long.parseLong(id));
+		if(car==null)
+			return false;
+		String dateStart = (String)params.get("startDate");
+		if(dateStart==null)
+			return false;
+		String[] parts = dateStart.split("/");
+		java.sql.Date date = new java.sql.Date(Integer.parseInt(parts[2]) - 1900, Integer.parseInt(parts[1]) - 1, Integer.parseInt(parts[0]));
+		Car car2=carRepository.checkIfReserved(car, date);
+		if(car2!=null)
+			return false;
+		return true;
+	}
+	
+	@Transactional(value=TxType.REQUIRED)
+	public boolean reserve(HttpServletRequest request, Map<String,String> params) {
+		
+		return true;
+	}
+
+	public Car getCar(Map<String, String> params) {
+		String dateStart = params.get("startDate");
+		String[] parts = dateStart.split("/");
+		Date d = new Date(Integer.parseInt(parts[2]) - 1900, Integer.parseInt(parts[1]) - 1, Integer.parseInt(parts[0]));
+		RentACarCompany c = rentACarCompanyRepository.findOne(Long.parseLong(params.get("id")));
+		String endDate = params.get("endDate");
+		String[] parts2 = endDate.split("/");
+		
+		java.util.Date date1 = null;
+		java.util.Date date2 = null;
+
+		SimpleDateFormat dates = new SimpleDateFormat("dd/mm/yyyy");
+
+		try {
+			date1 = dates.parse(parts[0] + '/' + parts[1] + '/' + parts[2]);
+			date2 = dates.parse(parts2[0] + '/' + parts2[1] + '/' + parts2[2]);
+		} catch (Exception e) {
+
+			e.printStackTrace();
+			throw new BeanCreationException("exc", e);
+		}
+
+		long difference = Math.abs(date1.getTime() - date2.getTime());
+		long differenceDates = difference / (24 * 60 * 60 * 1000);
+
+		String id = params.get("id");
+		Car ret = carRepository.findOne(Long.parseLong(id));
+	
+		ret.setTotalPrice(ret.getPrice()* (1 + differenceDates));
+		return ret;
+	}
+
+	public Double getAverage(String id) {
+		List<CarReview> rev=carReviewRepository.getByCarId(Long.parseLong(id));
+		Double sum=0.0;
+		int i=0;
+		for(CarReview r:rev)
+			if(r.getCarReview()!=null) {
+				i++;
+				sum+=r.getCarReview();
+			}
+		if(i==0)
+			i=1;
+		return sum/i;
+	}
+
+	public Double getCompanyAvg(String id) {
+		List<CarReview> rev=carReviewRepository.getByCompanyId(Long.parseLong(id));
+		Double sum=0.0;
+		int i=0;
+		for(CarReview r:rev)
+			if(r.getCompanyReview()!=null) {
+				i++;
+				sum+=r.getCompanyReview();
+			}
+		if(i==0)
+			i=1;
+		return sum/i;
+	}
+	
+	
 
 }

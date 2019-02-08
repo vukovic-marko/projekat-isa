@@ -17,6 +17,7 @@ import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 @Entity
 @Table(name = "HOTEL_ROOM", 
@@ -35,6 +36,7 @@ public class HotelRoom {
 	
 	@Column(nullable = false)
 	private Long size; // number of people
+	
 	
 	@ManyToOne(fetch = FetchType.EAGER)
 	@JoinColumn(name = "hotel_id", nullable = false)

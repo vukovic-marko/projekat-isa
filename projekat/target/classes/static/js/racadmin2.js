@@ -61,6 +61,22 @@ function createCarTR(value) {
 		}
 		
 	});
+	$.ajax({
+		async:false,
+		type:'get',
+		url:'/rentacar/average/'+value.id,
+		success:function(d){
+			if(d==0)
+				value.average='-';
+			else
+				value.average=data;
+			
+		},statusCode:{
+			404:function(){
+				value.average='-';
+			}
+		}
+	})
 	let txt="";
 	if(!flag)
 		txt="-uneditable";
@@ -74,7 +90,7 @@ function createCarTR(value) {
 	html += '<td class="doors">' + value.doors + '</td>';
 	html += '<td class="transmission">' + value.transmission + '</td>';
 	html += '<td class="price">' + value.price + '</td>';
-	
+	html += '<td class="price">' + value.average + '</td>';
 	if(flag)
 		html += '<td><button class="btn rembtn btn-danger close">×</button></td>';
 	else
@@ -259,7 +275,7 @@ function showReports(){
 
         
 	$('#items').load('rent/parts.html #reportsForm',function(){
-		
+		$('#items').append('<div id="moneycont" style="height: 100; width: 100%;"></div>');
 			$('#items').append('<div id="chartContainer" style="height: 300px; width: 100%;"></div>');
     
 		$.validator.addMethod('ge', function (value, element,
@@ -336,6 +352,26 @@ function showReports(){
              $("#startdate").datepicker();
              $("#startdate").datepicker("option", "dateFormat",
                  "dd/mm/yy");
+             
+             $('#moneybtn').click(function () {
+            	 if( $('#reportsForm').valid()){
+            		 let d={};
+             		
+            		 d.endDate=$('#enddate').val();
+            		 d.startDate=$('#startdate').val();
+            		 
+            		 $.ajax({
+         			 	data:JSON.stringify(d),
+         				url : 'racadmin/profit',
+         				contentType : 'application/json',
+         				type : 'post',
+         				success : function(data) {
+         					$('#moneycont').empty();
+         					$('#moneycont').append("<h2>Prihodi za izabrani period su: "+data+" €</h2>");
+         				}
+            		 });
+            	 }
+             });
              $('#searchBtn').click(function () {
             	 if( $('#reportsForm').valid()){
             		 let d={};
@@ -360,12 +396,22 @@ function showReports(){
             					}
             					dps.push(dps1);
             				
+            					let title;
+            					if(d.type==="Dnevni")
+            						title='Dani';
+            					else if(d.type==="Nedeljni")
+            						title='Nedelje';
+            					else 
+            						title="Meseci"
+            							
             					  var layout = { xaxis:
                                   {tickformat: ',d',
+            						title:title,
                                     fixedrange: true
                                   },
                                   yaxis:
                                   {tickformat: ',d',
+                                	  title:'Broj rezervacija',
                                     fixedrange: true
                                   }
             					  	};

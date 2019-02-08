@@ -209,9 +209,17 @@ function addHotelAdminButtons() {
 			'<li class="nav-item">' + ' <button id="logout"'
 					+ '  class="btn btn-primary">Odjavi se</button> </li>');
 	
+	$('.hotel-admin-navbar .navbar-nav').append(
+			'<li class="nav-item">' + ' <button id="changepass"'
+					+ '  class="btn btn-primary">Promeni lozinku</button> </li>');
+	
 	$('#logout').click(function() {
 		localStorage.setItem('jwtToken', null);
 		window.location.href = '/index.html';
+	});
+	
+	$('#changepass').click(function() {
+		changePass();
 	});
 	
 	$('.hotel-admin-navbar .navbar-nav')
@@ -344,6 +352,72 @@ function loadRooms() {
 			}
 		}
 	});
+}
+
+function changePass() {
+	$('#changePasswordModal1').modal('show');
+	
+	$('#changePasswordForm1')
+	.validate(
+			{
+				rules : {
+					
+					changepassword1 : "required",
+					changepassword12 : {
+						required : true,
+						equalTo : "#changepassword1"
+					}
+
+				},
+				messages : {
+					changepassword1 : "Lozinka nije uneta",
+
+					changepassword12 : {
+						required : "Unesite ponovo lozinku",
+						equalTo : "Lozinke se ne poklapaju"
+					}
+				}
+			});
+	
+	$('#changePasswordButton1').click(
+
+			function() {
+				if ($('#changePasswordForm1').valid()) {
+					var d = {};
+					d.username = "";
+					d.password = $('#changepassword1').val();
+					d.firstName = "";
+					d.lastName = "";
+					d.phone = "";
+					d.email = "";
+					d.city = "";
+					role = "";
+					
+					console.log(d);
+
+					$.ajax({
+						url : '/user/changePassword',
+						type : 'post',
+						contentType : 'application/json',
+						data : JSON.stringify(d),
+
+						success : function(data) {
+							if (data == true) {
+								$("#changePasswordModal1").modal('hide');
+
+								 //addHotelAdminButtons();
+							} else {
+								$('#regbtn-error1').show().html(
+										'Promena lozinke nije uspela').fadeOut(
+										5000);
+
+							}
+						}
+					});
+
+				}
+			});
+	
 }
 
 

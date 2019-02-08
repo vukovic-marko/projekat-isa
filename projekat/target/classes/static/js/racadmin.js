@@ -357,10 +357,22 @@ function myCompanyRACAdmin() {
             type: 'get',
             success: function (company) {
                 $('#items').empty();
+                $.ajax({
+            		async:false,
+            		type:'get',
+            		url:'/rentacar/average/company/'+company.id,
+            		success:function(d){
+            			if(d==0)
+            				company.average='-';
+            			else
+            				company.average=d;
+            			
+            		}
+            	});
                 
                 let html = '<div class="container">';
-                
-                html = '<a data-toggle="collapse" href="#prof"><h2>Detalji</h2></a>';
+                html='<h2>Prosecna ocena :'+company.average+'</h2>';
+                html+= '<a data-toggle="collapse" href="#prof"><h2>Detalji</h2></a>';
                 html += '<div class="row collapse row-eq-height bakground" id="prof"></div>';
                 html += '</div>';
                 $('#items').append(html);

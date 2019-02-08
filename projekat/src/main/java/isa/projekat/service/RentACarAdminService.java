@@ -2,7 +2,6 @@ package isa.projekat.service;
 
 import java.sql.Date;
 import java.util.Calendar;
-import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -24,6 +23,7 @@ import isa.projekat.model.RentACarCompany;
 import isa.projekat.model.User;
 import isa.projekat.repository.BranchesRepository;
 import isa.projekat.repository.CarRepository;
+import isa.projekat.repository.CarReservationRepository;
 import isa.projekat.repository.DestinationRepository;
 import isa.projekat.repository.RentACarCompanyRepository;
 import isa.projekat.repository.UserRepository;
@@ -46,6 +46,9 @@ public class RentACarAdminService {
 
 	@Autowired
 	private CarRepository carRepository;
+	
+	@Autowired
+	private CarReservationRepository carReservationRepository;
 	
 	@Autowired
 	private BranchesRepository branchRepository;
@@ -236,9 +239,6 @@ public class RentACarAdminService {
 		String token = tokenUtils.getToken(request);
 		if (token == null)
 			return false;
-		Car c=carRepository.findOne(Long.parseLong(id));
-		if(c==null)
-			return false;
 		Car car=carRepository.findOne(Long.parseLong(id));
 		if(car==null)
 			return false;
@@ -268,7 +268,7 @@ public class RentACarAdminService {
 		if(dend.getTime()<dstart.getTime())
 			return null;
 		String temp=params.get("type");
-		List<CarReservation> crs=carRepository.getReport(dstart, dend);
+		List<CarReservation> crs=carReservationRepository.getReport(dstart, dend);
 		if(temp.equals("Dnevni"))
 			ret= getDailyReport(dstart,dend,crs,ret,24*60*60*1000);
 		else if(temp.equals("Nedeljni"))
@@ -335,6 +335,34 @@ public class RentACarAdminService {
 		String uname = this.tokenUtils.getUsernameFromToken(token);
 		User user = (User) this.userDetailsService.loadUserByUsername(uname);
 		return user;
+	}
+
+	public Float getProfit(HttpServletRequest request, Map<String, String> params) {
+		User u=getUserFromRequestToken(request);
+		if(u==null)
+			return null;
+		float ret=(float) 0;
+		String dateStart = params.get("startDate");
+		if(dateStart==null)
+			return null;
+		String[] parts = dateStart.split("/");
+		java.sql.Date dstart = new java.sql.Date(Integer.parseInt(parts[2]) - 1900, Integer.parseInt(parts[1]) - 1, Integer.parseInt(parts[0]));
+		dateStart = params.get("endDate");
+		if(dateStart==null)
+			return null;
+		parts = dateStart.split("/");
+		java.sql.Date dend = new java.sql.Date(Integer.parseInt(parts[2]) - 1900, Integer.parseInt(parts[1]) - 1, Integer.parseInt(parts[0]));
+		if(dend.getTime()<dstart.getTime())
+			return null;
+		RentACarCompany company=rentACarCompanyRepository.findOneByAdmin(u);
+		if(company==null)
+			return null;
+		List<CarReservation> crs=carReservationRepository.getReservationsByCompany(company,dstart,dend);
+		for(CarReservation cr:crs) {
+		
+			ret+=cr.getPrice();
+		}
+		return ret;
 	}
 
 }

@@ -1,29 +1,28 @@
-
-$(document).ready(function() {
-	// TODO
-	$('.search-button').click(function(){
-		let search = {};
-		search.dateOfArrival = $('#sDateOfArrival').val();
-		search.dateOfDeparture = $('#sDateOfDeparture').val();
-		search.hotel = {};
-		search.hotel.name = $('#sname').val();
-		search.hotel.address = $('#saddress').val();
-		search.hotel.destination = {};
-		search.hotel.destination.city = $('#scity').val();
-		search.hotel.destination.country = $('#scountry').val();
-
-		$.ajax({
-			url: '/hotel/search',
-			type: 'post',
-			contentType: 'application/json',
-			data: JSON.stringify(search),
-			success: function(data) {
-				alert('ok');
-				console.log(data);
-			}
-		});
-	});
-});
+//
+//$(document).ready(function() {
+//	$('.search-button').click(function(){
+//		let search = {};
+//		search.dateOfArrival = $('#sDateOfArrival').val();
+//		search.dateOfDeparture = $('#sDateOfDeparture').val();
+//		search.hotel = {};
+//		search.hotel.name = $('#sname').val();
+//		search.hotel.address = $('#saddress').val();
+//		search.hotel.destination = {};
+//		search.hotel.destination.city = $('#scity').val();
+//		search.hotel.destination.country = $('#scountry').val();
+//
+//		$.ajax({
+//			url: '/hotel/search',
+//			type: 'post',
+//			contentType: 'application/json',
+//			data: JSON.stringify(search),
+//			success: function(data) {
+//				alert('ok');
+//				console.log(data);
+//			}
+//		});
+//	});
+//});
 
 
 function showHotel() {
@@ -80,6 +79,8 @@ function showHotel() {
 			"					</div>" +
 			"  </div>\r\n" + 
 	"</div><br/>");
+	
+	
 
 	$('#items').append('<!-- prikaz hotela -->' +
 			'<div class="row justify-content-center" id="hotelcards">' +
@@ -88,20 +89,65 @@ function showHotel() {
 		url: '/hotel/all',
 		type: 'get',
 		success: function(data) {
-			$('#hotelcards').empty();
-			$.each(data, function(i, v) {
-				c = createHotel(v);
-				$('#hotelcards').append(c.html);
-
-				showOnMap(c,v);
-			});
+			displayHotels(data);
+//			$('#hotelcards').empty();
+//			$.each(data, function(i, v) {
+//				c = createHotel(v);
+//				$('#hotelcards').append(c.html);
+//
+//				showOnMap(c,v);
+//			});
 
 			$('.hotelServiceModalLink').once('click', function(e){
 				let hotelId = e.target.attributes[1].value;
 				loadHotel(hotelId, false);
 				//localStorage.setItem("hotelId", JSON.stringify(hotelId));
 			});
+			
+			bindEvent();
 		}
+	});
+	
+	$('.search-button').once("click", function(){
+		let search = {};
+		search.dateOfArrival = $('#sDateOfArrival').val();
+		search.dateOfDeparture = $('#sDateOfDeparture').val();
+		search.hotel = {};
+		search.hotel.name = $('#sname').val();
+		search.hotel.address = $('#saddress').val();
+		search.hotel.destination = {};
+		search.hotel.destination.city = $('#scity').val();
+		search.hotel.destination.country = $('#scountry').val();
+
+		$.ajax({
+			url: '/hotel/search',
+			type: 'post',
+			contentType: 'application/json',
+			data: JSON.stringify(search),
+			success: function(data) {
+				//alert('ok');
+				console.log(data);
+				displayHotels(data);
+				$('.hotelServiceModalLink').once('click', function(e){
+					let hotelId = e.target.attributes[1].value;
+					loadHotel(hotelId, false);
+					//localStorage.setItem("hotelId", JSON.stringify(hotelId));
+				});
+				
+				bindEvent();
+			}
+		});
+	});
+}
+
+function displayHotels(data) {
+	console.log(data);
+	$('#hotelcards').empty();
+	$.each(data, function(i, v) {
+		c = createHotel(v);
+		$('#hotelcards').append(c.html);
+
+		showOnMap(c,v);
 	});
 }
 
@@ -126,161 +172,7 @@ function createHotel(data) {
 		    "</div>" +
 		  "</div>";
 	
-	$('.hotelReservationLink').once('click', function(e){
-		let hotelId = e.target.attributes[2].value;
-		
-		let sobe = new Map();
-		drawReservationModal();
-		$('#hotelReservationModal thead').empty();
-		$('#hotelReservationModal tbody').empty();
-		
-		$('.addRoomToReservationButton').once('click', function() {
-			let soba = $('#ressize').val();
-			if (sobe.get(soba) == null) {
-				sobe.set(soba, 1);
-			} else {
-				let help = sobe.get(soba);
-				help++;
-				sobe.set(soba, help);
-			}
-			//console.log(sobe);
-			$('#hotelReservationModal thead').empty();
-			$('#hotelReservationModal tbody').empty();
-			$('#hotelReservationModal thead').append("<tr><th>Velicina sobe</th><th>Broj soba</th></tr>");
-			for (var [key, value] of sobe) {
-				$('#hotelReservationModal tbody').append("<tr><td>" + key + "</td><td>" + value + "</td></tr>");
-			}
-		});
-		
-		$('#hotelReservationModal').modal('show');
-		$('.showAvailableRoomsButton').once('click', function(e){
-			let size = $('#ressize').val();
-			let date = [];
-			date.push($('#resDateOfArrival').val());
-			date.push($('#resDateOfDeparture').val());
-			
-			let data = {};
-			data.roomConfigurations = Array.from(sobe.keys());
-			data.numberOfRooms = Array.from(sobe.values());
-			data.dateOfArrival = $('#resDateOfArrival').val();
-			data.dateOfDeparture = $('#resDateOfDeparture').val();
-			data.hotelId = hotelId;
-			localStorage.setItem("hotelId", JSON.stringify(hotelId));
-			
-			localStorage.setItem("dateOfArrival", JSON.stringify(data.dateOfArrival));
-			localStorage.setItem("dateOfDeparture", JSON.stringify(data.dateOfDeparture));
-			
-						
-			$.ajax({
-				url: '/hotel/showavailablerooms',
-				type: 'post',
-				data: JSON.stringify(data),
-				contentType: 'application/json',
-				success: function(e) {
-					drawAvailableRoomsModal();
-					$('#roomCards').empty();
-					$.each(e, function(i,v) {
-						let cena = -1;
-						
-						var date1 = new Date(data.dateOfArrival);
-						var date2 = new Date(data.dateOfDeparture);
-						var timeDiff = Math.abs(date2.getTime() - date1.getTime());
-						var diffDays = Math.ceil(timeDiff / (1000 * 3600 * 24));
-						
-						console.log(diffDays);
-						
-						$.each(v.roomPrices, function (ii, vv) {
-							if (vv.startDate <= data.dateOfArrival && vv.endDate >= data.dateOfDeparture)
-								cena = vv.price;
-						});
-						
-						let ukupnaCena = cena * diffDays;
-						
-						$('#roomCards').append(
-								"<div class=\"card\">" +
-							    "	<div class=\"card-body\">" +
-							    "		<h5 class=\"card-title\"><input meta-size=\"" + v.size + "\" meta-floorNumber=\"" + v.floorNumber + "\" meta-cena=\"" + cena + "\" meta-ukupnaCena=\"" + ukupnaCena + "\" type=\"checkbox\" value=\"" + v.roomNumber + "\"/> " + v.roomNumber + "</h5>" +
-							    "		<p class=\"card-text\">Broj kreveta: " + v.size + ", Sprat: " + v.floorNumber  + "</p>" +
-							    "		<p class=\"card-text\">Cena nocenja: " + cena + ", Ukupna cena: " + ukupnaCena + "</p>" +
-							    "	</div>" +
-							  	"</div><br />");
-					});
-					
-					
-					$('#hotelReservationModal').modal('toggle');
-					$('#availableRoomsModal').modal('show');
-					
-					$('#additionalServicesReservationLink').once("click", function(e) {
-						$('#availableRoomsModal').modal('toggle');
-						loadHotel(data.hotelId, true);
-						$('#hotelServiceModal .btn-danger').once("click", function(e){
-							$('#hotelReservationModal').modal('hide');
-							$('#availableRoomsModal').modal('toggle');
-							$('#hotelServiceModal .btn-danger').off("click");
-						});
-						
-						
-						e.preventDefault();
-					});
-					
-					$('#addHotelReservationToCart').once("click", function(){
-						let roomCards = $('#roomCards .card input');
-						let rooms = [];
-						let roomsForStorage = [];
-						$.each(roomCards, function(i,v) {
-							if (v.checked == true) {
-								rooms.push(v.value);
-								let rroom = {};
-								rroom.size = v.attributes['meta-size'].value;
-								rroom.floorNumber = v.attributes['meta-floorNumber'].value;
-								rroom.cena = v.attributes['meta-cena'].value;
-								rroom.ukupnaCena = v.attributes['meta-ukupnaCena'].value;
-								roomsForStorage.push(rroom);
-							}
-						});
-						
-						let servicesCards = $('#hotelServiceModal input');
-						let services = [];
-						let servicesForStorage = [];
-						$.each(servicesCards, function(i, v) {
-							if (v.checked == true) {
-								services.push(v.value);
-								let sservice = {};
-								sservice.name = v.attributes['meta-name'].value;
-								sservice.price = v.attributes['meta-price'].value;
-								servicesForStorage.push(sservice);
-							}
-								
-						});
-												
-						let hotelCart = {};
-						hotelCart.roomNumbers = rooms;
-						hotelCart.services = services;
-						hotelCart.dateOfArrival = JSON.parse(localStorage.getItem("dateOfArrival"));
-						localStorage.removeItem("dateOfArrival");
-						hotelCart.dateOfDeparture = JSON.parse(localStorage.getItem("dateOfDeparture"));
-						localStorage.removeItem("dateOfDeparture");
-						hotelCart.hotelId = JSON.parse(localStorage.getItem("hotelId"));
-						localStorage.removeItem("hotelId");
-						
-						
-						if (rooms.length == 0) {
-							alert('Niste izabrali nijednu sobu.')
-						} else {
-							// ok
-							localStorage.setItem("hotelCart", JSON.stringify(hotelCart));
-							localStorage.setItem("roomsForStorage", JSON.stringify(roomsForStorage));
-							localStorage.setItem("servicesForStorage", JSON.stringify(servicesForStorage));			
-							
-							$('#availableRoomsModal').modal('hide');
-						}
-					});
-					
-					
-				}
-			});
-		});
-	});
+	
 	
 	let ret={};
 	ret.html=html;
@@ -442,4 +334,163 @@ function drawAvailableRoomsModal() {
 				"		</div>\r\n" + 
 				"	</div>");
 	}
+}
+
+function bindEvent() {
+	$('.hotelReservationLink').once('click', function(e){
+		let hotelId = e.target.attributes[2].value;
+		//alert(hotelId);
+		
+		let sobe = new Map();
+		drawReservationModal();
+		$('#hotelReservationModal thead').empty();
+		$('#hotelReservationModal tbody').empty();
+		
+		$('.addRoomToReservationButton').once('click', function() {
+			let soba = $('#ressize').val();
+			if (sobe.get(soba) == null) {
+				sobe.set(soba, 1);
+			} else {
+				let help = sobe.get(soba);
+				help++;
+				sobe.set(soba, help);
+			}
+			//console.log(sobe);
+			$('#hotelReservationModal thead').empty();
+			$('#hotelReservationModal tbody').empty();
+			$('#hotelReservationModal thead').append("<tr><th>Velicina sobe</th><th>Broj soba</th></tr>");
+			for (var [key, value] of sobe) {
+				$('#hotelReservationModal tbody').append("<tr><td>" + key + "</td><td>" + value + "</td></tr>");
+			}
+		});
+		
+		$('#hotelReservationModal').modal('show');
+		$('.showAvailableRoomsButton').once('click', function(e){
+			let size = $('#ressize').val();
+			let date = [];
+			date.push($('#resDateOfArrival').val());
+			date.push($('#resDateOfDeparture').val());
+			
+			let data = {};
+			data.roomConfigurations = Array.from(sobe.keys());
+			data.numberOfRooms = Array.from(sobe.values());
+			data.dateOfArrival = $('#resDateOfArrival').val();
+			data.dateOfDeparture = $('#resDateOfDeparture').val();
+			data.hotelId = hotelId;
+			localStorage.setItem("hotelId", JSON.stringify(hotelId));
+			
+			localStorage.setItem("dateOfArrival", JSON.stringify(data.dateOfArrival));
+			localStorage.setItem("dateOfDeparture", JSON.stringify(data.dateOfDeparture));
+			
+						
+			$.ajax({
+				url: '/hotel/showavailablerooms',
+				type: 'post',
+				data: JSON.stringify(data),
+				contentType: 'application/json',
+				success: function(e) {
+					drawAvailableRoomsModal();
+					$('#roomCards').empty();
+					$.each(e, function(i,v) {
+						let cena = -1;
+						
+						var date1 = new Date(data.dateOfArrival);
+						var date2 = new Date(data.dateOfDeparture);
+						var timeDiff = Math.abs(date2.getTime() - date1.getTime());
+						var diffDays = Math.ceil(timeDiff / (1000 * 3600 * 24));
+						
+						console.log(diffDays);
+						
+						$.each(v.roomPrices, function (ii, vv) {
+							if (vv.startDate <= data.dateOfArrival && vv.endDate >= data.dateOfDeparture)
+								cena = vv.price;
+						});
+						
+						let ukupnaCena = cena * diffDays;
+						
+						$('#roomCards').append(
+								"<div class=\"card\">" +
+							    "	<div class=\"card-body\">" +
+							    "		<h5 class=\"card-title\"><input meta-size=\"" + v.size + "\" meta-floorNumber=\"" + v.floorNumber + "\" meta-cena=\"" + cena + "\" meta-ukupnaCena=\"" + ukupnaCena + "\" type=\"checkbox\" value=\"" + v.roomNumber + "\"/> " + v.roomNumber + "</h5>" +
+							    "		<p class=\"card-text\">Broj kreveta: " + v.size + ", Sprat: " + v.floorNumber  + "</p>" +
+							    "		<p class=\"card-text\">Cena nocenja: " + cena + ", Ukupna cena: " + ukupnaCena + "</p>" +
+							    "	</div>" +
+							  	"</div><br />");
+					});
+					
+					
+					$('#hotelReservationModal').modal('toggle');
+					$('#availableRoomsModal').modal('show');
+					
+					$('#additionalServicesReservationLink').once("click", function(e) {
+						$('#availableRoomsModal').modal('toggle');
+						loadHotel(data.hotelId, true);
+						$('#hotelServiceModal .btn-danger').once("click", function(e){
+							$('#hotelReservationModal').modal('hide');
+							$('#availableRoomsModal').modal('toggle');
+							$('#hotelServiceModal .btn-danger').off("click");
+						});
+						
+						
+						e.preventDefault();
+					});
+					
+					$('#addHotelReservationToCart').once("click", function(){
+						let roomCards = $('#roomCards .card input');
+						let rooms = [];
+						let roomsForStorage = [];
+						$.each(roomCards, function(i,v) {
+							if (v.checked == true) {
+								rooms.push(v.value);
+								let rroom = {};
+								rroom.size = v.attributes['meta-size'].value;
+								rroom.floorNumber = v.attributes['meta-floorNumber'].value;
+								rroom.cena = v.attributes['meta-cena'].value;
+								rroom.ukupnaCena = v.attributes['meta-ukupnaCena'].value;
+								roomsForStorage.push(rroom);
+							}
+						});
+						
+						let servicesCards = $('#hotelServiceModal input');
+						let services = [];
+						let servicesForStorage = [];
+						$.each(servicesCards, function(i, v) {
+							if (v.checked == true) {
+								services.push(v.value);
+								let sservice = {};
+								sservice.name = v.attributes['meta-name'].value;
+								sservice.price = v.attributes['meta-price'].value;
+								servicesForStorage.push(sservice);
+							}
+								
+						});
+												
+						let hotelCart = {};
+						hotelCart.roomNumbers = rooms;
+						hotelCart.services = services;
+						hotelCart.dateOfArrival = JSON.parse(localStorage.getItem("dateOfArrival"));
+						localStorage.removeItem("dateOfArrival");
+						hotelCart.dateOfDeparture = JSON.parse(localStorage.getItem("dateOfDeparture"));
+						localStorage.removeItem("dateOfDeparture");
+						hotelCart.hotelId = JSON.parse(localStorage.getItem("hotelId"));
+						localStorage.removeItem("hotelId");
+						
+						
+						if (rooms.length == 0) {
+							alert('Niste izabrali nijednu sobu.')
+						} else {
+							// ok
+							localStorage.setItem("hotelCart", JSON.stringify(hotelCart));
+							localStorage.setItem("roomsForStorage", JSON.stringify(roomsForStorage));
+							localStorage.setItem("servicesForStorage", JSON.stringify(servicesForStorage));			
+							
+							$('#availableRoomsModal').modal('hide');
+						}
+					});
+					
+					
+				}
+			});
+		});
+	});
 }

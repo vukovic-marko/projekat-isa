@@ -9,7 +9,6 @@ import javax.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Example;
 import org.springframework.data.domain.ExampleMatcher;
-import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -42,11 +41,6 @@ import isa.projekat.service.HotelService;
 @RestController
 @RequestMapping(value="/hotel")
 public class HotelController {
-	@Autowired
-	private TokenUtils tokenUtils;
-	
-	@Autowired
-	private CustomUserDetailsService userDetailsService;
 
 	@Autowired
 	private HotelService hotelService;
@@ -55,19 +49,7 @@ public class HotelController {
 	private HotelRoomRepository hotelRoomRepository;
 	
 	@Autowired
-	private HotelReservationRepository hotelReservationRepository;
-	
-	@Autowired
 	private HotelRepository hotelRepository;
-	
-	@Autowired
-	private HotelAdditionalServiceRepository additionalServiceRepository;
-	
-	@Autowired
-	private HotelRoomPriceRepository roomPriceRepository;
-	
-	@Autowired
-	private DestinationRepository destinationRepository;
 	
 	@RequestMapping(value="/all", method = RequestMethod.GET)
 	public List<Hotel> getHotels() {
@@ -81,27 +63,7 @@ public class HotelController {
 	
 	@RequestMapping(value="/search", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE)
 	public List<Hotel> searchHotels(@RequestBody HotelReservationHelperClass query) {
-
-//		System.out.println("\t" + query.getHotel().getName());
-//		System.out.println("\t" + query.getHotel().getAddress());
-//		System.out.println("\t" + query.getHotel().getDestination().getCity());
-//		System.out.println("\t" + query.getHotel().getDestination().getCountry());
-//		System.out.println("\t" + query.getDateOfArrival() + " - " + query.getDateOfDeparture());
-//		
-//		Hotel h = new Hotel();
-//		h.setName(query.getHotel().getName());
-//		h.setAddress(query.getHotel().getAddress());
-//		
-//		System.out.println(h.getName());
-//		System.out.println(h.getAddress() == null);
-//		System.out.println(h.getAddress().equals(""));
-//		
-//		Specification<Hotel> spec = new HotelSpecification(h);
-//
-//		List<Hotel> result = hotelRepository.findAll(spec);
-//		
-//		System.out.println(result);
-		
+				
 		Hotel h = new Hotel();
 		h.setName(query.getHotel().getName());
 		h.setAddress(query.getHotel().getAddress());
@@ -121,38 +83,48 @@ public class HotelController {
 		Example<Hotel> example = Example.of(h, matcher); 
 		
 		List<Hotel> hots = hotelRepository.findAll(example);
+		List<Hotel> ret = new ArrayList<>(hots);
+		List<Hotel> retList = new ArrayList<Hotel>();
 
+		if (query.getDateOfArrival() != null && query.getDateOfDeparture() != null) {
+			// obrisi one hotele koji nemaju slobodnu sobu
+			Date dateOfArrival = query.getDateOfArrival();
+			Date dateOfDeparture = query.getDateOfDeparture();
 
-		
-		return hots;
-	}
+			for (Hotel hotel : hots) {
+				List<HotelRoom> allRooms = hotel.getRooms();
+				List<HotelRoom> unavailableRooms = new ArrayList<HotelRoom>();
+				unavailableRooms.addAll(hotelRoomRepository.findUnavailableRooms(dateOfArrival, 
+						dateOfDeparture, 1L, hotel.getId()));
+
+				allRooms.removeAll(unavailableRooms);
+				System.out.println(allRooms.size());
+				if (allRooms.size() == 0) {
+					System.out.println("izbacuje se hotel " + hotel.getId());
+					ret.remove(hotel);
+					//continue;
+				} else {
+					for (HotelRoom help : allRooms) {
+						for (HotelRoomPrice p : help.getRoomPrices()) {
+							if (query.getDateOfArrival().compareTo(p.getStartDate()) >= 0 && query.getDateOfDeparture().compareTo(p.getEndDate()) <= 0)
+								retList.add(hotel);
+						}
+					}
+				}	
+			}
 	
-//	@RequestMapping(value="/showavailablerooms/{hotelId}/{size}", method = RequestMethod.POST, 
-//			consumes = MediaType.APPLICATION_JSON_VALUE)
-//	public List<HotelRoom> showAvailableRooms(@RequestBody java.sql.Date[] dates, @PathVariable Long hotelId, @PathVariable Long size) {
-//		System.out.println(size);
-//		
-//		Date dateOfArrival = (Date) dates[0];
-//		Date dateOfDeparture = (Date) dates[1];
-//		
-//		List<HotelRoom> allRooms = hotelRepository.findOne(hotelId).getRooms();
-//		List<HotelRoom> unavailableRooms = hotelRoomRepository.findUnavailableRooms(dateOfArrival, dateOfDeparture, size, hotelId);
-//		System.out.println(unavailableRooms);
-//		allRooms.removeAll(unavailableRooms);
-//		
-//		return allRooms;
-//	}
+		} else {
+			retList.addAll(hots);
+		}
+		
+		
+		return retList;
+	}
 	
 	@RequestMapping(value="/showavailablerooms", method = RequestMethod.POST, 
 			consumes = MediaType.APPLICATION_JSON_VALUE)
 	public @ResponseBody ResponseEntity<List<HotelRoom>> showAvailableRooms(@RequestBody HotelReservationHelperClass query) {
 
-//		System.out.println("PRISTIGLI UPIT");
-//		System.out.println(query.getHotelId());
-//		System.out.println(query.getDateOfArrival());
-//		System.out.println(query.getDateOfDeparture());
-//		System.out.println(query.getRoomConfigurations());
-//		System.out.println(query.getNumberOfRooms());
 		List<HotelRoom> ret = new ArrayList<HotelRoom>();
 		
 		if (query.getHotelId() == null ||
@@ -188,146 +160,6 @@ public class HotelController {
 			}
 		}
 		
-//		Date dateOfArrival = (Date) dates[0];
-//		Date dateOfDeparture = (Date) dates[1];
-//		
-//		List<HotelRoom> allRooms = hotelRepository.findOne(hotelId).getRooms();
-//		List<HotelRoom> unavailableRooms = hotelRoomRepository.findUnavailableRooms(dateOfArrival, dateOfDeparture, size, hotelId);
-//		System.out.println(unavailableRooms);
-//		allRooms.removeAll(unavailableRooms);
-		
 		return new ResponseEntity<List<HotelRoom>>(retList, HttpStatus.OK);
 	}
-	
-	
-	@RequestMapping(value="/addhotelreservation", method = RequestMethod.POST, 
-			consumes = MediaType.APPLICATION_JSON_VALUE)
-	@PreAuthorize("hasRole('ROLE_USER')")
-	public @ResponseBody ResponseEntity<Boolean> addHotelReservation(@RequestBody HotelReservationHelperClass query, HttpServletRequest request) {
-		
-		String token = tokenUtils.getToken(request);
-		String username = this.tokenUtils.getUsernameFromToken(token);
-		User user = (User) this.userDetailsService.loadUserByUsername(username);
-		
-		List<String> rooms = query.getRoomNumbers();
-		Date dateOfArrival = query.getDateOfArrival();
-		Date dateOfDeparture = query.getDateOfDeparture();
-		
-		//Boolean error = false;
-		
-		for (String roomNumber : rooms) {
-			if (hotelRoomRepository.findRooms(dateOfArrival, dateOfDeparture, roomNumber, query.getHotelId()).size() != 0) {
-				//error = true;
-				return new ResponseEntity<Boolean>(false, HttpStatus.NOT_ACCEPTABLE);
-			}
-		}
-		
-		List<HotelAdditionalService> additionalServices = new ArrayList<HotelAdditionalService>();
-		Double price = 0.0;
-		for (Long l : query.getServices()) {
-			HotelAdditionalService aS = additionalServiceRepository.findOne(l);
-			if (aS == null) 
-				return new ResponseEntity<Boolean>(false, HttpStatus.NOT_ACCEPTABLE);
-			else {
-				additionalServices.add(aS);
-				price += aS.getPrice();
-			}
-		}
-		
-		//if (!error) {
-		
-		
-		
-		
-		List<HotelRoom> r = new ArrayList<HotelRoom>();
-		Hotel h = hotelRepository.findOne(query.getHotelId());
-		HotelReservation res = new HotelReservation();
-		res.setDateOfArrival(dateOfArrival);
-		res.setDateOfDeparture(dateOfDeparture);
-		res.setNumberOfGuests(-1);
-		
-		res.setUser(user);
-		res.setServices(additionalServices);
-		for (String roomNumber : rooms) {
-			HotelRoom rr = hotelRoomRepository.findByRoomNumberAndHotel(roomNumber, h);
-			HotelRoomPrice rp = roomPriceRepository.findPriceForRoomOnDate(dateOfArrival, rr);
-			
-			long diff = dateOfDeparture.getTime() - dateOfArrival.getTime();
-			 
-			int diffDays = (int) (diff / (24 * 60 * 60 * 1000));
-			
-			price += diffDays * rp.getPrice();
-			//System.out.println("difference between days: " + diffDays);
-			
-			rr.getRoomReservations().add(res);
-			r.add(rr);
-		}
-		
-		
-		res.setPrice(price);
-		res.setRooms(r);
-
-		hotelReservationRepository.save(res);
-		hotelRoomRepository.save(r);
-			
-		//}	
-		
-		return new ResponseEntity<Boolean>(true, HttpStatus.OK);
-	}
-	
-//	@RequestMapping(value="/addr", method = RequestMethod.GET)
-//	@PreAuthorize("hasRole('ROLE_USER')")
-//	public List<HotelRoom> addReservation(HttpServletRequest request) {
-//		String token = tokenUtils.getToken(request);
-//		String username = this.tokenUtils.getUsernameFromToken(token);
-//		User user = (User) this.userDetailsService.loadUserByUsername(username);
-//		
-//		HotelReservation r = new HotelReservation();
-//				
-//		try {
-//			r.setDateOfArrival(new SimpleDateFormat("dd-MM-yyyy").parse("24-12-2018"));
-//		} catch (ParseException e) {
-//			// TODO Auto-generated catch block
-//			e.printStackTrace();
-//		}
-//		try {
-//			r.setDateOfDeparture(new SimpleDateFormat("dd-MM-yyyy").parse("29-12-2018"));
-//		} catch (ParseException e) {
-//			// TODO Auto-generated catch block
-//			e.printStackTrace();
-//		}
-//		
-//		HotelRoom room = hotelRoomRepository.findOne(1L);
-//		
-//		r.setNumberOfGuests(1);
-//		r.setRooms(new ArrayList<HotelRoom>());
-//		r.getRooms().add(room);
-//		r.setUser(user);
-//		
-//		//room.getRoomReservations().add(r);
-//		
-//		
-//		hotelReservationRepository.save(r);
-//		hotelRoomRepository.save(room);
-//		
-//		List<HotelRoom> allRooms = hotelRoomRepository.findAll();
-//		List<HotelRoom> zauzete = new ArrayList<HotelRoom>();
-//		try {
-//			zauzete = hotelRoomRepository.find(new SimpleDateFormat("dd-MM-yyyy").parse("29-12-2018"));
-//		} catch (ParseException e) {
-//			// TODO Auto-generated catch block
-//			e.printStackTrace();
-//		}
-//		
-//		System.out.println(zauzete);
-//		System.out.println(zauzete.size());
-//		System.out.println(allRooms);
-//		System.out.println(allRooms.size());
-//		System.out.println("*****************");
-//		allRooms.removeAll(zauzete);
-//		System.out.println(allRooms);
-//		System.out.println(allRooms.size());
-//		
-//		return allRooms;
-//	}
 }

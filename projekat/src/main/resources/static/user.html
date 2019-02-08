@@ -10,8 +10,12 @@
 <link type="text/css" rel="stylesheet" href="css/styles.css">
 <link type="text/css" rel="stylesheet" href="css/bootstrap.css">
 <link type="text/css" rel="stylesheet" href="css/screen.css">
+<script type="text/javascript" src="js/history.js"></script>
 <script type="text/javascript" src="js/user.js"></script>
+<link href="css/toastr.css" rel="stylesheet"/>
+<script src="js/toastr.min.js"></script>
 <script type="text/javascript" src="js/jquery.validate.js"></script>
+
 <script type="text/javascript" src="js/cars.js"></script>
 <script type="text/javascript" src="js/jquery-ui.min.js"></script>
 <script type="text/javascript" src="js/jquery.validate.js"></script>
@@ -33,11 +37,20 @@
 		<ul class="navbar-nav">
 			<li class="nav-item">
 				<button id="history" class="btn btn-primary">Istorija</button>
+				<button id="reservations" class="btn btn-primary">Rezervacije</button>
+				<script type="text/javascript">
+				 $('#history').click(function () {
+			            location.hash = '';
+			        });
+				 $('#reservations').click(function () {
+			            location.hash = 'reservations';
+			        });
+				</script>
 				<button id="air" class="btn btn-primary">Aviokompanije</button>
 				<button id="hotel" class="btn btn-primary">Hoteli</button>
 				<button id="rent" class="btn btn-primary">Rent-a-car</button>
-
-				<button id="profile" class="btn btn-primary">Profil</button>
+			
+							<button id="profile" class="btn btn-primary">Profil</button>
 				<button id="cart" class="btn btn-primary">Korpa</button>
 				<button id="logout" class="btn btn-primary">Odjavi se</button>
 			</li>
@@ -45,8 +58,8 @@
 	</nav>
 
 	<div id="page" class="container-fluid">
-
-
+	
+	
 
 		<div class="row row-eq-height">
 			<div class="col-md-12" id="items" style="background-color: lavender;">
@@ -79,6 +92,12 @@
 						<hr />
 						<button id="createReservationButton" type="button"
 							class="btn btn-primary">Rezervisi</button>
+							<button id="removeFlight" type="button"
+							class="btn btn-primary">Ukloni let</button>
+							<button id="removeHotel" type="button"
+							class="btn btn-primary">Ukloni hotel</button>
+							<button id="removeCar" type="button"
+							class="btn btn-primary">Ukloni auto</button>
 					</div>
 				</div>
 			</div>

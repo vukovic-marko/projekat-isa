@@ -1,3 +1,4 @@
+
 //za mape sam uzeo yandex
 //odustao sam od njegovog geocode servise jer nece da nadje ulice u Budjanovcima!!! :@
 //tako da se za geokodiranje koristi here
@@ -29,10 +30,15 @@ $(document).ajaxSend(function (event, jqxhr, settings) {
 $(document).ready(
 
     function () {
+
+
+
+
+    	//----
         setInterval(refreshToken, 60000); // svaki min
         // LOGOUT
         $('#logout').click(function () {
-            localStorage.setItem('jwtToken', null);
+            localStorage.clear();
             window.location.href = '/';
         });
 
@@ -40,97 +46,463 @@ $(document).ready(
             location.hash = 'rentacar';
         });
 
-	    $("#profile").click(function (event) {
 
-	    	location.hash = "profile";
-		});
 
-		$("#air").click(function (event) {
+        $('#cart').click(function() {
+        	location.hash = 'cart';
+        })
+          $("#profile").click(function (event) {
 
-			location.hash = "airlineSearch";
-		});
+ 	    	location.hash = "profile";
+ 		});
 
-        $('#hotel').click(function() {
-	    	location.hash = 'hotel';
-	    });
+ 		$("#air").click(function (event) {
+
+ 			location.hash = "airlineSearch";
+ 		});
+
+         $('#hotel').click(function() {
+ 	    	location.hash = 'hotel';
+ 	    });
 
         $('#cart').click(function() {
         	location.hash = 'cart';
         })
 
         $(window).on('hashchange', function () {
-
-			if(!location.hash.includes("profile")) {
-
-				shownTab = false;
-			}
-
-
             // alert('Changed');
+        	 if(!location.hash.includes("profile")) {
+
+  				shownTab = false;
+  			}
+
+
             if (location.hash === '#rentacar') {
                 showRentACar();
             } else if (location.hash.includes("racservice")) {
                 let t = location.hash.split('=');
                 showService(t[1]);
-	        } else if(location.hash.includes("profile")) {
-
-
-				if (location.hash.includes("friends")) {
-
-					console.log('friends');
-					indexOfActiveTab = 1;
-				}  else if (location.hash.includes("requestsSent")) {
-
-					indexOfActiveTab = 2;
-				} else if (location.hash.includes("requestsReceived")) {
-
-					indexOfActiveTab = 3;
-				} else if (location.hash.includes("addFriend")) {
-
-					indexOfActiveTab = 4;
-				} else {
-
-					indexOfActiveTab = 0;
-					$("#tabs").tabs("enable", indexOfActiveTab);
-				}
-
-				if(!shownTab) {
-
-					showProfileInfo();
-					shownTab = true;
-				}
-			} else if(location.hash === "#airlineSearch") {
-
-				showAirlineSearch();
             }
             else if (location.hash.includes("hotel")) {
 	        	showHotel();
             } else if (location.hash.includes("cart")) {
             	showCart();
+            }else if (location.hash===("")) {
+            	showHistory();
             }
-        });
 
+        	else if (location.hash===("#reservations")) {
+        		showReservations();
+        	}
+
+
+
+ 	         else if(location.hash.includes("profile")) {
+
+
+ 				if (location.hash.includes("friends")) {
+
+ 					console.log('friends');
+ 					indexOfActiveTab = 1;
+ 				}  else if (location.hash.includes("requestsSent")) {
+
+ 					indexOfActiveTab = 2;
+ 				} else if (location.hash.includes("requestsReceived")) {
+
+ 					indexOfActiveTab = 3;
+ 				} else if (location.hash.includes("addFriend")) {
+
+ 					indexOfActiveTab = 4;
+ 				} else {
+
+ 					indexOfActiveTab = 0;
+ 					$("#tabs").tabs("enable", indexOfActiveTab);
+ 				}
+
+ 				if(!shownTab) {
+
+ 					showProfileInfo();
+ 					shownTab = true;
+ 				}
+ 			} else if(location.hash === "#airlineSearch") {
+
+ 				showAirlineSearch();
+             }
+             else if (location.hash.includes("hotel")) {
+ 	        	showHotel();
+            } else if (location.hash.includes("cart")) {
+            	showCart();
+             }
+        });
 
         $(window).trigger('hashchange');
 
-	// Provjera telefona
-	$.validator.methods.phoneCheck = function(value, element) {
-		return this.optional(element)
-			|| /([0-9]{3,3}\/[0-9]{3,3}-[0-9]{2,2}-[0-9]{2,2})$/
-				.test(value);
-	}
+     	// Provjera telefona
+     	$.validator.methods.phoneCheck = function(value, element) {
+     		return this.optional(element)
+     			|| /([0-9]{3,3}\/[0-9]{3,3}-[0-9]{2,2}-[0-9]{2,2})$/
+     				.test(value);
+     	}
+    });
 
-	//
-});
+function showRentACar() {
+
+    $
+        .ajax({
+            url: 'rentacar/',
+            type: 'get',
+            success: function (data) {
+                $('#items').empty();
+                $('#items')
+                    .append(
+                        '<div class="row" id="search"></div><hr><div class="row" id="row"></div>');
+                $('#search')
+                    .load(
+                        'rent/parts.html #searchRACdiv > ',
+                        function () {
+                            $.ajax({
+                                url: 'rentacar/destinations',
+                                type: 'get',
+                                success: function (data) {
+                                    for (let i = 0; i < data.length; ++i) {
+                                        let html = '<option value="' + data[i].id
+                                            + '">';
+                                        html += data[i].city + ', '
+                                            + data[i].country;
+                                        html += '</option>';
+                                        $('#location').append(html);
+                                    }
+
+                                }
+
+                            });
+
+                        	let t = new Date().toISOString().split("T")[0];
+                            t = t.split('-');
+                            t = t[2] + '/' + t[1] + '/' + t[0];
+                        	$("#enddate").datepicker();
+                            $("#enddate").datepicker("option", "dateFormat",
+                                "dd/mm/yy");
+                            $("#enddate").datepicker("option", "minDate", t);
+                            $("#startdate").datepicker();
+                            $("#startdate").datepicker("option", "dateFormat",
+                                "dd/mm/yy");
+                            $("#startdate").datepicker("option", "minDate", t);
+
+
+
+                            $.validator.addMethod('rq', function (
+                                value, element, param) {
+                                if (value == "")
+                                    return false;
+
+                                return true;
+
+                            }, 'poruka xD');
+
+                            $('#searchForm')
+                                .validate(
+                                    {
+                                        rules: {
+                                            startdate: {
+                                                rq: true
+                                            },
+                                        },
+                                        messages: {
+                                            startdate: "Datum preuzimanja nije unet",
+                                        }
+                                    });
+
+                            $('#searchBtn').click(function () {
+                                if ($('#searchForm').valid()) {
+                                    let d = {};
+                                    d.startDate = $("#startdate").val();
+                                    d.endDate = $("#enddate").val();
+                                    d.name = $("#name").val();
+                                    d.location = $("#location").val();
+
+                                    $.ajax({
+
+                                        url: 'rentacar/findcompanies',
+                                        type: 'post',
+                                        contentType: 'application/json',
+                                        data: JSON.stringify(d),
+                                        success: function (data) {
+                                        	  $('#row').empty();
+                                        	showRentACarCompanies(data);
+                                        }
+
+                                    });
+                                }
+
+                            });
+
+
+                        });
+
+                showRentACarCompanies(data);
+
+            }
+        });
+
+}
+
+function showRentACarCompanies(data){
+	for (let i = 0; i < data.length; i++) {
+        let c = createRAC(data[i]);
+        $('#row').append(c.html);
+        showOnMap(c, data[i]);
+    }
+	 $('.shcars').click(function () {
+         let id = $(this).attr('id');
+         location.hash = 'racservice=' + id;
+     });
+}
+
+function showOnMap(c, data) {
+    ymaps
+        .ready(function () {
+
+            var map = new ymaps.Map(c.id, {
+                center: [c.pos.Latitude, c.pos.Longitude],
+                zoom: 10
+            });
+            let myPlacemark = new ymaps.Placemark([c.pos.Latitude,
+            c.pos.Longitude], {
+                    hintContent: c.name,
+                    balloonContent: c.adr
+                });
+            map.geoObjects.add(myPlacemark);
+            for (let j = 0; j < data.branchOffices.length; j++) {
+                let bo = data.branchOffices[j];
+                let adr = bo.address + ' ' + bo.location.city + ' '
+                    + bo.location.country;
+                $
+                    .ajax({
+                        url: 'https://geocoder.api.here.com/6.2/geocode.json?app_id=aJx1PxrXFwpMDT0M30rJ&app_code=am23BxvdgXkXf2c15NUZgw&searchtext='
+                            + adr.replace(/ /g, '+'),
+                        // url:
+                        // 'https://geocode-maps.yandex.ru/1.x/?apikey=68f27d0d-4416-406a-8570-ec7b43f271a6&format=json&geocode='+adr.replace(/
+                        // /g,'+')+'&lang=en-US',
+                        type: 'get',
+                        async: false,
+                        success: function (mi) {
+                            let pos = mi.Response.View[0].Result[0].Location.DisplayPosition;
+                            let pm = new ymaps.Placemark([
+                                pos.Latitude, pos.Longitude], {
+                                    hintContent: adr,
+                                    balloonContent: adr
+                                });
+                            map.geoObjects.add(pm);
+                        }
+
+                    });
+            }
+        });
+}
+
+function createRAC(data) {
+	$.ajax({
+		async:false,
+		type:'get',
+		url:'/rentacar/average/company/'+data.id,
+		success:function(d){
+			if(d==0)
+				data.average='-';
+			else
+				data.average=d;
+
+		}
+	});
+    let adr = data.address + ' ' + data.location.city + ' '
+        + data.location.country;
+    let html = '<div class="col-md-4 text-center">';
+    html += '<div class="rac-company card border border-dark">';
+    html += '<div class="card-header"><h3 "class=" card-title rac-name">'
+        + data.name + '</h3>'+'<h3 "class=" card-title rac-avg">Ocena:'
+        + data.average + '</h3>' + '</div>';
+    html += '<div class="card-body">';
+    html += '<h3 "class="rac-address">' + adr + '</h3>';
+    html += '<textarea readonly style="width: -webkit-fill-available;" class="rac-description"> '
+        + data.description + '</textarea>';
+    html += '</div>';
+
+    html += '<div  class="card-footer"><div class="map" id="map' + data.id
+        + '" style="height: 250px"></div>';
+    html += '<button class="btn shcars btn-primary" id="' + data.id
+        + '">Automobili</button>'
+    html += '	</div></div></div>';
+
+    let ret = {};
+    ret.html = html;
+    ret.id = 'map' + data.id;
+    ret.name = data.name;
+    ret.adr = adr;
+    $
+        .ajax({
+            url: 'https://geocoder.api.here.com/6.2/geocode.json?app_id=aJx1PxrXFwpMDT0M30rJ&app_code=am23BxvdgXkXf2c15NUZgw&searchtext='
+                + adr.replace(/ /g, '+'),
+            type: 'get',
+            async: false,
+            success: function (mi) {
+                ret.pos = mi.Response.View[0].Result[0].Location.DisplayPosition;
+            }
+
+        });
+    return ret;
+}
+
+function showService(id) {
+    let d = {};
+    $('#items').empty();
+    $('#items')
+        .append(
+            '<div id="lol">'
+            + '<a data-toggle="collapse" href="#asd"><h2>Pretraga</h2></a>'
+            + '<div class="row aria-expanded= collapse show" id="asd"></div>'
+            +
+
+            '</div>	<div id="cars" class="row row-eq-height"></div>');
+
+    $('#asd')
+        .load(
+            "rent/parts.html #search",
+            function () {
+
+                search
+                $.validator.addMethod('ge', function (value, element,
+                    param) {
+                    if ($(param).val() == "")
+                        return true;
+                    if (this.optional(element) && value == "")
+                        return true;
+                    return parseFloat(value) >= parseFloat($(param)
+                        .val());
+                }, 'poruka xD');
+                $.validator.addMethod('le', function (value, element,
+                    param) {
+                    if ($(param).val() == "")
+                        return true;
+                    if (this.optional(element) && value == "")
+                        return true;
+                    return parseFloat(value) <= parseFloat($(param)
+                        .val());
+                }, 'poruka xD');
+                $.validator.addMethod('rq', function (value, element,
+                    param) {
+                    if (value == "")
+                        return false;
+
+                    return true;
+
+                }, 'poruka xD');
+                $('#searchForm')
+                    .validate(
+                        {
+                            rules: {
+                                enddate: {
+                                    rq: true
+                                },
+                                startdate: {
+                                    rq: true
+                                },
+                                passengers: "required",
+                                maxprice: {
+                                    ge: "#minprice"
+                                },
+                                minprice: {
+                                    le: "#maxprice"
+                                }
+                            },
+                            messages: {
+                                enddate: "Datum vraćanja nije unet",
+                                startdate: "Datum preuzimanja nije unet",
+                                maxprice: {
+                                    ge: "Maksimalna cena mora biti veca ili jednaka minimalnoj"
+                                },
+                                minprice: {
+                                    le: " Minimalna cena mora biti manja ili jednaka maksimalnoj"
+                                },
+                                passengers: "Unesite broj putnika"
+                            }
+                        });
+
+                let t = new Date().toISOString().split("T")[0];
+                t = t.split('-');
+                t = t[2] + '/' + t[1] + '/' + t[0];
+                $("#enddate").datepicker();
+                $("#enddate").datepicker("option", "dateFormat",
+                    "dd/mm/yy");
+                $("#enddate").datepicker("option", "minDate", t);
+                $("#startdate").datepicker();
+                $("#startdate").datepicker("option", "dateFormat",
+                    "dd/mm/yy");
+                $("#startdate").datepicker("option", "minDate", t);
+
+                $('#searchBtn').click(function () {
+                    if ($('#searchForm').valid()) {
+                        let d = {};
+                        d = {};
+                        d.id = id;
+                        d.startDate = $("#startdate").val();
+                        d.endDate = $("#enddate").val();
+                        d.type = $("#cartype").val();
+                        d.minprice = $("#minprice").val();
+                        d.maxprice = $("#maxprice").val();
+                        d.passengers = $("#passengers").val();
+
+                        $.ajax({
+
+                            url: 'rentacar/freecars',
+                            type: 'post',
+                            contentType: 'application/json',
+                            data: JSON.stringify(d),
+                            success: function (data) {
+                                showCars(data);
+                            }
+
+                        });
+                    }
+
+                });
+                $.ajax({
+                    url: 'rentacar/' + id + '/destinations',
+                    type: 'get',
+                    success: function (data) {
+                        for (let i = 0; i < data.length; ++i) {
+                            let html = '<option value="' + data[i].id
+                                + '">';
+                            html += data[i].city + ', '
+                                + data[i].country;
+                            html += '</option>';
+                            $('.dest').append(html);
+                        }
+
+                    }
+
+                });
+
+            });
+
+	/*
+	 * $.ajax({ url:'/rentacar/cars/'+id, type:'get', data:d, sucess:function(){
+	 *
+	 *  }
+	 *
+	 *
+	 * });
+	 */
+
+}
+
+function showAirlineSearch() {
+	// $.load("/registereduser/profile")
+}
+
 
 var indexOfActiveTab = 0;
 var shownTab = false;
 var validatorProfileInfo = null;
-
-function showAirlineSearch() {
-	$("#items").load("/registereduser/profile")
-}
-
 function showProfileInfo() {
 
 	$("#items").
@@ -500,337 +872,4 @@ function showProfileInfo() {
 		$("#tabs").tabs("load", indexOfActiveTab).show("fade", {}, 400, function() {});
 	});
 }
-
-function showRentACar() {
-
-    $
-        .ajax({
-            url: 'rentacar/',
-            type: 'get',
-            success: function (data) {
-                $('#items').empty();
-                $('#items')
-                    .append(
-                        '<div class="row" id="search"></div><hr><div class="row" id="row"></div>');
-                $('#search')
-                    .load(
-                        'rent/parts.html #searchRACdiv > ',
-                        function () {
-                            $.ajax({
-                                url: 'rentacar/destinations',
-                                type: 'get',
-                                success: function (data) {
-                                    for (let i = 0; i < data.length; ++i) {
-                                        let html = '<option value="' + data[i].id
-                                            + '">';
-                                        html += data[i].city + ', '
-                                            + data[i].country;
-                                        html += '</option>';
-                                        $('#location').append(html);
-                                    }
-
-                                }
-
-                            });
-
-                        	let t = new Date().toISOString().split("T")[0];
-                            t = t.split('-');
-                            t = t[2] + '/' + t[1] + '/' + t[0];
-                        	$("#enddate").datepicker();
-                            $("#enddate").datepicker("option", "dateFormat",
-                                "dd/mm/yy");
-                            $("#enddate").datepicker("option", "minDate", t);
-                            $("#startdate").datepicker();
-                            $("#startdate").datepicker("option", "dateFormat",
-                                "dd/mm/yy");
-                            $("#startdate").datepicker("option", "minDate", t);
-
-
-
-                            $.validator.addMethod('rq', function (
-                                value, element, param) {
-                                if (value == "")
-                                    return false;
-
-                                return true;
-
-                            }, 'poruka xD');
-
-                            $('#searchForm')
-                                .validate(
-                                    {
-                                        rules: {
-                                            startdate: {
-                                                rq: true
-                                            },
-                                        },
-                                        messages: {
-                                            startdate: "Datum preuzimanja nije unet",
-                                        }
-                                    });
-
-                            $('#searchBtn').click(function () {
-                                if ($('#searchForm').valid()) {
-                                    let d = {};
-                                    d.startDate = $("#startdate").val();
-                                    d.endDate = $("#enddate").val();
-                                    d.name = $("#name").val();
-                                    d.location = $("#location").val();
-
-                                    $.ajax({
-
-                                        url: 'rentacar/findcompanies',
-                                        type: 'post',
-                                        contentType: 'application/json',
-                                        data: JSON.stringify(d),
-                                        success: function (data) {
-                                        	  $('#row').empty();
-                                        	showRentACarCompanies(data);
-                                        }
-
-                                    });
-                                }
-
-                            });
-
-
-                        });
-
-                showRentACarCompanies(data);
-
-            }
-        });
-
-}
-
-function showRentACarCompanies(data){
-	for (let i = 0; i < data.length; i++) {
-        let c = createRAC(data[i]);
-        $('#row').append(c.html);
-        showOnMap(c, data[i]);
-    }
-	 $('.shcars').click(function () {
-         let id = $(this).attr('id');
-         location.hash = 'racservice=' + id;
-     });
-}
-
-function showOnMap(c, data) {
-    ymaps
-        .ready(function () {
-
-            var map = new ymaps.Map(c.id, {
-                center: [c.pos.Latitude, c.pos.Longitude],
-                zoom: 10
-            });
-            let myPlacemark = new ymaps.Placemark([c.pos.Latitude,
-            c.pos.Longitude], {
-                    hintContent: c.name,
-                    balloonContent: c.adr
-                });
-            map.geoObjects.add(myPlacemark);
-            for (let j = 0; j < data.branchOffices.length; j++) {
-                let bo = data.branchOffices[j];
-                let adr = bo.address + ' ' + bo.location.city + ' '
-                    + bo.location.country;
-                $
-                    .ajax({
-                        url: 'https://geocoder.api.here.com/6.2/geocode.json?app_id=aJx1PxrXFwpMDT0M30rJ&app_code=am23BxvdgXkXf2c15NUZgw&searchtext='
-                            + adr.replace(/ /g, '+'),
-                        // url:
-                        // 'https://geocode-maps.yandex.ru/1.x/?apikey=68f27d0d-4416-406a-8570-ec7b43f271a6&format=json&geocode='+adr.replace(/
-                        // /g,'+')+'&lang=en-US',
-                        type: 'get',
-                        async: false,
-                        success: function (mi) {
-                            let pos = mi.Response.View[0].Result[0].Location.DisplayPosition;
-                            let pm = new ymaps.Placemark([
-                                pos.Latitude, pos.Longitude], {
-                                    hintContent: adr,
-                                    balloonContent: adr
-                                });
-                            map.geoObjects.add(pm);
-                        }
-
-                    });
-            }
-        });
-}
-
-function createRAC(data) {
-    let adr = data.address + ' ' + data.location.city + ' '
-        + data.location.country;
-    let html = '<div class="col-md-4 text-center">';
-    html += '<div class="rac-company card border border-dark">';
-    html += '<div class="card-header"><h3 "class=" card-title rac-name">'
-        + data.name + '</h3>' + '</div>';
-    html += '<div class="card-body">';
-    html += '<h3 "class="rac-address">' + adr + '</h3>';
-    html += '<textarea readonly style="width: -webkit-fill-available;" class="rac-description"> '
-        + data.description + '</textarea>';
-    html += '</div>';
-
-    html += '<div  class="card-footer"><div class="map" id="map' + data.id
-        + '" style="height: 250px"></div>';
-    html += '<button class="btn shcars btn-primary" id="' + data.id
-        + '">Automobili</button>'
-    html += '	</div></div></div>';
-
-    let ret = {};
-    ret.html = html;
-    ret.id = 'map' + data.id;
-    ret.name = data.name;
-    ret.adr = adr;
-    $
-        .ajax({
-            url: 'https://geocoder.api.here.com/6.2/geocode.json?app_id=aJx1PxrXFwpMDT0M30rJ&app_code=am23BxvdgXkXf2c15NUZgw&searchtext='
-                + adr.replace(/ /g, '+'),
-            type: 'get',
-            async: false,
-            success: function (mi) {
-                ret.pos = mi.Response.View[0].Result[0].Location.DisplayPosition;
-            }
-
-        });
-    return ret;
-}
-
-function showService(id) {
-    let d = {};
-    $('#items').empty();
-    $('#items').append(
-            '<div id="lol">'
-            + '<a data-toggle="collapse" href="#asd"><h2>Pretraga</h2></a>'
-            + '<div class="row aria-expanded= collapse show" id="asd"></div>'
-            +
-
-            '</div>	<div id="cars" class="row row-eq-height"></div>');
-
-    $('#asd').load(
-            "rent/parts.html #search",
-            function () {
-
-                search
-                $.validator.addMethod('ge', function (value, element,
-                    param) {
-                    if ($(param).val() == "")
-                        return true;
-                    if (this.optional(element) && value == "")
-                        return true;
-                    return parseFloat(value) >= parseFloat($(param)
-                        .val());
-                }, 'poruka xD');
-                $.validator.addMethod('le', function (value, element,
-                    param) {
-                    if ($(param).val() == "")
-                        return true;
-                    if (this.optional(element) && value == "")
-                        return true;
-                    return parseFloat(value) <= parseFloat($(param)
-                        .val());
-                }, 'poruka xD');
-                $.validator.addMethod('rq', function (value, element,
-                    param) {
-                    if (value == "")
-                        return false;
-
-                    return true;
-
-                }, 'poruka xD');
-                $('#searchForm')
-                    .validate(
-                        {
-                            rules: {
-                                enddate: {
-                                    rq: true
-                                },
-                                startdate: {
-                                    rq: true
-                                },
-                                passengers: "required",
-                                maxprice: {
-                                    ge: "#minprice"
-                                },
-                                minprice: {
-                                    le: "#maxprice"
-                                }
-                            },
-                            messages: {
-                                enddate: "Datum vraćanja nije unet",
-                                startdate: "Datum preuzimanja nije unet",
-                                maxprice: {
-                                    ge: "Maksimalna cena mora biti veca ili jednaka minimalnoj"
-                                },
-                                minprice: {
-                                    le: " Minimalna cena mora biti manja ili jednaka maksimalnoj"
-                                },
-                                passengers: "Unesite broj putnika"
-                            }
-                        });
-
-                let t = new Date().toISOString().split("T")[0];
-                t = t.split('-');
-                t = t[2] + '/' + t[1] + '/' + t[0];
-                $("#enddate").datepicker();
-                $("#enddate").datepicker("option", "dateFormat",
-                    "dd/mm/yy");
-                $("#enddate").datepicker("option", "minDate", t);
-                $("#startdate").datepicker();
-                $("#startdate").datepicker("option", "dateFormat",
-                    "dd/mm/yy");
-                $("#startdate").datepicker("option", "minDate", t);
-
-                $('#searchBtn').click(function () {
-                    if ($('#searchForm').valid()) {
-                        let d = {};
-                        d = {};
-                        d.id = id;
-                        d.startDate = $("#startdate").val();
-                        d.endDate = $("#enddate").val();
-                        d.type = $("#cartype").val();
-                        d.minprice = $("#minprice").val();
-                        d.maxprice = $("#maxprice").val();
-                        d.passengers = $("#passengers").val();
-
-                        $.ajax({
-
-                            url: 'rentacar/freecars',
-                            type: 'post',
-                            contentType: 'application/json',
-                            data: JSON.stringify(d),
-                            success: function (data) {
-                                showCars(data);
-							}
-                        });
-                    }
-
-                });
-
-                $.ajax({
-                    url: 'rentacar/' + id + '/destinations',
-                    type: 'get',
-                    success: function (data) {
-                        for (let i = 0; i < data.length; ++i) {
-                            let html = '<option value="' + data[i].id
-                                + '">';
-                            html += data[i].city + ', '
-                                + data[i].country;
-                            html += '</option>';
-                            $('.dest').append(html);
-                        }
-
-                    }
-				});
-            });
-
-	}
-
-	/*
-	 * $.ajax({ url:'/rentacar/cars/'+id, type:'get', data:d, sucess:function(){
-	 *
-	 *  }
-	 *
-	 *
-	 * });
-	 */
 
