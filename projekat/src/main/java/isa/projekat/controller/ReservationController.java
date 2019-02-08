@@ -11,6 +11,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -63,4 +64,31 @@ public class ReservationController {
 		return reservationService.getMyHotelHistoty(request);
 	}
 
+	@GetMapping(value = "/currentcars", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+	@PreAuthorize("hasRole('ROLE_USER')")
+	@ResponseBody
+	public Set<CarReservation> currentCarResercations(HttpServletRequest request) {
+		return reservationService.currentReservations(request);
+	}
+	
+	@DeleteMapping(value = "/deletecar/{id}", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+	@PreAuthorize("hasRole('ROLE_USER')")
+	@ResponseBody
+	public boolean cancelCar(HttpServletRequest request,@PathVariable(value = "id") String id) {
+		return reservationService.cancelCar(request,id);
+	}
+	
+	@GetMapping(value = "/currenthotels", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+	@PreAuthorize("hasRole('ROLE_USER')")
+	@ResponseBody
+	public Set<HotelReservation> currenthotels(HttpServletRequest request) {
+		return reservationService.currentHotels(request);
+	}
+	@DeleteMapping(value = "/deletehotel/{id}", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+	@PreAuthorize("hasRole('ROLE_USER')")
+	@ResponseBody
+	public boolean cancelHotel(HttpServletRequest request,@PathVariable(value = "id") String id) {
+		return reservationService.cancelHotel(request,id);
+	}
+	
 }

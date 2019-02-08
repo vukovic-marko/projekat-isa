@@ -86,6 +86,10 @@ $(document).ready(
             }else if (location.hash===("")) {
             	showHistory();
             }
+            
+        	else if (location.hash===("#reservations")) {
+        		showReservations();
+        	}
            
 
              

@@ -277,7 +277,15 @@ public class RentACarService {
 		int seats = Integer.parseInt(params.get("passengers"));
 		java.util.Date date1 = null;
 		java.util.Date date2 = null;
-
+		
+		Double maxPrice=null;
+		if(params.get("maxprice")!=null&&!params.get("maxprice").equals(""))
+			maxPrice=Double.parseDouble(params.get("maxprice"));
+		Double minPrice=null;
+		if(params.get("minprice")!=null &&!params.get("minprice").equals(""))
+			minPrice=Double.parseDouble(params.get("minprice"));
+		
+		
 		SimpleDateFormat dates = new SimpleDateFormat("dd/mm/yyyy");
 
 		try {
@@ -293,9 +301,18 @@ public class RentACarService {
 		long differenceDates = difference / (24 * 60 * 60 * 1000);
 
 		List<Car> ret = carRepository.findFreeCars(c, d, type, seats);
-		for (Car ca : ret)
+		List<Car> ret2=new LinkedList<>();
+		for(Car ca:ret) {
+			
 			ca.setTotalPrice(ca.getPrice() * (1 + differenceDates));
-		return ret;
+			if(maxPrice!=null && ca.getTotalPrice()>maxPrice)
+				continue;
+			if(minPrice!=null&&ca.getTotalPrice()<minPrice)
+				continue;
+			ret2.add(ca);
+		}
+		
+		return ret2;
 	}
 
 	public List<Destination> getAllDestinations() {

@@ -13,6 +13,11 @@ public interface HotelReservationRepository extends JpaRepository<HotelReservati
 
 	@Query("select cr from HotelReservation cr where "+
 			"cr.dateOfDeparture<?2 and cr.user=?1")
-	Set<HotelReservation> findUserHistory(User user, Date d);
+	public Set<HotelReservation> findUserHistory(User user, Date d);
+
+	
+	@Query("select cr from HotelReservation cr where "+
+			"cr.dateOfDeparture>=?2 and cr.user=?1")
+	public Set<HotelReservation> findCurrent(User user, java.util.Date date);
 
 }

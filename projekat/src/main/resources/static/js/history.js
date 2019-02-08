@@ -3,6 +3,7 @@ function showHistory(){
 	 $('#items').load("userparts.html #history",function(){
 		carHist();
 		hotelHist();
+		// +letovi, koje nemamo
 	 });
 	
 	
@@ -116,9 +117,10 @@ function hotelHist(){
 								 html+='<td><input style="width:50px" type="number" min="1" max="5"></input>'+
 								 '/ 5<button id="hotel'+data[i].id+'">Oceni</button></td>';
 							// html+='<td>';
-							/* for(let j=0;j<data[i].rooms.length;j++)
-								 html+='<div>'+data[i].rooms[j].roomNumber+'</div>';*/
-						//	html+='</td>';
+							/*
+							 * for(let j=0;j<data[i].rooms.length;j++) html+='<div>'+data[i].rooms[j].roomNumber+'</div>';
+							 */
+						// html+='</td>';
 							html+='<td>';
 							 for(let j=0;j<data[i].rooms.length;j++){
 								html+=data[i].rooms[j].roomNumber+' :   ';
@@ -152,7 +154,7 @@ function hotelHist(){
 								 let rev={};
 								 rev.a=parseInt($(this).prev().val());
 								 let ids=$(this).attr('id').split('_');
-								 $this=$(this);
+								 let $this=$(this);
 								 $.ajax({
 									 url:'review/roomreview/'+ids[1]+'/'+ids[0],
 									 type:'post',
@@ -169,7 +171,7 @@ function hotelHist(){
 									 return;
 								 let rev={};
 								 rev.a=parseInt($(this).prev().val());
-								 $this=$(this);
+								 let $this=$(this);
 								 $.ajax({
 									 url:'review/hotel/'+data[i].id,
 									 type:'post',
@@ -191,5 +193,138 @@ function hotelHist(){
 			 }
 		 }
 	 });
+
+}
+
+
+function showReservations(){
+	 $('#items').empty();
+	 $('#items').load("userparts.html #reservations",function(){
+		loadReservedHotels();
+		 $.ajax({
+			 type:'get',
+			 url:'reservate/currentcars/',
+			 success:function(d){
+				 if(d==null)
+					 return;
+				 for(let i=0;i<d.length;i++){
+					 let html='<tr>';
+					 html+='<td>'+d[i].car.company.name+'</td>';
+					 html+='<td>'+d[i].car.name+'</td>';
+					 html+='<td>'+d[i].startDate+'</td>';
+					 html+='<td>'+d[i].endDate+'</td>';
+					 let date=new Date();
+					 date.setHours(0,0,0,0)
+					 date.setDate(date.getDate()-2);
+					 let sd=d[i].startDate.split('-');
+					 let date2=new Date(sd[0],sd[1],sd[2]);
+					 date2.setMonth(date2.getMonth()-1);
+					 if(date<date2){
+						 html += '<td><button class="btn resend btn-danger close" id="'+d[i].id+'">×</button></td>';
+					 }else
+						 html+='<td></td>';
+					 
+					 html+='</tr>';
+					 $('#cars tbody').append(html);
+					 }
+					
+					 $('.resend').click(function(){
+						 let $this=$(this);
+						 $.ajax({
+							 type:'delete',
+							 url:'reservate/deletecar/'+$this.attr('id'),
+							 success:function(da){
+								 if(da==true){
+									 $this.parent().parent().remove();
+									 toastr.info('Otkazano!')
+								 }else{
+									 toastr.error('Ne mozete otkazati ovu rezervaciju :(')
+								 }
+							 }
+				
+						 
+					 });
+					 });
+				 
+				 
+		
+			 }
+		 });
+		  
+	 
+	 });
+
+
+}
+
+
+
+function loadReservedHotels(){
+	
+		 $.ajax({
+			 type:'get',
+			 url:'reservate/currenthotels/',
+			 success:function(d){
+				 if(d==null)
+					 return;
+				 for(let i=0;i<d.length;i++){
+					 let html='<tr>';
+					 let hotel;
+						
+					 $.ajax({
+						 success: function(da){
+							 hotel=da;
+						 },async:false,
+						 url:'review/hotelreview/gethotelbyroom/'+d[i].rooms[0].id,
+						 type:'get'
+					 });
+					 
+					 html+='<td>'+hotel.name+'</td>';
+					 html+='<td>';
+					 for(let j=0;j<d[i].rooms.length;j++){
+						 html+='<div>'+d[i].rooms[j].roomNumber+'</div>';
+					 }
+					 html+='</td>';
+					 html+='<td>'+d[i].dateOfArrival+'</td>';
+					 html+='<td>'+d[i].dateOfDeparture+'</td>';
+					 let date=new Date();
+					 date.setHours(0,0,0,0)
+					 date.setDate(date.getDate()-2);
+					 let sd=d[i].dateOfArrival.split('-');
+					 let date2=new Date(sd[0],sd[1],sd[2]);
+					 date2.setMonth(date2.getMonth()-1);
+					 if(date<date2){
+						 html += '<td><button class="btn resend btn-danger close" id="ho'+d[i].id+'">×</button></td>';
+					 }else
+						 html+='<td></td>';
+					 
+					 html+='</tr>';
+					 $('#hotels tbody').append(html);
+					 }
+					
+					 $('.resend').click(function(){
+						 let $this=$(this);
+						 $.ajax({
+							 type:'delete',
+							 url:'reservate/deletehotel/'+$this.attr('id').substring(2),
+							 success:function(da){
+								 if(da==true){
+									 $this.parent().parent().remove();
+									 toastr.info('Otkazano!')
+								 }else{
+									 toastr.error('Ne mozete otkazati ovu rezervaciju :(')
+								 }
+							 }
+				
+						 
+					 });
+					 });
+				 
+				 
+		
+			 }
+		 });
+		  
+
 
 }

@@ -214,7 +214,7 @@ $("#removeFlight").click(function(){
 				},
 				statusCode : {
 					403 : function(data) {
-						var string = data.responseJSON.message;
+						var string = data.responseText;
 						//nema else-if jer moze vise gresaka da bude
 						if(string.includes("hotel")){
 							
@@ -226,7 +226,11 @@ $("#removeFlight").click(function(){
 						
 						}
 						if(string.includes("car")){
-							
+							//localStorage.removeItem("carReservation");
+							toastr.error('Auto je vec rezervisan');
+							$("#removeCar").click();
+						}else{
+							toastr.error('Ne mozete poslati prazanu rezervaciju');
 						}
 						
 					}

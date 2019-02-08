@@ -28,6 +28,10 @@ public interface CarReservationRepository extends JpaRepository<CarReservation, 
 	@Query("select cr from CarReservation cr where "+
 			"cr.endDate<?2 and cr.user=?1")
 	public Set<CarReservation> findUserHistory(User user, Date d);
+
+	@Query("select cr from CarReservation cr where "+
+			"cr.endDate>=?2 and cr.user=?1")
+	public Set<CarReservation> findCurrent(User user, java.util.Date date);
 	
 	
 }
