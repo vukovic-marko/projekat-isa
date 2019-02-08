@@ -2,14 +2,15 @@ package isa.projekat.controller;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Example;
 import org.springframework.data.domain.ExampleMatcher;
-import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -222,7 +223,7 @@ public class HotelController {
 			}
 		}
 		
-		List<HotelAdditionalService> additionalServices = new ArrayList<HotelAdditionalService>();
+		Set<HotelAdditionalService> additionalServices = new HashSet<HotelAdditionalService>();
 		Double price = 0.0;
 		for (Long l : query.getServices()) {
 			HotelAdditionalService aS = additionalServiceRepository.findOne(l);
@@ -239,7 +240,7 @@ public class HotelController {
 		
 		
 		
-		List<HotelRoom> r = new ArrayList<HotelRoom>();
+		Set<HotelRoom> r = new HashSet<HotelRoom>();
 		Hotel h = hotelRepository.findOne(query.getHotelId());
 		HotelReservation res = new HotelReservation();
 		res.setDateOfArrival(dateOfArrival);

@@ -2,7 +2,7 @@ package isa.projekat.model;
 
 import java.io.Serializable;
 import java.util.Date;
-import java.util.List;
+import java.util.Set;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -49,20 +49,20 @@ public class HotelReservation implements Serializable{
 	@JoinTable(name = "hotel_room_occupation", 
 		joinColumns = 
 		{
-			@JoinColumn(name = "reservation_id", referencedColumnName = "id")		},
+			@JoinColumn(name = "hotel_reservation_id", referencedColumnName = "id")		},
 		inverseJoinColumns = @JoinColumn(name = "room_id", referencedColumnName = "id"))
-	private List<HotelRoom> rooms;
+	private Set<HotelRoom> rooms;
 	
 	@ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
 	@JoinTable(name = "hotel_reservations_additional_services",
 			joinColumns = @JoinColumn(name = "reservation_id", referencedColumnName = "id"),
 			inverseJoinColumns = @JoinColumn(name = "service_id", referencedColumnName="id"))
-	private List<HotelAdditionalService> services;
+	private Set<HotelAdditionalService> services;
 	
 	@Column(nullable = false)
 	private Double price;
 	
-	@ManyToOne(fetch = FetchType.LAZY)
+	@ManyToOne(fetch = FetchType.EAGER)
 	@JoinColumn(name = "user_id", nullable = false)
 	private User user;
 
@@ -98,11 +98,11 @@ public class HotelReservation implements Serializable{
 		this.numberOfGuests = numberOfGuests;
 	}
 	
-	public List<HotelRoom> getRooms() {
+	public Set<HotelRoom> getRooms() {
 		return rooms;
 	}
 
-	public void setRooms(List<HotelRoom> rooms) {
+	public void setRooms(Set<HotelRoom> rooms) {
 		this.rooms = rooms;
 	}
 
@@ -115,11 +115,11 @@ public class HotelReservation implements Serializable{
 		this.user = user;
 	}
 
-	public List<HotelAdditionalService> getServices() {
+	public Set<HotelAdditionalService> getServices() {
 		return services;
 	}
 
-	public void setServices(List<HotelAdditionalService> services) {
+	public void setServices(Set<HotelAdditionalService> services) {
 		this.services = services;
 	}
 

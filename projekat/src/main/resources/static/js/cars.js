@@ -9,6 +9,27 @@ function showCars(data) {
 		let carReservation={};
 		carReservation.startDate=$('#startdate').val();
 		carReservation.endDate=$('#enddate').val();
+		carReservation.startDestionation=$('#startlocation').val();
+		carReservation.endDestination=$('#endlocation').val();
+		$.ajax({
+			success:function(data){
+				if(data!=null)
+					localStorage.setItem("carStart",JSON.stringify(data));
+			},
+			url:'/reservate/dest/'+carReservation.startDestionation,
+			type:'get',
+
+		});		
+		$.ajax({
+			success:function(data){
+				if(data!=null)
+					localStorage.setItem("carEnd",JSON.stringify(data));
+			},
+			url:'/reservate/dest/'+carReservation.endDestination,
+			type:'get',
+
+		});
+		
 		carReservation.id=id;
 		
 		$.ajax({
@@ -17,7 +38,7 @@ function showCars(data) {
 					toastr.error('Auto je vec rezervisan!')
 					return;
 				}
-				localStorage.setItem('carReservation', carReservation);
+				localStorage.setItem('carReservation', JSON.stringify(carReservation));
 				toastr.info('Dodato u rezervacije!')
 			},
 			url:'rentacar/checkiffree',

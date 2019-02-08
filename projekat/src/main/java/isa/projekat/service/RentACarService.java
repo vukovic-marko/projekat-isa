@@ -297,14 +297,14 @@ public class RentACarService {
 	}
 	
 	@Transactional(value=TxType.REQUIRED)
-	public boolean checkCar(Map<String, String> params) {
-		String id=params.get("id");
+	public boolean checkCar(Map<String, Object> params) {
+		String id= (String)params.get("id");
 		if(id==null)
 			return false;
 		Car car=carRepository.findOne(Long.parseLong(id));
 		if(car==null)
 			return false;
-		String dateStart = params.get("startDate");
+		String dateStart = (String)params.get("startDate");
 		if(dateStart==null)
 			return false;
 		String[] parts = dateStart.split("/");
@@ -319,6 +319,38 @@ public class RentACarService {
 	public boolean reserve(HttpServletRequest request, Map<String,String> params) {
 		
 		return true;
+	}
+
+	public Car getCar(Map<String, String> params) {
+		String dateStart = params.get("startDate");
+		String[] parts = dateStart.split("/");
+		Date d = new Date(Integer.parseInt(parts[2]) - 1900, Integer.parseInt(parts[1]) - 1, Integer.parseInt(parts[0]));
+		RentACarCompany c = rentACarCompanyRepository.findOne(Long.parseLong(params.get("id")));
+		String endDate = params.get("endDate");
+		String[] parts2 = endDate.split("/");
+		
+		java.util.Date date1 = null;
+		java.util.Date date2 = null;
+
+		SimpleDateFormat dates = new SimpleDateFormat("dd/mm/yyyy");
+
+		try {
+			date1 = dates.parse(parts[0] + '/' + parts[1] + '/' + parts[2]);
+			date2 = dates.parse(parts2[0] + '/' + parts2[1] + '/' + parts2[2]);
+		} catch (Exception e) {
+
+			e.printStackTrace();
+			throw new BeanCreationException("exc", e);
+		}
+
+		long difference = Math.abs(date1.getTime() - date2.getTime());
+		long differenceDates = difference / (24 * 60 * 60 * 1000);
+
+		String id = params.get("id");
+		Car ret = carRepository.findOne(Long.parseLong(id));
+	
+		ret.setTotalPrice(ret.getPrice()* (1 + differenceDates));
+		return ret;
 	}
 	
 	

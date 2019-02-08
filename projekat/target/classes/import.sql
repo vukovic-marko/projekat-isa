@@ -20,16 +20,6 @@
 
 --INSERT INTO destination (id,city,country) VALUES(1,'novi sad','srbija');
 
-INSERT INTO car (id,brand,doors,model,name,price,seats,transmission,type,year,company_id) VALUES (1,'marka',2,'modle','naziv',345,5,'Manuelni','Hečbek',2000,1);
-
-INSERT INTO car (id,brand,doors,model,name,price,seats,total_price,transmission,type,year,company_id) VALUES (1,'q',0,'q','q',23,5,0,'Manuelni','Hečbek',2000,1);
-INSERT INTO car (id,brand,doors,model,name,price,seats,total_price,transmission,type,year,company_id) VALUES (2,'qe',3,'qee','qe',233,5,0,'Manuelni','Hečbek',2000,1);
-INSERT INTO car (id,brand,doors,model,name,price,seats,total_price,transmission,type,year,company_id) VALUES (3,'qeer',3,'qee','qeer',233,5,0,'Manuelni','Hečbek',2000,1);
-
-INSERT INTO car_reservation (id,end_date,price,start_date,car_id,end_destination_id,start_destination_id,user_id) VALUES (1,'2019-02-06',11,'2019-02-01',1,1,1,1);
-INSERT INTO car_reservation (id,end_date,price,start_date,car_id,end_destination_id,start_destination_id,user_id) VALUES (2,'2019-02-05',11,'2019-02-01',2,1,1,1);
-INSERT INTO car_reservation (id,end_date,price,start_date,car_id,end_destination_id,start_destination_id,user_id) VALUES (3,'2019-02-04',15,'2019-02-01',3,1,1,1);
-
 
 
 
@@ -102,3 +92,13 @@ INSERT INTO HOTEL_ROOM_OCCUPATION(reservation_id, room_id) VALUES (1, 1);
 
 INSERT INTO rentacar_company (id,address,description,name,version,admin,location_id) VALUES (1,'kisacka 24','ad','ad',1,3,1);
 
+
+INSERT INTO car (id,brand,doors,model,name,price,seats,transmission,type,year,company_id) VALUES (1,'marka',2,'modle','naziv',345,5,'Manuelni','Hečbek',2000,1);
+
+INSERT INTO car (id,brand,doors,model,name,price,seats,total_price,transmission,type,year,company_id) VALUES (1,'q',0,'q','q',23,5,0,'Manuelni','Hečbek',2000,1);
+INSERT INTO car (id,brand,doors,model,name,price,seats,total_price,transmission,type,year,company_id) VALUES (2,'qe',3,'qee','qe',233,5,0,'Manuelni','Hečbek',2000,1);
+INSERT INTO car (id,brand,doors,model,name,price,seats,total_price,transmission,type,year,company_id) VALUES (3,'qeer',3,'qee','qeer',233,5,0,'Manuelni','Hečbek',2000,1);
+
+INSERT INTO car_reservation (id,end_date,price,start_date,car_id,end_destination_id,start_destination_id,user_id) VALUES (1,'2019-02-06',11,'2019-02-01',1,1,1,1);
+INSERT INTO car_reservation (id,end_date,price,start_date,car_id,end_destination_id,start_destination_id,user_id) VALUES (2,'2019-02-05',11,'2019-02-01',2,1,1,1);
+INSERT INTO car_reservation (id,end_date,price,start_date,car_id,end_destination_id,start_destination_id,user_id) VALUES (3,'2019-02-04',15,'2019-02-01',3,1,1,1);

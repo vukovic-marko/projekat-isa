@@ -54,8 +54,16 @@ public class RentACarController {
 	
 	
 	@PostMapping(value = "/checkiffree",produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
-	public boolean chekcIfFree(@RequestBody Map<String,String> params) {
+	public boolean chekcIfFree(@RequestBody Map<String,Object> params) {
 		return rentACarService.checkCar(params);
+	}
+	
+	
+	
+	@PostMapping(value = "/getcar",produces = MediaType.APPLICATION_JSON_UTF8_VALUE,
+			consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
+	public Car getCar( @RequestBody Map<String,String> params) {
+		return rentACarService.getCar(params);
 	}
 	/*
 	//@GetMapping(value = "/cars/{id}",produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
