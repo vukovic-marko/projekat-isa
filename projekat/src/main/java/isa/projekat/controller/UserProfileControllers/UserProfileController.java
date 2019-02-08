@@ -1,18 +1,24 @@
 package isa.projekat.controller.UserProfileControllers;
 
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.util.JSONPObject;
+import isa.projekat.model.Forms.FindFriendForm;
 import isa.projekat.model.Forms.RegisteredUserFormData;
 import isa.projekat.model.User;
 import isa.projekat.service.RegisteredUserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.json.GsonJsonParser;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -38,55 +44,56 @@ public class UserProfileController {
         return new ResponseEntity<>(new ArrayList<>(), HttpStatus.OK);
     }
 
-    /**
-     * @return username svakog od prijatelja
-     */
-    @GetMapping(value = "/{username}/friends")
-    public ResponseEntity<List<String>> getFriends(@PathVariable("username") String username) {
+    @PostMapping(
+            value = "/friends/add",
+            consumes = MediaType.APPLICATION_JSON_VALUE,
+            produces = MediaType.TEXT_PLAIN_VALUE)
+    public ResponseEntity<String> addFriend(@RequestBody Map<String,String> payload, HttpServletRequest request) {
 
-        ArrayList<String> list = new ArrayList<String>();
-        list.add("1)abc");
-        list.add("2)123");
-        list.add("3)def");
+        Long idPrijatelja = Long.parseLong(payload.get("id"));
 
-        ResponseEntity<List<String>> listResponseEntity = new ResponseEntity<List<String>>(list, HttpStatus.OK);
+        boolean success = userService.sendRequestToRegisteredUser(idPrijatelja, request);
 
-        return listResponseEntity;
+        String ret;
+        if(success) {
+
+            ret = "Uspjesno poslan zahtjev!";
+            return new ResponseEntity<String>(ret, HttpStatus.OK);
+        } else {
+
+            ret = "Nespjesno poslan zahtjev!";
+            return new ResponseEntity<String>(ret, HttpStatus.BAD_REQUEST);
+        }
     }
 
-    @GetMapping(value = "/{username}/friends/isFriend/{friendUsername}")
-    public ResponseEntity<Boolean> isFriend(@PathVariable("username") String username, @PathVariable("friendsUsername") String friendsUsername) {
+    @GetMapping(
+            value = "/friends",
+            produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<List<User>> getFriends(HttpServletRequest request) {
 
-        ResponseEntity<Boolean> booleanResponseEntity = new ResponseEntity<Boolean>(Boolean.TRUE, HttpStatus.OK);
+        ObjectMapper om = new ObjectMapper();
 
-        return booleanResponseEntity;
+        List<User> friends = userService.getFriendsOfCurrentUser(request);
+
+        return new ResponseEntity<List<User>>(friends, HttpStatus.OK);
     }
 
-    @GetMapping(value = "/{username}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<Map<String, String>> getProfileInfo(@PathVariable("username") String username) {
-
-        // authenticate username with token
-        // get user from data source
-        // populate map with entries
-
-        return new ResponseEntity<>(new HashMap<String, String>(), HttpStatus.OK);
-    }
-
-    @PatchMapping(value = "/{username}/edit",
+    @PatchMapping(
+            value = "/edit",
             consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE,
             produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<Object> updateProfileInfo(@PathVariable("username") String username,
+    public ResponseEntity<Object> updateProfileInfo(
                                                     @ModelAttribute("user") @Valid RegisteredUserFormData user,
-                                                    BindingResult bindingResult) {
+                                                    BindingResult bindingResult, HttpServletRequest request) {
 
         ArrayList<String> messages = new ArrayList<>();
         if (!bindingResult.hasErrors()) {
 
-            boolean success = userService.changeUserInfo(user);
+            boolean success = userService.changeUserInfo(user, request);
 
             if (success) {
 
-                messages.add("Uspješno izmjenjen korisnik " + username);
+                messages.add("Uspješno izmjenjen korisnik " + userService.getCurrentUser(request).getUsername());
                 return new ResponseEntity<Object>(messages, HttpStatus.OK);
             } else {
 
@@ -105,5 +112,44 @@ public class UserProfileController {
 
             return new ResponseEntity<Object>(messages, HttpStatus.BAD_REQUEST);
         }
+    }
+
+    @DeleteMapping(value = "/requests/cancelRequest",
+            consumes = MediaType.APPLICATION_JSON_VALUE,
+            produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<Boolean> cancelRequest(@RequestBody Map<String,String> payload, HttpServletRequest request) {
+
+        String strIdRec = payload.get("idReceiver");
+        Long idReceiver = Long.parseLong(strIdRec);
+
+        userService.cancelRequest(idReceiver, request);
+
+        return new ResponseEntity<Boolean>(Boolean.TRUE, HttpStatus.OK);
+    }
+
+    @PatchMapping(value = "/requests/acceptRequest",
+            consumes = MediaType.APPLICATION_JSON_VALUE,
+            produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<Boolean> acceptRequest(@RequestBody Map<String,String> payload, HttpServletRequest request) {
+
+        String strIdReq = payload.get("idRequester");
+        Long idRequester = Long.parseLong(strIdReq);
+
+        userService.acceptRequest(idRequester, request);
+
+        return new ResponseEntity<Boolean>(Boolean.TRUE, HttpStatus.OK);
+    }
+
+    @DeleteMapping(value = "/friends/delete",
+            consumes = MediaType.APPLICATION_JSON_VALUE,
+            produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<Boolean> deleteFriend(@RequestBody Map<String,String> payload, HttpServletRequest request) {
+
+        String strIdFriend = payload.get("idFriend");
+        Long idFriend = Long.parseLong(strIdFriend);
+
+        userService.deleteFriend(idFriend, request);
+
+        return new ResponseEntity<Boolean>(Boolean.TRUE, HttpStatus.OK);
     }
 }

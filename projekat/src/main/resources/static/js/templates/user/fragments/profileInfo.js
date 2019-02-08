@@ -40,12 +40,12 @@ $(document).ready(function () {
                 rules: {
                     username: {
                         required: true,
-                        remote: "user/checkusername/"
+                        remote: "/registereduser/profile/validity/checkusername/"
                     },
                     email: {
                         required: true,
                         email: true,
-                        remote: "user/checkemail/"
+                        remote: "/registereduser/profile/validity/checkemail/"
                     },
                     firstName: {
                         required: true
@@ -65,14 +65,7 @@ $(document).ready(function () {
                 messages: {
                     username: {
                         required: "Ime nije uneto",
-                        remote: "Korisničko ime je zauzeto"
-                    },
-
-                    password: "Lozinka nije uneta",
-
-                    password2: {
-                        required: "Unesite ponovo lozinku",
-                        equalTo: "Lozinke se ne poklapaju"
+                        remote: "Korisničko ime se ne može mjenjati"
                     },
                     firstName: {
                         required: "Ime nije uneto",
@@ -85,7 +78,7 @@ $(document).ready(function () {
                     email: {
                         required: "Email adresa nije uneta",
                         email: "Neispravan format adrese",
-                        remote: "Već postoji nalog koji je registrovan na ovu email adresu"
+                        remote: "Email se ne može mjenjati"
                     },
                     phone: {
                         required: "Telefon nije unet",
@@ -156,7 +149,7 @@ $(document).ready(function () {
             var serialized = $("#profileInfoForm").serialize();
 
             $.ajax({
-                url: "/api/registeredusers/" + $("#username").val() + "/edit",
+                url: "/edit",
                 data: serialized,
                 method: 'PATCH'
             }).done(function (event, data, jqxhr) {

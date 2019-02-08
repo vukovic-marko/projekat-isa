@@ -1,3 +1,4 @@
+
 //za mape sam uzeo yandex
 //odustao sam od njegovog geocode servise jer nece da nadje ulice u Budjanovcima!!! :@
 //tako da se za geokodiranje koristi here
@@ -29,10 +30,15 @@ $(document).ajaxSend(function (event, jqxhr, settings) {
 $(document).ready(
 
     function () {
+    	
+
+       
+    	
+    	//----
         setInterval(refreshToken, 60000); // svaki min
         // LOGOUT
         $('#logout').click(function () {
-            localStorage.setItem('jwtToken', null);
+            localStorage.clear();
             window.location.href = '/';
         });
 
@@ -40,16 +46,33 @@ $(document).ready(
             location.hash = 'rentacar';
         });
         
-        $('#hotel').click(function() {
-	    	location.hash = 'hotel';
-	    });
+ 
         
         $('#cart').click(function() {
         	location.hash = 'cart';
         })
+          $("#profile").click(function (event) {
+
+ 	    	location.hash = "profile";
+ 		});
+
+ 		$("#air").click(function (event) {
+
+ 			location.hash = "airlineSearch";
+ 		});
+
+         $('#hotel').click(function() {
+ 	    	location.hash = 'hotel';
+ 	    });
 
         $(window).on('hashchange', function () {
             // alert('Changed');
+        	 if(!location.hash.includes("profile")) {
+
+  				shownTab = false;
+  			}
+
+        	
             if (location.hash === '#rentacar') {
                 showRentACar();
             } else if (location.hash.includes("racservice")) {
@@ -61,9 +84,53 @@ $(document).ready(
             } else if (location.hash.includes("cart")) {
             	showCart();
             }
+           
+
+             
+ 	         else if(location.hash.includes("profile")) {
+
+
+ 				if (location.hash.includes("friends")) {
+
+ 					console.log('friends');
+ 					indexOfActiveTab = 1;
+ 				}  else if (location.hash.includes("requestsSent")) {
+
+ 					indexOfActiveTab = 2;
+ 				} else if (location.hash.includes("requestsReceived")) {
+
+ 					indexOfActiveTab = 3;
+ 				} else if (location.hash.includes("addFriend")) {
+
+ 					indexOfActiveTab = 4;
+ 				} else {
+
+ 					indexOfActiveTab = 0;
+ 					$("#tabs").tabs("enable", indexOfActiveTab);
+ 				}
+
+ 				if(!shownTab) {
+
+ 					showProfileInfo();
+ 					shownTab = true;
+ 				}
+ 			} else if(location.hash === "#airlineSearch") {
+
+ 				showAirlineSearch();
+             }
+             else if (location.hash.includes("hotel")) {
+ 	        	showHotel();
+             }
         });
 
         $(window).trigger('hashchange');
+
+     	// Provjera telefona
+     	$.validator.methods.phoneCheck = function(value, element) {
+     		return this.optional(element)
+     			|| /([0-9]{3,3}\/[0-9]{3,3}-[0-9]{2,2}-[0-9]{2,2})$/
+     				.test(value);
+     	}
     });
 
 function showRentACar() {
@@ -402,3 +469,382 @@ function showService(id) {
 	 */
 
 }
+
+function showAirlineSearch() {
+	// $.load("/registereduser/profile")
+}
+
+
+var indexOfActiveTab = 0;
+var shownTab = false;
+var validatorProfileInfo = null;
+function showProfileInfo() {
+
+	$("#items").
+	load("/registereduser/profile", function() {
+
+			$("#tabs").hide();
+
+			$("#tabs").tabs({
+				active: indexOfActiveTab,
+				collapsible: true,
+				show: 400
+			});
+
+			$("#tabs").on("tabsbeforeload", function (event, ui) {
+
+				//selektovani tab
+				var indeks = $(this).tabs("option", "active");
+				var myjqxhr = ui.jqXHR;
+
+				if (indeks == 0) {
+
+					location.hash = 'profile';
+				} else if (indeks == 1) {
+
+					location.hash = 'profile#friends';
+				}  else if (indeks == 2) {
+
+					location.hash = 'profile#requestsSent';
+				} else if (indeks == 3) {
+
+					location.hash = 'profile#requestsReceived';
+				} else if (indeks == 4) {
+
+					location.hash = 'profile#addFriend';
+				}
+			});
+
+		$("#tabs").on("tabsload", function (event, ui) {
+
+			var indeks = $(this).tabs("option", "active");
+
+			if (indeks == 0) {
+
+				$("#username").prop("disabled", true);
+				$("#userInfoFieldset").prop("disabled", true);
+
+				validatorProfileInfo = $('#profileInfoForm').validate({
+					rules: {
+						username: {
+							required: true,
+							remote: "/registereduser/profile/validity/checkusername/"
+						},
+						email: {
+							required: true,
+							email: true,
+							remote: "/registereduser/profile/validity/checkemail/"
+						},
+						firstName: {
+							required: true
+						},
+						lastName: {
+							required: true
+						},
+						phone: {
+							required: true,
+							phoneCheck: true
+						},
+						city: {
+							required: true
+						}
+
+					},
+					messages: {
+						username: {
+							required: "Ime nije uneto",
+							remote: "Korisničko ime se ne može mjenjati"
+						},
+						firstName: {
+							required: "Ime nije uneto",
+							letters: "Dozvoljena su samo slova srpske latinice i razmaci"
+						},
+						lastName: {
+							required: "Prezime nije uneto",
+							letters: "Dozvoljena su samo slova srpske latinice i razmaci"
+						},
+						email: {
+							required: "Email adresa nije uneta",
+							email: "Neispravan format adrese",
+							remote: "Email se ne može mjenjati"
+						},
+						phone: {
+							required: "Telefon nije unet",
+							phoneCheck: "Neispravan format (123/456-78-99)"
+						},
+						city: {
+							required: "Grad nije unet"
+						}
+					}
+				});
+
+				// Profile info dugmad
+				$(document).on("click", "#edit", function (event) {
+
+					$("#cityFieldset").prop("disabled", false);
+					$("#userInfoFieldset").prop("disabled", false);
+					$("#btnEdit").hide();
+					$("#btnsEditing").show();
+				});
+
+				$(document).on("click", "#cancel", function (event) {
+
+					$("#reset").trigger("click");
+
+					$("#username").prop("disabled", true);
+					$("#userInfoFieldset").prop("disabled", true);
+					$("#btnsEditing").hide();
+					$("#btnEdit").show();
+				});
+
+				$(document).on("click", "#reset", function (event) {
+
+					$("#profileInfoForm").trigger("reset");
+
+					validatorProfileInfo.resetForm();
+				});
+
+				$(document).on("click", "#submit", function (event) {
+
+					if ($("#profileInfoForm").valid()) {
+
+						var myform = $('#profileInfoForm');
+
+						// Find disabled inputs, and remove the "disabled" attribute
+						var disabled = myform.find(':input:disabled').removeAttr('disabled');
+
+						// serialize the form
+						var serialized = myform.serialize();
+
+						// re-disabled the set of inputs that you previously enabled
+						disabled.attr('disabled','disabled');
+
+
+						$.ajax({
+							url: "/api/registeredusers/edit",
+							data: serialized,
+							method: 'PATCH'
+						}).done(function (event, data, jqxhr) {
+
+							console.log("Uspjesno je poslan patch");
+
+							$("#cancel").trigger("click");
+
+							$("#tabs").tabs("load", 0);
+
+						})
+					} else {
+
+						console.log("Nije poslan");
+					}
+				});
+			}
+			else if (indeks == 1) {
+
+				$("button[id^='friendDelete_']").one("click", function(event) {
+
+					event.preventDefault();
+					$(this).hide();
+
+					var context = $(this);
+
+					var payload = {};
+					payload.idFriend = ((context[0].id).split('_'))[1];
+
+					payload = JSON.stringify(payload);
+					$.ajax({
+						url: '/api/registeredusers/friends/delete',
+						method: 'DELETE',
+						data: payload,
+						contentType: 'application/json',
+						headers: {Authorization : 'Bearer ' + getToken()}
+
+					}).done(function () {
+
+						var $par = context.parent(".card-body");
+						$par.addClass("bg-danger");
+						$par.delay(1000).hide('fade', 500, function() {
+
+							$(this).closest('div .col-md-3').remove();
+						});
+					});
+				});
+			}
+			else if (indeks == 2) {
+
+				$("button[id^='reqSent_']").one("click", function(event) {
+
+					event.preventDefault();
+					$(this).hide();
+
+					var context = $(this);
+
+					var payload = {};
+					payload.idReceiver = ((context[0].id).split('_'))[1];
+
+					payload = JSON.stringify(payload);
+					$.ajax({
+						url: '/api/registeredusers/requests/cancelRequest',
+						method: 'DELETE',
+						data: payload,
+						contentType: 'application/json',
+						headers: {Authorization : 'Bearer ' + getToken()}
+
+					}).done(function () {
+
+						var $par = context.parent(".card-body");
+						$par.addClass("bg-danger");
+						$par.delay(1000).hide('fade', 500, function() {
+
+							$(this).closest('div .col-md-3').remove();
+						});
+					});
+    });
+			}
+			else if (indeks == 3) {
+
+				$("button[id^='reqReceived_']").one("click", function(event) {
+
+					event.preventDefault();
+					$(this).hide();
+
+					var context = $(this);
+
+					var payload = {};
+					payload.idRequester = ((context[0].id).split('_'))[1];
+
+					payload = JSON.stringify(payload);
+					$.ajax({
+						url: '/api/registeredusers/requests/acceptRequest',
+						method: 'PATCH',
+						data: payload,
+						contentType: 'application/json',
+						headers: {Authorization : 'Bearer ' + getToken()}
+
+					}).done(function () {
+
+						var $par = context.parent(".card-body");
+						$par.addClass("bg-success");
+						$par.delay(1000).hide('fade', 500, function() {
+
+							$(this).closest('div .col-md-3').remove();
+						});
+					});
+				});
+			}
+			else if (indeks == 4) {
+
+				$("#loadingAlert").hide();
+				$("#loadedAlert").hide();
+				$("#friendAddedAlert").hide();
+				$("#emptyAlert").show();
+
+				$("#submitFriends").off('click');
+
+				$("#submitFriends").on("click", function (event) {
+
+					event.preventDefault();
+
+					//
+					var friendQuery = $("#findFriendsForm").serialize();
+
+					$("#emptyAlert").hide("fade");
+					$("#loadedAlert").hide("fade");
+					$("#loadingAlert").show('fade', 500);
+					// Dodati handler za klik za svaku od dugmadi
+
+					$("#resultsUsers").load("/registereduser/profile/friends/add/results", friendQuery, function () {
+
+						if($("#tmpUserList").children().length == 0) {
+
+							$("#emptyAlert").show("fade", 1000);
+						} else {
+
+							$("#loadedAlert").show("fade", 1000);
+						}
+
+						$("#loadingAlert").hide("fade");
+
+						$("button[id^='add_']").one("click", function (event) {
+
+							event.preventDefault();
+
+							var context = $(this);
+							context.hide();
+
+							var $target = event.target;
+							var idButton = ($target.id).split("_");
+
+							var vid =  parseInt(idButton[1]);
+							var payload = {id:  vid};
+
+
+							payload = JSON.stringify(payload);
+							// Salje se zahtjev useru sa id
+							$.ajax({
+
+								url: "/api/registeredusers/friends/add",
+								method: 'POST',
+								data: payload,
+								contentType: 'application/json',
+								success: function(data, textStatus, jqxhr) {
+									// console.log("=========================\nSUCCESS ADD FRIEND");
+									// console.log("=========================");
+
+									$("#loadedAlert")
+										.hide("fade", 50).delay(2100).show("fade", 100);
+
+									$("#friendAddedAlert")
+										.show("fade", 2000)
+										.hide("fade", 100);
+
+								},
+								error: function(data, textStatus, jqxhr) {
+									// console.log("=========================\nFAIL ADD FRIEND");
+									// console.log("=========================");
+								}
+							}).done(function(event) {
+
+								// Iskljucuje se dugme
+								context.off("click");
+								context.hide();
+
+								var $b = context.parent(".card-body");
+								$b.addClass("bg-success");
+							});
+						});
+
+					});
+				});
+			}
+		});
+
+		// Refresh taba
+		$(document).on("click", "#buttonRefresh", function (event) {
+
+			console.log('button clicked');
+
+			$("#tabs").tabs("disable");
+
+			//
+			var loadedTabs = 0;
+			$("#tabs").on("tabsload", function (event) {
+
+				loadedTabs++;
+				if (loadedTabs == 4) {
+
+					$(this).tabs("enable");
+					//$(this).off("tabsload");
+				}
+			});
+
+			for (var i = 0; i < 4; i++) {
+
+				$("#tabs").tabs("load", i);
+			}
+		});
+
+		$("#tabs").tabs("load", indexOfActiveTab).show("fade", {}, 400, function() {});
+	});
+}
+

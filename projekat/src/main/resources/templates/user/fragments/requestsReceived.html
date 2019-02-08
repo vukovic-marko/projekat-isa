@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en"
+      xmlns:th="http://www.thymeleaf.org/"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+      xmlns="http://www.w3.org/1999/xhtml">
+<head>
+
+    <!-- Ukljuceni bootstrap i jquery, i <title/> ocekuje u modelu 'title' -->
+    <th:block th:include="fragments/main-fragment :: head-default">
+    </th:block>
+
+    <!-- static -->
+    <div th:remove="all">
+
+        <meta http-equiv='Content-Type' content='text/html; charset=UTF-8'/>
+
+        <link type="text/css" rel="stylesheet" href="../../static/css/jquery-ui.min.css"/>
+        <link type="text/css" rel="stylesheet" href="../../static/css/styles.css"/>
+        <link type="text/css" rel="stylesheet" href="../../static/css/bootstrap.css"/>
+        <link type="text/css" rel="stylesheet" href="../../static/css/screen.css"/>
+
+        <script type="text/javascript" src="../../static/js/jquery-3.3.1.min.js"></script>
+        <script type="text/javascript" src="../../static/js/jquery-ui.min.js"></script>
+
+        <script type="text/javascript" src="../../static/js/bootstrap.js"></script>
+        <script type="text/javascript" src="../../static/js/jquery.validate.js"></script>
+    </div>
+
+</head>
+
+<body>
+
+
+<div id="tmpUserRecList">
+
+    <div class="row">
+        <div class="col-md-12">
+            <h1>Lista primljenih zahtjeva</h1>
+        </div>
+    </div>
+
+    <hr/>
+
+    <div class="row container-fluid" th:unless="${not #lists.isEmpty(reqReceivedUsers)}">
+
+        <p><i>Prazna lista</i></p>
+    </div>
+    <!-- Rezultati -->
+    <div class=" row container-fluid" th:unless="${#lists.isEmpty(reqReceivedUsers)}">
+
+        <div class="row mb-2" th:each="userReqReceived : ${reqReceivedUsers}" th:with="numColumns=${#numbers.sequence(0,3)}" th:if="${userReqReceivedStat.index} % 4 == 0">
+
+            <div class="col-md-3"
+                 th:each="indexNumLoop : ${numColumns}"
+                 th:with="indexNum = (${userReqReceivedStat.index} + ${indexNumLoop})">
+
+                <div class="card"
+                     th:if="${indexNum} lt ${userReqReceivedStat.size}">
+
+                    <div class="card-body" th:with="currentElement = ${reqReceivedUsers[indexNum]}">
+                        <h5 class="card-title" th:text="${currentElement.firstName}">Special title treatment</h5>
+                        <h5 class="card-title" th:text="${currentElement.lastName}">Special title treatment</h5>
+                        <p class="card-text" th:text="${currentElement.email}">With supporting text below as a natural
+                            lead-in
+                            to additional content.</p>
+                        <button class="btn btn-success" th:id="'reqReceived_' + ${currentElement.id}">Potvrdi zahtjev</button>
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+    </div>
+
+    <hr/>
+</div>
+
+</body>
+
+</html>
