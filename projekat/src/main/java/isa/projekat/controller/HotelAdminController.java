@@ -236,4 +236,22 @@ public class HotelAdminController {
 		
 		return hotelReviewService.getAverage(user.getHotel().getId().toString());
 	}
+	
+	@RequestMapping(value="/areviewr", method=RequestMethod.GET)
+	@PreAuthorize("hasRole('ROLE_HOTEL_ADMIN')")
+	public List<Double> getAReviewRoom(HttpServletRequest request) {
+		String token = tokenUtils.getToken(request);
+		String username = this.tokenUtils.getUsernameFromToken(token);
+		User user = (User) this.userDetailsService.loadUserByUsername(username);
+		List<Double> retList = new ArrayList<Double>();
+		
+		for (HotelRoom r : user.getHotel().getRooms()) {
+			retList.add(hotelReviewService.getAverageRoom(r.getId().toString()));
+		}
+		
+		System.out.println(retList);
+		
+		return retList;
+		//return hotelReviewService.getAverage(user.getHotel().getId().toString());
+	}
 }

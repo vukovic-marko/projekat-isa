@@ -122,4 +122,26 @@ public class HotelReviewService {
 			i=1;
 		return sum/i;
 	}
+	
+	public Double getAverageRoom(String id) {
+		List<HotelReview> rev= hotelReviewRepository.getByRoomId(Long.parseLong(id));
+		System.out.println(rev);
+		Double sum=0.0;
+		int i=0;
+		for(HotelReview r:rev)
+			if(r.getRoomReviews()!=null) {
+				i++;
+				//sum+=r.getHotelReview();
+				for (RoomReview rr : r.getRoomReviews()) {
+					System.out.println(rr.getHotelRoom().getId() + " == " + Long.parseLong(id));
+					if (rr.getHotelRoom().getId() == Long.parseLong(id)) {
+						sum += rr.getReview();
+						break;
+					}
+				}
+			}
+		if(i==0)
+			i=1;
+		return sum/i;
+	}
 }

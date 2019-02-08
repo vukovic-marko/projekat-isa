@@ -40,6 +40,14 @@ $(document).ready(function() {
 		}
 	});
 	
+//	$.ajax({
+//		url: 'hoteladmin/areviewr',
+//		type: 'get',
+//		success: function(data) {
+//			console.log(data);	
+//		}
+//	});
+	
 	$.ajax({
 		url: 'user/checkactivated',
 		type: 'get',
@@ -326,12 +334,21 @@ function loadRooms() {
 			if (data == null || data.length == 0) {
 				$('#editRoomsModal tbody').append('Nema dodatih soba.');
 			} else {
-				$('#editRoomsModal thead').append('<tr><th>Broj sobe</th><th>Sprat</th><th>Broj kreveta (velicina)</th><th></th></tr>');
+				let hhh = {};
+				$.ajax({
+					url: 'hoteladmin/areviewr',
+					type: 'get',
+					async: false,
+					success: function(data) {
+						hhh=data;
+					}
+				});
+				$('#editRoomsModal thead').append('<tr><th>Broj sobe</th><th>Sprat</th><th>Broj kreveta (velicina)</th><th></th><th>Prosecna ocena</th></tr>');
 				$.each(data, function(i, v) {
 					$('#editRoomsModal tbody').append('<tr>' + 
 							'<td><a class=\"roomPriceModalShow\" href=\"#\" meta-roomnumber=\"' + v.roomNumber + '\">' + v.roomNumber + '</a></td>' + 
 							'<td>' + v.floorNumber + '</td>' + 
-							'<td>' + v.size + '</td><td><a class="removeRoomLink" href="#" meta-id="' + v.id + '">Izbrisi</a></td></tr>');
+							'<td>' + v.size + '</td><td><a class="removeRoomLink" href="#" meta-id="' + v.id + '">Izbrisi</a></td><td>' + hhh[i] + '</td></tr>');
 				});
 			}
 			
