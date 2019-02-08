@@ -61,6 +61,22 @@ function createCarTR(value) {
 		}
 		
 	});
+	$.ajax({
+		async:false,
+		type:'get',
+		url:'/rentacar/average/'+value.id,
+		success:function(d){
+			if(d==0)
+				value.average='-';
+			else
+				value.average=data;
+			
+		},statusCode:{
+			404:function(){
+				value.average='-';
+			}
+		}
+	})
 	let txt="";
 	if(!flag)
 		txt="-uneditable";
@@ -74,7 +90,7 @@ function createCarTR(value) {
 	html += '<td class="doors">' + value.doors + '</td>';
 	html += '<td class="transmission">' + value.transmission + '</td>';
 	html += '<td class="price">' + value.price + '</td>';
-	
+	html += '<td class="price">' + value.average + '</td>';
 	if(flag)
 		html += '<td><button class="btn rembtn btn-danger close">×</button></td>';
 	else

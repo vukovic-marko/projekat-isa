@@ -28,7 +28,7 @@ public class Car {
 	private int doors;
 	@Column(nullable = false)
 	private int year;
-	@JsonIgnore
+	
 	@ManyToOne(fetch = FetchType.EAGER, optional = false)
 	private RentACarCompany company;
 	private CarType type;

@@ -2,7 +2,9 @@ package isa.projekat.service;
 
 import java.sql.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -12,10 +14,12 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import isa.projekat.model.Car;
+import isa.projekat.model.CarReservation;
 import isa.projekat.model.Destination;
 import isa.projekat.model.Reservation;
 import isa.projekat.model.User;
 import isa.projekat.repository.CarRepository;
+import isa.projekat.repository.CarReservationRepository;
 import isa.projekat.repository.DestinationRepository;
 import isa.projekat.repository.ReservationRepository;
 import isa.projekat.security.TokenUtils;
@@ -35,6 +39,8 @@ public class ReservationService {
 	private DestinationRepository destinationRepository;
 	@Autowired
 	private CarRepository carRepository;
+	@Autowired
+	private CarReservationRepository carReservationRepository;
 	
 	@Transactional(propagation=Propagation.REQUIRES_NEW)
 	public String reserve(HttpServletRequest request, Reservation reservation) {
@@ -93,5 +99,20 @@ public class ReservationService {
 
 	public Destination getDestination(String id) {
 		return  destinationRepository.findOne(Long.parseLong(id));
+	}
+
+	public Set<CarReservation> getMyCarHistoty(HttpServletRequest request) {
+		String token = tokenUtils.getToken(request);
+		if (token == null)
+			return null;
+		String uname = this.tokenUtils.getUsernameFromToken(token);
+		User user = (User) this.userDetailsService.loadUserByUsername(uname);
+		if (user == null)
+			return null;
+		Set<CarReservation> ret=new HashSet<>();
+		java.util.Date date= new java.util.Date();
+		java.sql.Date d=new Date(date.getTime());
+		ret=carReservationRepository.findUserHistory(user,d);
+		return ret;
 	}
 }

@@ -83,6 +83,8 @@ $(document).ready(
 	        	showHotel();
             } else if (location.hash.includes("cart")) {
             	showCart();
+            }else if (location.hash===("")) {
+            	showHistory();
             }
            
 
@@ -290,12 +292,25 @@ function showOnMap(c, data) {
 }
 
 function createRAC(data) {
+	$.ajax({
+		async:false,
+		type:'get',
+		url:'/rentacar/average/company/'+data.id,
+		success:function(d){
+			if(d==0)
+				data.average='-';
+			else
+				data.average=d;
+			
+		}
+	});
     let adr = data.address + ' ' + data.location.city + ' '
         + data.location.country;
     let html = '<div class="col-md-4 text-center">';
     html += '<div class="rac-company card border border-dark">';
     html += '<div class="card-header"><h3 "class=" card-title rac-name">'
-        + data.name + '</h3>' + '</div>';
+        + data.name + '</h3>'+'<h3 "class=" card-title rac-avg">Ocena:'
+        + data.average + '</h3>' + '</div>';
     html += '<div class="card-body">';
     html += '<h3 "class="rac-address">' + adr + '</h3>';
     html += '<textarea readonly style="width: -webkit-fill-available;" class="rac-description"> '

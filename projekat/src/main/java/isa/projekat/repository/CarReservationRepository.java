@@ -12,6 +12,7 @@ import isa.projekat.model.Car;
 import isa.projekat.model.CarReservation;
 import isa.projekat.model.CarType;
 import isa.projekat.model.RentACarCompany;
+import isa.projekat.model.User;
 
 @Repository
 public interface CarReservationRepository extends JpaRepository<CarReservation, Long> {
@@ -23,6 +24,10 @@ public interface CarReservationRepository extends JpaRepository<CarReservation, 
 	@Query("select cr from CarReservation cr,Car c where "+
 			"cr.car=c and c.company=?1 and cr.endDate>=?2 and cr.endDate<=?3")
 	public List<CarReservation> getReservationsByCompany(RentACarCompany c, Date dstart, Date dend);
+
+	@Query("select cr from CarReservation cr,Car c where "+
+			"cr.endDate<?2 and cr.user=?1")
+	public Set<CarReservation> findUserHistory(User user, Date d);
 	
 	
 }

@@ -20,12 +20,14 @@ import org.springframework.stereotype.Service;
 
 import isa.projekat.model.BranchOffice;
 import isa.projekat.model.Car;
+import isa.projekat.model.CarReview;
 import isa.projekat.model.CarType;
 import isa.projekat.model.Destination;
 import isa.projekat.model.RentACarCompany;
 import isa.projekat.model.User;
 import isa.projekat.repository.BranchesRepository;
 import isa.projekat.repository.CarRepository;
+import isa.projekat.repository.CarReviewRepository;
 import isa.projekat.repository.DestinationRepository;
 import isa.projekat.repository.RentACarCompanyRepository;
 import isa.projekat.repository.UserRepository;
@@ -48,6 +50,10 @@ public class RentACarService {
 	@Autowired
 	private CarRepository carRepository;
 
+
+	@Autowired
+	private CarReviewRepository carReviewRepository;
+	
 	@Autowired
 	private BranchesRepository branchRepository;
 
@@ -351,6 +357,34 @@ public class RentACarService {
 	
 		ret.setTotalPrice(ret.getPrice()* (1 + differenceDates));
 		return ret;
+	}
+
+	public Double getAverage(String id) {
+		List<CarReview> rev=carReviewRepository.getByCarId(Long.parseLong(id));
+		Double sum=0.0;
+		int i=0;
+		for(CarReview r:rev)
+			if(r.getCarReview()!=null) {
+				i++;
+				sum+=r.getCarReview();
+			}
+		if(i==0)
+			i=1;
+		return sum/i;
+	}
+
+	public Double getCompanyAvg(String id) {
+		List<CarReview> rev=carReviewRepository.getByCompanyId(Long.parseLong(id));
+		Double sum=0.0;
+		int i=0;
+		for(CarReview r:rev)
+			if(r.getCompanyReview()!=null) {
+				i++;
+				sum+=r.getCompanyReview();
+			}
+		if(i==0)
+			i=1;
+		return sum/i;
 	}
 	
 	

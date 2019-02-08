@@ -1,6 +1,8 @@
 
 package isa.projekat.controller;
 
+import java.util.Set;
+
 import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,6 +18,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import isa.projekat.model.CarReservation;
 import isa.projekat.model.Destination;
 import isa.projekat.model.Reservation;
 import isa.projekat.service.ReservationService;
@@ -43,6 +46,13 @@ public class ReservationController {
 	public Destination getDest(@PathVariable(value = "id") String id) {
 		Destination d = reservationService.getDestination(id);
 		return d;
+	}
+	
+	@GetMapping(value = "/mycarhistory", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+	@PreAuthorize("hasRole('ROLE_USER')")
+	@ResponseBody
+	public Set<CarReservation> getMyCarHistory(HttpServletRequest request) {
+		return reservationService.getMyCarHistoty(request);
 	}
 
 }

@@ -52,13 +52,25 @@ function showCars(data) {
 }
 
 function createCar(d) {
-
+	$.ajax({
+		async:false,
+		type:'get',
+		url:'/rentacar/average/'+d.id,
+		success:function(data){
+			if(data==0)
+				d.average='-';
+			else
+				d.average=data;
+			
+		}
+	})
+	
 	let html='<div class="col-md-4 text-center">'+
     '<div class="item card border border-dark">'+
     '<div class="card-header">'+
         '<div "class="row card-title rac-name">' +
             '<div class=" col-md-6 text-left"><h3>' + d.name + '</h3></div>'+
-            '<div class=" col-md-6 text-right"><h3>' +  '</h3></div>'+
+            '<div class=" col-md-6 text-right"><h3>Ocena: ' + d.average+ '</h3></div>'+
         '</div>'+
     '</div>'+
     '<div class=" card-body">'+
