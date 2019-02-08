@@ -296,29 +296,16 @@ function addHotelAdminButtons() {
 						}
 					});
 
-//					$.ajax({
-//						url : '/user/changePassword',
-//						type : 'post',
-//						contentType : 'application/json',
-//						data : JSON.stringify(d),
-//
-//						success : function(data) {
-//							if (data == true) {
-//								$("#changePasswordModal").modal('hide');
-//								addSysAdminButtons();
-//							} else {
-//								$('#regbtn-error').show().html(
-//										'Promena lozinke nije uspela').fadeOut(
-//										5000);
-//
-//							}
-//						}
-//					});
-
 				}
 			});
 	
 }
+
+$.fn.once = function(a, b) {
+    return this.each(function() {
+        $(this).off(a).on(a,b);
+    });
+};
 
 function loadRooms() {
 	$.ajax({
@@ -330,12 +317,12 @@ function loadRooms() {
 			if (data == null || data.length == 0) {
 				$('#editRoomsModal tbody').append('Nema dodatih soba.');
 			} else {
-				$('#editRoomsModal thead').append('<tr><th>Broj sobe</th><th>Sprat</th><th>Broj kreveta (velicina)</th></tr>');
+				$('#editRoomsModal thead').append('<tr><th>Broj sobe</th><th>Sprat</th><th>Broj kreveta (velicina)</th><th></th></tr>');
 				$.each(data, function(i, v) {
 					$('#editRoomsModal tbody').append('<tr>' + 
 							'<td><a class=\"roomPriceModalShow\" href=\"#\" meta-roomnumber=\"' + v.roomNumber + '\">' + v.roomNumber + '</a></td>' + 
 							'<td>' + v.floorNumber + '</td>' + 
-							'<td>' + v.size + '</td></tr>');
+							'<td>' + v.size + '</td><td><a class="removeRoomLink" href="#" meta-id="' + v.id + '">Izbrisi</a></td></tr>');
 				});
 			}
 			
@@ -344,6 +331,25 @@ function loadRooms() {
 				
 				loadRoomPrices(roomnumber);
 			});
+			
+			$('.removeRoomLink').once("click", function(e) {
+				let id = e.target.attributes['meta-id'].value;
+				$.ajax({
+					url: '/hoteladmin/remove/room/' + id,
+					type: 'get',
+					success: function(data) {
+						console.log(data);
+						if (data != false) {
+							$('#editRoomsModal tbody').empty();
+							loadRooms();
+						} else {
+							alert('Nije moguce obrisati sobu za koju postoje rezervacije.')
+						}
+					}
+				});
+				e.preventDefault();
+			});
+			
 			$('#editRoomsModal').modal('show');
 		},
 		statusCode: {

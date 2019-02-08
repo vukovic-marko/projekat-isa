@@ -1,16 +1,13 @@
 package isa.projekat.controller;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.websocket.server.PathParam;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import org.springframework.http.RequestEntity;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -42,6 +39,12 @@ public class HotelAdminController {
 	
 	@Autowired
 	private HotelAdminService hotelAdminService;
+	
+	@RequestMapping(value="/remove/room/{id}", method = RequestMethod.GET)
+	@PreAuthorize("hasRole('ROLE_HOTEL_ADMIN')")
+	public Boolean removeRoom(@PathVariable("id") Long id) {
+		return hotelAdminService.removeRoom(id);
+	}
 	
 	@RequestMapping(value="/edit/profile", method = RequestMethod.POST,
 			consumes = MediaType.APPLICATION_JSON_VALUE)

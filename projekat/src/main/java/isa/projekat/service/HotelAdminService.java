@@ -3,6 +3,7 @@ package isa.projekat.service;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -12,12 +13,14 @@ import org.springframework.transaction.annotation.Transactional;
 import isa.projekat.model.Destination;
 import isa.projekat.model.Hotel;
 import isa.projekat.model.HotelAdditionalService;
+import isa.projekat.model.HotelReservation;
 import isa.projekat.model.HotelRoom;
 import isa.projekat.model.HotelRoomPrice;
 import isa.projekat.model.User;
 import isa.projekat.repository.DestinationRepository;
 import isa.projekat.repository.HotelAdditionalServiceRepository;
 import isa.projekat.repository.HotelRepository;
+import isa.projekat.repository.HotelReservationRepository;
 import isa.projekat.repository.HotelRoomPriceRepository;
 import isa.projekat.repository.HotelRoomRepository;
 import isa.projekat.repository.UserRepository;
@@ -41,6 +44,27 @@ public class HotelAdminService {
 	
 	@Autowired
 	private DestinationRepository destinationRepository;
+	
+	@Autowired
+	private HotelReservationRepository hotelReservationRepository;
+	
+	@Transactional(readOnly=false, isolation=Isolation.READ_COMMITTED)
+	public Boolean removeRoom(Long id) {
+		HotelRoom room = hotelRoomRepository.findOne(id);
+		System.out.println(room.getId());
+		
+		Set<HotelReservation> res = hotelReservationRepository.findByRoom(id);
+		if (res != null) {
+			System.out.println(res.size());
+			if (res.size() == 0) {
+				hotelRoomRepository.delete(room);
+				return true;
+			} else {
+				return false;
+			}		
+		}
+		return null;
+	}
 	
 	@Transactional(readOnly=true, isolation=Isolation.READ_COMMITTED)
 	public List<HotelRoomPrice> getRoomPrices(Hotel h, HotelRoom r) {
