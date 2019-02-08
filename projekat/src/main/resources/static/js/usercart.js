@@ -1,5 +1,32 @@
 function showCart() {
+	$("#removeCar").unbind('click');
+	$("#removeHotel").unbind('click');
+	$("#removeFlight").unbind('click');
+	
+$("#removeCar").click(function(){
+		
+	localStorage.removeItem("carReservation");
+	clearModal();
+	$('#cartModal').modal('toggle');
+	setTimeout(function () {
+		showCart();
+	}, 800);
+	});
 
+$("#removeHotel").click(function(){
+	localStorage.removeItem("hotelCart");
+	localStorage.removeItem("roomsForStorage");
+	localStorage.removeItem("servicesForStorage");
+	$('#cartModal').modal('toggle');
+	setTimeout(function () {
+		showCart();
+	}, 800);
+	
+});
+$("#removeFlight").click(function(){
+	//TODO
+	
+});
 	$('#cartModal').modal('toggle');
 
 	$('#cartModal').once('hidden.bs.modal', function() {
