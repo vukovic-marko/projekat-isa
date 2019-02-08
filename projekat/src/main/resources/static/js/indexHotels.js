@@ -1,7 +1,5 @@
 
 function showHotel() {
-	
-	alert('click');
 	addServicesModal();
 
 	$('#items').empty();
