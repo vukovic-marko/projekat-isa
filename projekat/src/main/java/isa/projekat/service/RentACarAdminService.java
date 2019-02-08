@@ -8,12 +8,14 @@ import java.util.Map;
 import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.transaction.Transactional;
-import javax.transaction.Transactional.TxType;
+
 import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Isolation;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 
 import isa.projekat.model.BranchOffice;
 import isa.projekat.model.Car;
@@ -54,12 +56,9 @@ public class RentACarAdminService {
 	private BranchesRepository branchRepository;
 	
 	public boolean edit(HttpServletRequest request, User u) {
-		String token = tokenUtils.getToken(request);
-		if (token == null)
+		User user = (User) getUserFromRequestToken(request);
+		if(user==null)
 			return false;
-		String uname = this.tokenUtils.getUsernameFromToken(token);
-
-		User user = (User) this.userDetailsService.loadUserByUsername(uname);
 		if (u.getCity() == null || u.getCity().equals(""))
 			return false;
 		if (u.getPhone() == null || u.getPhone().equals(""))
@@ -77,29 +76,23 @@ public class RentACarAdminService {
 	}
 
 	public RentACarCompany company(HttpServletRequest request) {
-		String token = tokenUtils.getToken(request);
-		if (token == null)
+		User user = (User) getUserFromRequestToken(request);
+		if(user==null)
 			return null;
-		String uname = this.tokenUtils.getUsernameFromToken(token);
-		User user = (User) this.userDetailsService.loadUserByUsername(uname);
 		return rentACarCompanyRepository.findOneByAdmin(user);
 	}
 
 	public User getAdmin(HttpServletRequest request) {
-		String token = tokenUtils.getToken(request);
-		if (token == null)
+		User user = (User) getUserFromRequestToken(request);
+		if(user==null)
 			return null;
-		String uname = this.tokenUtils.getUsernameFromToken(token);
-		User user = (User) this.userDetailsService.loadUserByUsername(uname);
 		return user;
 	}
 
 	public boolean editCompany(HttpServletRequest request, RentACarCompany c) {
-		String token = tokenUtils.getToken(request);
-		if (token == null)
+		User user = (User) getUserFromRequestToken(request);
+		if(user==null)
 			return false;
-		String uname = this.tokenUtils.getUsernameFromToken(token);
-		User user = (User) this.userDetailsService.loadUserByUsername(uname);
 		if (c.getLocation().getCity()== null || c.getLocation().getCity().equals(""))
 			return false;
 		if (c.getLocation().getCountry()== null || c.getLocation().getCountry().equals(""))
@@ -123,12 +116,11 @@ public class RentACarAdminService {
 		return true;
 	}
 
-	public Long addBranch(HttpServletRequest request,@Valid BranchOffice bo) {
-		String token = tokenUtils.getToken(request);
-		if (token == null)
+	public Long addBranch(HttpServletRequest request, BranchOffice bo) {
+		
+		User user = (User) getUserFromRequestToken(request);
+		if(user==null)
 			return null;
-		String uname = this.tokenUtils.getUsernameFromToken(token);
-		User user = (User) this.userDetailsService.loadUserByUsername(uname);
 		RentACarCompany c=rentACarCompanyRepository.findOneByAdmin(user);
 		if(c==null)
 			return null;
@@ -187,7 +179,7 @@ public class RentACarAdminService {
 		return c.getCars();
 	}
 
-	public Long addCar(HttpServletRequest request,@Valid Car c) {
+	public Long addCar(HttpServletRequest request, Car c) {
 		
 		User user=getUserFromRequestToken(request);
 		if(user==null)
@@ -202,7 +194,7 @@ public class RentACarAdminService {
 	}
 	
 	
-	@Transactional(value=TxType.REQUIRES_NEW)
+	@Transactional(isolation=Isolation.READ_COMMITTED,propagation=Propagation.REQUIRES_NEW)
 	public boolean editCar(HttpServletRequest request, Car c) {
 		if(!checkCar(request, c.getId().toString()))
 			return false;
@@ -216,7 +208,7 @@ public class RentACarAdminService {
 		carRepository.save(c);
 		return true;
 	}
-	@Transactional(value=TxType.REQUIRES_NEW)
+	@Transactional(isolation=Isolation.REPEATABLE_READ,propagation=Propagation.REQUIRES_NEW)
 	public boolean deleteCar(HttpServletRequest request, String id) {
 		if(!checkCar(request, id))
 			return false;
@@ -234,7 +226,7 @@ public class RentACarAdminService {
 		return true;
 	}
 	
-	@Transactional(value=TxType.REQUIRED)
+	@Transactional(isolation=Isolation.READ_COMMITTED,propagation=Propagation.REQUIRED)
 	public boolean checkCar(HttpServletRequest request, String id) {
 		String token = tokenUtils.getToken(request);
 		if (token == null)
@@ -327,8 +319,8 @@ public class RentACarAdminService {
 		return ret;
 	}
 
-	private User getUserFromRequestToken(HttpServletRequest request) {
-		//TODO  izbaci ovaj kod iz ostalih metoda, premesti ovdee
+	public User getUserFromRequestToken(HttpServletRequest request) {
+	
 		String token = tokenUtils.getToken(request);
 		if (token == null)
 			return null;

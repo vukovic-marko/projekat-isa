@@ -128,11 +128,9 @@ public class RentACarService {
 	}
 
 	public Long addBranch(HttpServletRequest request, @Valid BranchOffice bo) {
-		String token = tokenUtils.getToken(request);
-		if (token == null)
+		User user=getUserFromRequestToken(request);
+		if(user==null)
 			return null;
-		String uname = this.tokenUtils.getUsernameFromToken(token);
-		User user = (User) this.userDetailsService.loadUserByUsername(uname);
 		RentACarCompany c = rentACarCompanyRepository.findOneByAdmin(user);
 		if (c == null)
 			return null;
@@ -145,14 +143,13 @@ public class RentACarService {
 	}
 
 	public boolean delete(HttpServletRequest request, String id) {
-		String token = tokenUtils.getToken(request);
-		if (token == null)
+		User user=getUserFromRequestToken(request);
+		if(user==null)
 			return false;
 		BranchOffice bo = branchRepository.findOne(Long.parseLong(id));
 		if (bo == null)
 			return false;
-		String uname = this.tokenUtils.getUsernameFromToken(token);
-		User user = (User) this.userDetailsService.loadUserByUsername(uname);
+		
 		RentACarCompany c = rentACarCompanyRepository.findOneByAdmin(user);
 		c.getBranchOffices().remove(bo);
 		rentACarCompanyRepository.save(c);
@@ -179,11 +176,9 @@ public class RentACarService {
 	}
 
 	public Set<Car> getCars(HttpServletRequest request) {
-		String token = tokenUtils.getToken(request);
-		if (token == null)
+		User user=getUserFromRequestToken(request);
+		if(user==null)
 			return null;
-		String uname = this.tokenUtils.getUsernameFromToken(token);
-		User user = (User) this.userDetailsService.loadUserByUsername(uname);
 
 		RentACarCompany c = rentACarCompanyRepository.findOneByAdmin(user);
 		if (c == null)
@@ -192,11 +187,9 @@ public class RentACarService {
 	}
 
 	public Long addCar(HttpServletRequest request, @Valid Car c) {
-		String token = tokenUtils.getToken(request);
-		if (token == null)
+		User user=getUserFromRequestToken(request);
+		if(user==null)
 			return null;
-		String uname = this.tokenUtils.getUsernameFromToken(token);
-		User user = (User) this.userDetailsService.loadUserByUsername(uname);
 
 		RentACarCompany comp = rentACarCompanyRepository.findOneByAdmin(user);
 		if (comp == null)
@@ -219,14 +212,13 @@ public class RentACarService {
 	}
 
 	public boolean deleteCar(HttpServletRequest request, String id) {
-		String token = tokenUtils.getToken(request);
-		if (token == null)
+		User user=getUserFromRequestToken(request);
+		if(user==null)
 			return false;
 		Car c = carRepository.findOne(Long.parseLong(id));
 		if (c == null)
 			return false;
-		String uname = this.tokenUtils.getUsernameFromToken(token);
-		User user = (User) this.userDetailsService.loadUserByUsername(uname);
+	
 		RentACarCompany co = rentACarCompanyRepository.findOneByAdmin(user);
 		co.getCars().remove(c);
 		rentACarCompanyRepository.save(co);
@@ -338,12 +330,12 @@ public class RentACarService {
 		return true;
 	}
 	
-	@Transactional(value=TxType.REQUIRED)
+	/*@Transactional(value=TxType.REQUIRED)
 	public boolean reserve(HttpServletRequest request, Map<String,String> params) {
 		
 		return true;
 	}
-
+*/
 	public Car getCar(Map<String, String> params) {
 		String dateStart = params.get("startDate");
 		String[] parts = dateStart.split("/");
@@ -404,6 +396,15 @@ public class RentACarService {
 		return sum/i;
 	}
 	
-	
+	private User getUserFromRequestToken(HttpServletRequest request) {
+		//TODO  izbaci ovaj kod iz ostalih metoda, premesti ovdee
+		String token = tokenUtils.getToken(request);
+		if (token == null)
+			return null;
+		String uname = this.tokenUtils.getUsernameFromToken(token);
+		User user = (User) this.userDetailsService.loadUserByUsername(uname);
+		return user;
+	}
+
 
 }
