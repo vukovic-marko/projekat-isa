@@ -1,8 +1,11 @@
 package isa.projekat.service;
 
-import java.sql.Date;
+import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -16,11 +19,21 @@ import org.springframework.transaction.annotation.Transactional;
 import isa.projekat.model.Car;
 import isa.projekat.model.CarReservation;
 import isa.projekat.model.Destination;
+import isa.projekat.model.Hotel;
+import isa.projekat.model.HotelAdditionalService;
+import isa.projekat.model.HotelReservation;
+import isa.projekat.model.HotelRoom;
+import isa.projekat.model.HotelRoomPrice;
 import isa.projekat.model.Reservation;
 import isa.projekat.model.User;
 import isa.projekat.repository.CarRepository;
 import isa.projekat.repository.CarReservationRepository;
 import isa.projekat.repository.DestinationRepository;
+import isa.projekat.repository.HotelAdditionalServiceRepository;
+import isa.projekat.repository.HotelRepository;
+import isa.projekat.repository.HotelReservationRepository;
+import isa.projekat.repository.HotelRoomPriceRepository;
+import isa.projekat.repository.HotelRoomRepository;
 import isa.projekat.repository.ReservationRepository;
 import isa.projekat.security.TokenUtils;
 
@@ -39,6 +52,16 @@ public class ReservationService {
 	private DestinationRepository destinationRepository;
 	@Autowired
 	private CarRepository carRepository;
+	@Autowired
+	private HotelRepository hotelRepository;
+	@Autowired
+	private HotelRoomRepository hotelRoomRepository;
+	@Autowired
+	private HotelAdditionalServiceRepository additionalServiceRepository;
+	@Autowired
+	private HotelRoomPriceRepository roomPriceRepository;
+	@Autowired
+	private HotelReservationRepository hotelReservationRepository;
 	@Autowired
 	private CarReservationRepository carReservationRepository;
 	
@@ -81,21 +104,92 @@ public class ReservationService {
 			// ili sa onim da se mora da se prikljuci postojecoj (ako je ne pozivate sa fronta ili tako nsto)
 			//ako u ovoj klasi pravite nove metode koje pozivate iz ove,
 			//stavite da MORA da postoji transakcija kojoj se ta prikljucuje
-			
-			if(ret.equals("OK")) {
-				reservationRepository.save(reservation);
-				
-			}
-			return ret;
-			
 		} 
 		
+		if (reservation.getHotelReservation() != null) {
+			System.out.println("Rez nije null <-");
+			HotelReservation hRes = reservation.getHotelReservation();
+			System.out.println(reservation.getHotelReservation().getRooms().size());
+			List<String> rooms = new ArrayList<String>();
+			
+			for (Iterator<HotelRoom> it = hRes.getRooms().iterator(); it.hasNext(); ) {
+		        HotelRoom f = it.next();
+		        rooms.add(f.getRoomNumber());
+			}
+			
+			System.out.println(rooms.size());
+			
+			Date dateOfArrival = hRes.getDateOfArrival();
+			Date dateOfDeparture = hRes.getDateOfDeparture();
+			
+			Boolean error = false;
+			
+			for (String roomNumber : rooms) {
+				if (hotelRoomRepository.findRooms(dateOfArrival, dateOfDeparture, roomNumber, hRes.getId()).size() != 0) {
+					error = true;
+					ret += "hotel";
+				}
+			}
+			if (!error) {
+			Set<HotelAdditionalService> additionalServices = new HashSet<HotelAdditionalService>();
+			Double price = 0.0;
+	
+			for (Iterator<HotelAdditionalService> it = hRes.getServices().iterator(); it.hasNext(); ) {
+		        HotelAdditionalService f = it.next();
+		        HotelAdditionalService aS = additionalServiceRepository.findOne(f.getId());
+				if (aS == null) 
+					ret += "hotel";
+				else {
+					additionalServices.add(aS);
+					price += aS.getPrice();
+				}
+			}
+						
+			Set<HotelRoom> r = new HashSet<HotelRoom>();
+			Hotel h = hotelRepository.findOne(hRes.getId());
+			HotelReservation res = new HotelReservation();
+			res.setDateOfArrival(dateOfArrival);
+			res.setDateOfDeparture(dateOfDeparture);
+			res.setNumberOfGuests(-1);
+			
+			res.setUser(user);
+			res.setServices(additionalServices);
+			for (String roomNumber : rooms) {
+				HotelRoom rr = hotelRoomRepository.findByRoomNumberAndHotel(roomNumber, h);
+				HotelRoomPrice rp = roomPriceRepository.findPriceForRoomOnDate(dateOfArrival, rr);
+				
+				long diff = dateOfDeparture.getTime() - dateOfArrival.getTime();
+				 
+				int diffDays = (int) (diff / (24 * 60 * 60 * 1000));
+				
+				price += diffDays * rp.getPrice();
+				
+				rr.getRoomReservations().add(res);
+				r.add(rr);
+			}
+			
+			
+			res.setPrice(price);
+			res.setRooms(r);
+			reservation.setHotelReservation(res);
+			reservation.getHotelReservation().setId(null);
+			hotelReservationRepository.save(reservation.getHotelReservation());
+			
+			hotelRoomRepository.save(r);
+			}
+		}
 		
 		
 		
+		if(ret.equals("OK")) {
+			reservationRepository.save(reservation);
+			
+		}
+		return ret;
 		
-		return null;
+		//return null;
 	}
+
 
 	public Destination getDestination(String id) {
 		return  destinationRepository.findOne(Long.parseLong(id));
@@ -111,7 +205,7 @@ public class ReservationService {
 			return null;
 		Set<CarReservation> ret=new HashSet<>();
 		java.util.Date date= new java.util.Date();
-		java.sql.Date d=new Date(date.getTime());
+		java.sql.Date d=new java.sql.Date(date.getTime());
 		ret=carReservationRepository.findUserHistory(user,d);
 		return ret;
 	}
