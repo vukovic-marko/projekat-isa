@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import isa.projekat.model.CarReservation;
 import isa.projekat.model.Destination;
+import isa.projekat.model.HotelReservation;
 import isa.projekat.model.Reservation;
 import isa.projekat.service.ReservationService;
 
@@ -53,6 +54,13 @@ public class ReservationController {
 	@ResponseBody
 	public Set<CarReservation> getMyCarHistory(HttpServletRequest request) {
 		return reservationService.getMyCarHistoty(request);
+	}
+	
+	@GetMapping(value = "/myhotelhistory", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+	@PreAuthorize("hasRole('ROLE_USER')")
+	@ResponseBody
+	public Set<HotelReservation> getMyHotelhistory(HttpServletRequest request) {
+		return reservationService.getMyHotelHistoty(request);
 	}
 
 }

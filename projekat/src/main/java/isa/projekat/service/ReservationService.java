@@ -40,8 +40,8 @@ import isa.projekat.security.TokenUtils;
 @Service
 public class ReservationService {
 	
-	 @Autowired
-	    private TokenUtils tokenUtils;
+	@Autowired
+	private TokenUtils tokenUtils;
 	@Autowired
 	private CustomUserDetailsService userDetailsService;
 	@Autowired
@@ -207,6 +207,22 @@ public class ReservationService {
 		java.util.Date date= new java.util.Date();
 		java.sql.Date d=new java.sql.Date(date.getTime());
 		ret=carReservationRepository.findUserHistory(user,d);
+		return ret;
+	}
+
+
+	public Set<HotelReservation> getMyHotelHistoty(HttpServletRequest request) {
+		String token = tokenUtils.getToken(request);
+		if (token == null)
+			return null;
+		String uname = this.tokenUtils.getUsernameFromToken(token);
+		User user = (User) this.userDetailsService.loadUserByUsername(uname);
+		if (user == null)
+			return null;
+		Set<HotelReservation> ret=new HashSet<>();
+		java.util.Date date= new java.util.Date();
+		java.sql.Date d=new java.sql.Date(date.getTime());
+		ret=hotelReservationRepository.findUserHistory(user,d);
 		return ret;
 	}
 }

@@ -15,36 +15,76 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import isa.projekat.model.CarReview;
+import isa.projekat.model.Hotel;
+import isa.projekat.model.HotelReview;
 import isa.projekat.service.CarReviewService;
+import isa.projekat.service.HotelReviewService;
 
 @Controller
-@RequestMapping(value="review")
+@RequestMapping(value = "review")
 public class ReviewController {
 
-@Autowired
-private CarReviewService carReviewService;
+	@Autowired
+	private CarReviewService carReviewService;
+
+	@Autowired
+	private HotelReviewService hotelReviewService;
+
+	@GetMapping(value = "/carreview/{id}", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+	@PreAuthorize("hasRole('ROLE_USER')")
+	@ResponseBody
+	public CarReview getReview(@PathVariable(value = "id") String id) {
+
+		return carReviewService.getReview(id);
+	}
+
+	@PostMapping(value = "/carreview/{id}", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+	@PreAuthorize("hasRole('ROLE_USER')")
+	@ResponseBody
+	public boolean makeCarReview(@PathVariable(value = "id") String id, @RequestBody Map<String, Integer> a) {
+
+		return carReviewService.setCarReview(id, a.get("a"));
+	}
+
+	@PostMapping(value = "/carreview/company/{id}", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+	@PreAuthorize("hasRole('ROLE_USER')")
+	@ResponseBody
+	public boolean makeCompanyRev(@PathVariable(value = "id") String id, @RequestBody Map<String, Integer> a) {
+
+		return carReviewService.setCarCompanyReview(id, a.get("a"));
+	}
+
+	@GetMapping(value = "/hotelreview/gethotelbyroom/{id}", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+	@PreAuthorize("hasRole('ROLE_USER')")
+	@ResponseBody
+	public Hotel getHotelByRoom(@PathVariable(value = "id") String id) {
+
+		return hotelReviewService.hotelByRoom(id);
+	}
+
+	@GetMapping(value = "/hotelreview/{id}", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+	@PreAuthorize("hasRole('ROLE_USER')")
+	@ResponseBody
+	public HotelReview getHotelRev(@PathVariable(value = "id") String id) {
+
+		return hotelReviewService.getReview(id);
+	}
 	
-	@GetMapping(value = "/carreview/{id}",produces=MediaType.APPLICATION_JSON_UTF8_VALUE)
-	@PreAuthorize("hasRole('ROLE_USER')")
-	@ResponseBody
-    public CarReview getReview(@PathVariable(value = "id") String id) {
-
-        return carReviewService.getReview(id);
-    }
 	
-	@PostMapping(value = "/carreview/{id}",produces=MediaType.APPLICATION_JSON_UTF8_VALUE)
+	@PostMapping(value = "/roomreview/{idres}/{idroom}", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
 	@PreAuthorize("hasRole('ROLE_USER')")
 	@ResponseBody
-    public boolean makeCarReview( @PathVariable(value = "id") String id,@RequestBody Map<String,Integer> a) {
+	public boolean reviewRoom(@PathVariable(value = "idres") String res,@PathVariable(value = "idroom") String room, @RequestBody Map<String, Integer> a) {
 
-        return carReviewService.setCarReview(id,a.get("a"));
-    }
-	@PostMapping(value = "/carreview/company/{id}",produces=MediaType.APPLICATION_JSON_UTF8_VALUE)
+		return hotelReviewService.setRoomReview(res,room, a.get("a"));
+	}
+	
+	@PostMapping(value = "/hotel/{id}", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
 	@PreAuthorize("hasRole('ROLE_USER')")
 	@ResponseBody
-    public boolean makeCompanyRev( @PathVariable(value = "id") String id,@RequestBody Map<String,Integer> a) {
+	public boolean makeHotelReview(@PathVariable(value = "id") String id, @RequestBody Map<String, Integer> a) {
 
-        return carReviewService.setCarCompanyReview(id,a.get("a"));
-    }
+		return hotelReviewService.reviewHotel(id, a.get("a"));
+	}
+	
 }
-
