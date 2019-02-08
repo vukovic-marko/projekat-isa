@@ -25,7 +25,7 @@ public interface CarReservationRepository extends JpaRepository<CarReservation, 
 			"cr.car=c and c.company=?1 and cr.endDate>=?2 and cr.endDate<=?3")
 	public List<CarReservation> getReservationsByCompany(RentACarCompany c, Date dstart, Date dend);
 
-	@Query("select cr from CarReservation cr,Car c where "+
+	@Query("select cr from CarReservation cr where "+
 			"cr.endDate<?2 and cr.user=?1")
 	public Set<CarReservation> findUserHistory(User user, Date d);
 	
