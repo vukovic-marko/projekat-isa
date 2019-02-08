@@ -83,7 +83,6 @@ public class ReviewController {
 	@PreAuthorize("hasRole('ROLE_USER')")
 	@ResponseBody
 	public boolean makeHotelReview(@PathVariable(value = "id") String id, @RequestBody Map<String, Integer> a) {
-
 		return hotelReviewService.reviewHotel(id, a.get("a"));
 	}
 	
