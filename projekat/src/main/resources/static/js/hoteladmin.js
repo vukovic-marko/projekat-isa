@@ -32,6 +32,15 @@ $(document).ready(function() {
 	setInterval(refreshToken, 60000); //svaki min
 	
 	$.ajax({
+		url: 'hoteladmin/areview',
+		type: 'get',
+		success: function(data) {
+			//alert(data);	
+			$('#arev').append("<br/><br/><br/><br/><h4>Prosecna ocena hotela: " + data + "</h4>");
+		}
+	});
+	
+	$.ajax({
 		url: 'user/checkactivated',
 		type: 'get',
 		statusCode: {

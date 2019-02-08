@@ -22,6 +22,9 @@ public interface HotelReviewRepository extends JpaRepository<HotelReview, Long> 
 	@Query("select cr from CarReview cr, CarReservation res"+
 	" where cr.carReservation.car.company.id=?1")
 	List<CarReview> getByCompanyId(long parseLong);
-	*/
+	*/	
 	
+	@Query("select hr from HotelReview hr, HotelReservation res JOIN res.rooms r"+
+			" where r.hotel.id=?1")
+	List<HotelReview> getByHotelId(long parseLong);
 }

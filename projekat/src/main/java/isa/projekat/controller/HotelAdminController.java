@@ -27,6 +27,7 @@ import isa.projekat.model.User;
 import isa.projekat.security.TokenUtils;
 import isa.projekat.service.CustomUserDetailsService;
 import isa.projekat.service.HotelAdminService;
+import isa.projekat.service.HotelReviewService;
 
 @RestController
 @RequestMapping(value="/hoteladmin")
@@ -39,6 +40,9 @@ public class HotelAdminController {
 	
 	@Autowired
 	private HotelAdminService hotelAdminService;
+	
+	@Autowired
+	private HotelReviewService hotelReviewService;
 	
 	@RequestMapping(value="/remove/room/{id}", method = RequestMethod.GET)
 	@PreAuthorize("hasRole('ROLE_HOTEL_ADMIN')")
@@ -220,5 +224,16 @@ public class HotelAdminController {
 		Boolean b = hotelAdminService.addRoomPrice(user.getHotel(), price, roomNumber);
 		
 		return new ResponseEntity<Boolean>(b, HttpStatus.OK);
+	}
+	
+	@RequestMapping(value="/areview", method=RequestMethod.GET)
+	@PreAuthorize("hasRole('ROLE_HOTEL_ADMIN')")
+	public Double getAReview(HttpServletRequest request) {
+		String token = tokenUtils.getToken(request);
+		String username = this.tokenUtils.getUsernameFromToken(token);
+		User user = (User) this.userDetailsService.loadUserByUsername(username);
+
+		
+		return hotelReviewService.getAverage(user.getHotel().getId().toString());
 	}
 }

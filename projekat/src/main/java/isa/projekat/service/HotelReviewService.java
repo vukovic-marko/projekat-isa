@@ -108,4 +108,18 @@ public class HotelReviewService {
 		return true;
 		
 	}
+	
+	public Double getAverage(String id) {
+		List<HotelReview> rev= hotelReviewRepository.getByHotelId(Long.parseLong(id));
+		Double sum=0.0;
+		int i=0;
+		for(HotelReview r:rev)
+			if(r.getHotelReview()!=null) {
+				i++;
+				sum+=r.getHotelReview();
+			}
+		if(i==0)
+			i=1;
+		return sum/i;
+	}
 }
