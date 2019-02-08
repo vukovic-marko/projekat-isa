@@ -21,30 +21,51 @@ function refreshToken(){
 
 
 
-$(document).ready(
+$(document).ready(function () {
+	
 
-		function() {
-			  setInterval(refreshToken, 60000); //svaki min
-			$.validator.methods.phoneCheck = function(value, element) {
-				return this.optional(element)
-						|| /([0-9]{3,3}\/[0-9]{3,3}-[0-9]{2,2}-[0-9]{2,2})$/
-								.test(value);
-			}
+	setInterval(refreshToken, 60000); //svaki min
+	$.validator.methods.phoneCheck = function(value, element) {
+		return this.optional(element)
+		|| /([0-9]{3,3}\/[0-9]{3,3}-[0-9]{2,2}-[0-9]{2,2})$/
+		.test(value);
+	}
 
-			fillButtons();
-			
-			next();
-		});
+	$('#rent').click(function () {
+		location.hash = 'rentacar';
+	});
+
+	$("#air").click(function (event) {
+
+		location.hash = "airlineSearch";
+	});
+
+	$('#hotel').click(function() {
+		location.hash = 'hotel';
+	});
+
+	$(window).on('hashchange', function () {
+//		if (location.hash === '#rentacar') {
+//		showRentACar();
+//		} else
+
+		if (location.hash.includes("hotel")) {
+			showHotel();}
+//		} else if (location.hash.includes("cart")) {
+//		showCart();
+	});
+
+	fillButtons();
+
+
+
+});
 
 $(window).resize(adjust_body_offset);
 adjust_body_offset();
 
 function fillButtons() {	
 	
-	$('.logged-out-navbar .navbar-nav').append(
-			'<li class="nav-item">'
-					+ ' <button data-toggle="modal" href="#loginModal"'
-					+ '  class="btn btn-primary">Prijavi se</button> </li>');
 	$('#loginForm').validate({
 		rules : {
 			username : "required",
@@ -155,12 +176,7 @@ function fillButtons() {
 			});
 		}
 	});
-	$('.logged-out-navbar .navbar-nav')
-			.append(
-					'<li class="nav-item">'
-							+ ' <button id="refModalShow" data-toggle="modal" href="#registerModal"'
-							+ '  class="btn btn-primary">Registruj se</button> </li>');
-	$('#registerButton').click(
+	$('#register').click(
 
 			function() {
 				if ($('#registerForm').valid()) {
