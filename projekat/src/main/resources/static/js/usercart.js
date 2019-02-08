@@ -36,8 +36,15 @@ $("#removeFlight").click(function(){
 	let hotelRes = JSON.parse(localStorage.getItem("hotelCart"));
 	let finalnaCena = 0;
 	let roomsForStorage = JSON.parse(localStorage.getItem("roomsForStorage"));
+	
+	let hotelReservation = {};
 
 	if (hotelRes != null) {
+		hotelReservation.dateOfArrival = hotelRes.dateOfArrival;
+		hotelReservation.dateOfDeparture = hotelRes.dateOfDeparture;
+		hotelReservation.id = hotelRes.hotelId;
+		hotelReservation.rooms = [];
+		hotelReservation.services = [];
 		$.each(roomsForStorage, function(a, b) {
 			$('#roomCardsCart').append(
 					"<div class=\"card\">" + "	<div class=\"card-body\">"
@@ -51,6 +58,9 @@ $("#removeFlight").click(function(){
 							+ b.cena + ", Ukupna cena: " + b.ukupnaCena
 							+ "</p>" + "	</div>" + "</div><br />");
 			finalnaCena += parseInt(b.ukupnaCena);
+			let temp = {};
+			temp.roomNumber = hotelRes.roomNumbers[a];
+			hotelReservation.rooms.push(temp);
 		});
 
 		let servicesForStorage = JSON.parse(localStorage
@@ -63,8 +73,12 @@ $("#removeFlight").click(function(){
 							+ "</h5>" + "		<p class=\"card-text\">Cena: "
 							+ b.price + "</p>" + "	</div>" + "</div><br />");
 			finalnaCena += parseInt(b.price);
+			let temp = {};
+			temp.id = hotelRes.services[a];
+			hotelReservation.services.push(temp);
 		});
-
+		
+		localStorage.setItem("hotelReservation", JSON.stringify(hotelReservation));
 	}
 	// ---AUTO----------
 	let car = localStorage.getItem("carReservation");
@@ -156,11 +170,12 @@ $("#removeFlight").click(function(){
 	$('#createReservationButton').once("click", function() {
 		//if (hotelRes != null) 
 		{
-			let r = JSON.parse(localStorage.getItem("hotelCart"));
-		//	console.log(r);
+			let r = JSON.parse(localStorage.getItem("hotelReservation"));
+			console.log(r);
 			let d = {};
 			let c = JSON.parse(localStorage.getItem("carReservation"));
 			d.hotelReservation = r;
+			console.log(c);
 			
 			if(c!=null)
 			$.ajax({
@@ -195,6 +210,7 @@ $("#removeFlight").click(function(){
 					localStorage.removeItem("roomsForStorage");
 					localStorage.removeItem("servicesForStorage");
 					localStorage.removeItem("carReservation");
+					localStorage.removeItem("hotelReservation");
 				},
 				statusCode : {
 					403 : function(data) {
