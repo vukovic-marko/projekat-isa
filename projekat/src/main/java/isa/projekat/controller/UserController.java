@@ -136,6 +136,7 @@ public class UserController {
 	@RequestMapping(value = "/activate/{username}", method = RequestMethod.GET)
 	public @ResponseBody ResponseEntity<Boolean> activate(@PathVariable String username) {
 		boolean reg = userService.activate(username);
+
 		return new ResponseEntity<Boolean>(reg, HttpStatus.OK);
 	}
 }

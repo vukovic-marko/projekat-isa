@@ -1,4 +1,4 @@
-package isa.projekat.controller.AirlineComapanyAdminControllers;
+package isa.projekat.controller.AirlineCompanyAdminControllers;
 
 
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 
 @RestController
-@RequestMapping(value = "/api/airportadmins/{adminId}/airlinecompanies/{airlineCompanyId}")
+@RequestMapping(value = "/api/airportadmins/airlinecompanies")
 @PreAuthorize("hasRole('ROLE_AIRPORT_ADMIN')")
 public class AirlineCompanyAdminController {
 //

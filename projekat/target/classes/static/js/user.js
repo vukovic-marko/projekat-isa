@@ -54,6 +54,10 @@ $(document).ready(
 	    	location.hash = 'hotel';
 	    });
 
+        $('#cart').click(function() {
+        	location.hash = 'cart';
+        })
+
         $(window).on('hashchange', function () {
 
 			if(!location.hash.includes("profile")) {
@@ -101,9 +105,11 @@ $(document).ready(
             }
             else if (location.hash.includes("hotel")) {
 	        	showHotel();
+            } else if (location.hash.includes("cart")) {
+            	showCart();
             }
         });
-	
+
 
         $(window).trigger('hashchange');
 
@@ -113,12 +119,18 @@ $(document).ready(
 			|| /([0-9]{3,3}\/[0-9]{3,3}-[0-9]{2,2}-[0-9]{2,2})$/
 				.test(value);
 	}
+
 	//
 });
 
 var indexOfActiveTab = 0;
 var shownTab = false;
 var validatorProfileInfo = null;
+
+function showAirlineSearch() {
+	$("#items").load("/registereduser/profile")
+}
+
 function showProfileInfo() {
 
 	$("#items").
@@ -487,10 +499,6 @@ function showProfileInfo() {
 
 		$("#tabs").tabs("load", indexOfActiveTab).show("fade", {}, 400, function() {});
 	});
-}
-
-function showAirlineSearch() {
-	// $.load("/registereduser/profile")
 }
 
 function showRentACar() {

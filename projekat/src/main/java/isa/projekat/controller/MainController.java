@@ -52,6 +52,11 @@ public class MainController {
             if (li.get(0).getName().equals("ROLE_HOTEL_ADMIN"))
             	return new ModelAndView("redirect:" + "hoteladmin.html");
 
+            if(li.get(0).getName().equals("ROLE_AIRPORT_ADMIN")) {
+
+                return new ModelAndView("redirect:" + "airportadmin.html");
+            }
+
         }
         return new ModelAndView("redirect:" + "index.html");
 	}

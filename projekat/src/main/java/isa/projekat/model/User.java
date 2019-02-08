@@ -19,6 +19,7 @@ import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.persistence.Version;
 
+import isa.projekat.model.AirlineCompany.AirlineCompany;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
@@ -116,6 +117,8 @@ public class User implements UserDetails {
 	//------------------------------------
 	//AIRPORT ADMIN
 
+	@OneToMany
+	private Set<AirlineCompany> airlineCompanies;
 
 	//-----------------------------------
 
@@ -126,7 +129,7 @@ public class User implements UserDetails {
 
 	@OneToMany(mappedBy = "friendReceiver")
 	private Set<Friendship> receivedFriends;
-	
+	//------------------------------------
 	
 	
 	

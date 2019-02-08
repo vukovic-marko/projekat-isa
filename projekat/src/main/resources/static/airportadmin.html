@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en"
+      xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+      xmlns:th="http://www.thymeleaf.org/">
+<head>
+
+    <meta content='text/html; charset=UTF-8' http-equiv='Content-Type'/>
+
+    <title>Airport admin</title>
+
+    <script src="js/jquery-3.3.1.min.js" type="text/javascript"></script>
+    <script src="js/bootstrap.js" type="text/javascript"></script>
+    <script src="js/jquery.validate.js" type="text/javascript"></script>
+    <script type="text/javascript" src="js/jquery-ui.min.js"></script>
+
+    <link href="css/styles.css" rel="stylesheet" type="text/css">
+    <link href="css/bootstrap.css" rel="stylesheet" type="text/css">
+    <link href="css/screen.css" rel="stylesheet" type="text/css">
+    <link rel="stylesheet" href="css/jquery-ui.min.css">
+
+    <script src="js/airportadmin.js" type="text/javascript"></script>
+</head>
+
+<body>
+
+<nav class="navbar navbar-default navbar-expand-sm bg-dark navbar-dark fixed-top logged-out-navbar">
+    <ul class="navbar-nav">
+        <li class="nav-item">
+            <button class="btn btn-primary" id="logout">Odjavi se</button>
+        </li>
+    </ul>
+</nav>
+
+<!-- User profile tabs -->
+<div class="container-fluid" id="userProfile">
+
+    <!-- naslov -->
+    <div class="row  mt-1" style="background-color: white">
+        <div class="page-header">
+            <h1>
+                Profil korisnika <span sec:authentication="name">USERNAME</span>
+            </h1>
+        </div>
+    </div>
+
+    <!-- Profil info, aviokompanije info, letovi-->
+    <div class="row mt-2 py-2" style="background-color: white">
+
+        <div class="container-fluid ">
+            <div id="tabs">
+                <ul>
+                    <li><a href="/airportadmins/profile">Moj profil</a></li>
+                    <li><a href="/airportadmins/airlinecompanies">Moje aviokompanije</a></li>
+                    <li><a href="/airportadmins/flights">Letovi</a></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+</body>
+
+</html>
